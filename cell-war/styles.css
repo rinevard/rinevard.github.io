@@ -1,0 +1,90 @@
+body { 
+    font-family: Arial, sans-serif; 
+  }
+  
+  .game-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .game-area {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .board { 
+    display: grid; 
+    grid-template-columns: repeat(18, 30px); 
+    margin-top: 10px; 
+  }
+  
+  .cell { 
+    width: 30px; 
+    height: 30px; 
+    border: 1px solid #ccc; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+  }
+  
+  .red { background-color: red; }
+  .blue { background-color: blue; }
+  .neutral { background-color: grey; }
+  .ai-preview { background-color: rgba(255, 0, 0, 0.3); }
+  
+  #gameInfo { 
+    display: flex; 
+    align-items: center; 
+    padding: 10px;
+    background-color: #f0f0f0;
+  }
+  
+  #gameStatus {
+    margin-right: 10px;
+  }
+  
+  #endTurnBtn, #undoBtn, #restartBtn { 
+    padding: 5px 10px; 
+    white-space: nowrap;
+    margin-right: 5px;
+  }
+  
+  #endTurnBtn:disabled, #undoBtn:disabled { 
+    background-color: #cccccc; 
+    color: #666666; 
+  }
+  
+  #gameResult {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+  
+  .instructions-area {
+    width: 300px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+  
+  #toggleInstructions {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #instructions {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  .hidden {
+    display: none;
+  }
