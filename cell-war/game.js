@@ -196,12 +196,17 @@ function toggleInstructions() {
 document.addEventListener('keydown', function(event) {
   const endTurnBtn = document.getElementById('endTurnBtn');
   const undoBtn = document.getElementById('undoBtn');
+  const restartBtn = document.getElementById('restartBtn');
+
   if (event.code === 'Space' && !endTurnBtn.disabled) {
     event.preventDefault();
     endTurnBtn.click();
   } else if (event.code === 'KeyZ' && !undoBtn.disabled) {
     event.preventDefault();
     undoBtn.click();
+  } else if (event.code === 'KeyR' && !restartBtn.disabled) {
+    event.preventDefault();
+    restartBtn.click();
   }
 });
 
