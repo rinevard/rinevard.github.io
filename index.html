@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rinevard - Self Introduction</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* 添加一些内联样式来确保布局正确 */
+      #randomTextContainer {
+        margin-top: 20px;
+        min-height: 30px;
+      }
+      #generateTextBtn {
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -22,6 +32,8 @@
       <section id="about">
         <h1>Rinevard</h1>
         <p>I am Rinevard, a student interested in math, games, and AI.</p>
+        <button id="generateTextBtn">A cool button</button>
+        <div id="randomTextContainer" class="mixed-text-container"></div>
       </section>
 
       <section id="skills">
@@ -45,6 +57,7 @@
       </section>
     </main>
 
+    <script src="cool-text/mixed-text.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
