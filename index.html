@@ -1,75 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rinevard - Self Introduction</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      /* 添加一些内联样式来确保布局正确 */
-      #randomTextContainer {
-        margin-top: 20px;
-        min-height: 30px;
-      }
-      #generateTextBtn {
-        margin-top: 10px;
-      }
-    </style>
+    <title>Rinevard</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
   </head>
   <body>
-    <header>
-      <nav>
-        <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <main>
-      <section id="about">
+    <div class="content-wrapper">
+      <header>
         <h1>Rinevard</h1>
-        <p>I am Rinevard, a student interested in math, games, and AI.</p>
-        <button id="generateTextBtn">A cool button</button>
-        <div id="randomTextContainer" class="mixed-text-container"></div>
-      </section>
-
-      <section id="skills">
-        <h2>Skills</h2>
-        <ul>
-          <li>Problem-solving</li>
-          <li>Programming (Python, TypeScript, etc.)</li>
-        </ul>
-      </section>
-
-      <section id="projects">
-        <h2>Projects</h2>
+        <button id="invert-theme">Invert Theme</button>
+      </header>
+      <main>
+        <p>
+          I am a Chinese second-year undergraduate student majoring in
+          Artificial Intelligence at
+          <a href="https://english.bit.edu.cn/">
+            Beijing Institute of Technology</a
+          >. I'm interested in probability, reinforcement learning, and game
+          design.
+        </p>
+        <p>Here are some things I've worked on:</p>
         <ul>
           <li>
-            <a href="https://github.com/rinevard/SnakeDRL"
-              >SnakeDRL (Using DRL to teach AI to play Snake)</a
-            >
+            A
+            <a href="https://github.com/rinevard/SummerGamejam">repository</a>
+            containing a game prototype called StarTrack.
           </li>
-        </ul>
-        <ul>
           <li>
-            <a
-              href="https://github.com/rinevard/SummerGamejam/releases/tag/startrack"
-              >StarTrack (a prototype for a school gamejam)</a
-            >
+            A
+            <a href="https://github.com/rinevard/SnakeDRL">small project</a>
+            using DQN to teach AI to play Snake.
+          </li>
+          <li>
+            Some <a href="notes/notes.html">course notes</a> written in Chinese.
           </li>
         </ul>
-      </section>
-
-      <section id="contact">
-        <h2>Contact</h2>
-        <p>You can reach me at rinevard@outlook.com</p>
-      </section>
-    </main>
-
-    <script src="cool-text/mixed-text.js"></script>
-    <script src="script.js"></script>
+        <p>
+          Feel free to reach out to me on
+          <a href="https://github.com/rinevard">GitHub</a>!
+        </p>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
   </body>
 </html>
