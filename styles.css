@@ -11,6 +11,7 @@
   --text-color: #444;
   --primary-color: #06f;
   --accent-color: #085;
+  --primary-color-rgb: 0, 102, 255;
 }
 
 /* 暗色主题 */
@@ -19,6 +20,7 @@ html[theme="dark"] {
   --text-color: #e0e0e0;
   --primary-color: #4a9eff;
   --accent-color: #50c878;
+  --primary-color-rgb: 74, 158, 255;
 }
 
 /* 基本页面结构 */
@@ -103,6 +105,37 @@ header {
   align-items: center;
 }
 
+/* 头部布局 */
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+h1 {
+  margin-right: 15px;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.github-link:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.github-link svg {
+  fill: var(--text-color);
+  transition: fill 0.3s;
+}
+
+.github-link:hover svg {
+  fill: var(--primary-color);
+}
+
 /* 页脚 */
 footer {
   flex-shrink: 0;
@@ -118,12 +151,18 @@ footer {
 
 /* 列表样式 */
 ul {
-  list-style-type: "- ";
+  list-style-type: disc;
   padding-left: 1em;
 }
 
-li {
-  margin-bottom: 10px;
+ol {
+  list-style-type: decimal;
+  padding-left: 1em;
+}
+
+ul ul,
+ol ul {
+  list-style-type: circle;
 }
 
 /* 导航和章节样式 */
@@ -153,9 +192,7 @@ a {
   transition: 0.25s;
 }
 
-a:focus,
-a:hover,
-a:active {
+a:hover {
   background-color: var(--primary-color);
   color: var(--background-color);
   border-radius: 5px;
@@ -195,4 +232,108 @@ footer a:focus,
 footer a:active {
   background-color: transparent;
   color: var(--primary-color);
+}
+
+/* 代码块样式 */
+pre[class*="language-"] {
+  border-radius: 5px;
+  margin: 1em 0;
+  padding: 1em;
+  overflow: auto;
+  background-color: #f5f5f5; /* 浅色模式下的背景色 */
+}
+
+/* 深色模式下的代码块样式 */
+html[theme="dark"] pre[class*="language-"] {
+  background-color: #1e1e1e; /* 深色模式下的背景色 */
+}
+
+/* 确保深色模式下代码文本颜色可见 */
+html[theme="dark"] code[class*="language-"],
+html[theme="dark"] pre[class*="language-"] {
+  color: #d4d4d4;
+}
+
+/* 代码复制按钮样式 */
+.copy-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 5px 10px;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8em;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+/* 调整代码块容器样式 */
+pre {
+  position: relative;
+}
+
+/* 适应深色模式的代码高亮 */
+html[theme="dark"] .token.comment,
+html[theme="dark"] .token.prolog,
+html[theme="dark"] .token.doctype,
+html[theme="dark"] .token.cdata {
+  color: #8292a2;
+}
+
+html[theme="dark"] .token.punctuation {
+  color: #f8f8f2;
+}
+
+html[theme="dark"] .token.property,
+html[theme="dark"] .token.tag,
+html[theme="dark"] .token.constant,
+html[theme="dark"] .token.symbol,
+html[theme="dark"] .token.deleted {
+  color: #f92672;
+}
+
+html[theme="dark"] .token.boolean,
+html[theme="dark"] .token.number {
+  color: #ae81ff;
+}
+
+html[theme="dark"] .token.selector,
+html[theme="dark"] .token.attr-name,
+html[theme="dark"] .token.string,
+html[theme="dark"] .token.char,
+html[theme="dark"] .token.builtin,
+html[theme="dark"] .token.inserted {
+  color: #a6e22e;
+}
+
+html[theme="dark"] .token.operator,
+html[theme="dark"] .token.entity,
+html[theme="dark"] .token.url,
+html[theme="dark"] .language-css .token.string,
+html[theme="dark"] .style .token.string,
+html[theme="dark"] .token.variable {
+  color: #f8f8f2;
+}
+
+html[theme="dark"] .token.atrule,
+html[theme="dark"] .token.attr-value,
+html[theme="dark"] .token.function,
+html[theme="dark"] .token.class-name {
+  color: #e6db74;
+}
+
+html[theme="dark"] .token.keyword {
+  color: #66d9ef;
+}
+
+html[theme="dark"] .token.regex,
+html[theme="dark"] .token.important {
+  color: #fd971f;
 }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>收益最大化</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>收益最大化</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          我们之前在研究surplus-maximization，现在我们看看revenue-maximization，即收益最大化。
+        </p>
+
+        <p>
+          我们假设每个bidder的私有价格 $v_i$ 都服从一个累积分布
+          $F_i$，且概率密度函数为 $f_i$.
+          不难证明，在单参数环境中，<strong>对一个DSIC的机制</strong>，若固定
+          $\mathbf{b}_{-i}$ 后分配函数 $x_i(z,\mathbf{b}_{-i})$
+          可导（这一点存疑。这里加上这个条件主要是因为在证明中用到了myerson's
+          lemma，而lemma在用 $x_i$ 表示 $p_i$ 时要求可导。<span
+            style="color: red"
+            >此处待施工TODO</span
+          >），则下式恒成立：
+        </p>
+
+        $$ \mathbb{E}_{\mathbf v}(\sum_{i=1}^n p_i(\mathbf v)) =
+        \mathbb{E}_{\mathbf v}(\sum_{i=1}^{n}\varphi_i(v_i)x_i(\mathbf v)) $$
+
+        <p>其中</p>
+
+        $$ \varphi_i(v_i) = v_i - \frac{1-F_i(v_i)}{f_i(v_i)} $$
+
+        <p>
+          这里的 $\varphi_i(v_i)$ 也被称作virtual valuation（虚拟估值）.
+          值得一提的是，虚拟估值可能是小于零的值。
+        </p>
+
+        <p>
+          我们略微提一下证明的要点。在证明中，我们用到了myerson's
+          lemma，因为对DISC的机制，它允许我们用 $x_i$ 来表示 $p_i$.
+          接下来就是简单的运算了，积分交换和分部积分之类的。
+        </p>
+
+        <p>
+          这个等式指出，在DSIC的机制中，收益仅与分配策略有关。因此，我们只要找到一个能最大化等式右边的分配策略，再证明它是monotone的策略（因为要求DSIC），就能得到最大化的收益了。顺提一句，等式右边也被称作virtual
+          welfare.
+        </p>
+
+        <p>
+          <strong>定义：</strong>对累积分布函数 $F$，如果 $\varphi(v) = v -
+          \frac{1-F(v)}{f(v)}$ 严格单调递增，则称 $F$ 是regular的分布。
+        </p>
+
+        <p>
+          我们有一个比较好的结果：如果每个$F_i$
+          都是regular的，且它们相互独立（看起来我们需要这个独立的条件，<span
+            style="color: red"
+            >是否要删除这个条件？此处待施工TODO</span
+          >），那么使virtual welfare最大化的分配规则是monotone的。
+        </p>
+
+        <p>
+          课上还有一些补充，比如我们可以不要求regular，只要求独立。在这种情况下，我们仍然能在monotone的分配规则的空间中找到一个还不错的解。See
+          Hartline [1, Chapter 3] for a textbook treatment.
+        </p>
+
+        <h1>Q&A</h1>
+
+        <p>
+          Q：当所有的虚拟估值都小于零时，最大化 $\mathbb{E}_{\mathbf
+          v}(\sum_{i=1}^{n}\varphi_i(v_i)x_i(\mathbf v))$
+          的方法看起来是不把物品分配给任何人。但这怎么可能会比随便卖给一个人得到的收益更高呢？
+        </p>
+
+        <p>
+          A：我<strong>猜测（没有严格证明）</strong>，这是因为我们要求机制是DSIC的。之前的等式仅仅在DSIC的机制中成立，对非DSIC的机制，我们目前没有学到什么结果。而我<strong>进一步猜测</strong>，对所有的能产生DSIC机制的分配策略来说，有时不把物品分配给任何人才能最大化收益。
+        </p>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../scripts.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>无模型方法</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>无模型方法</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          Model-Free方法指不需要知道奖励函数 $R(s,a)$ 和转移概率 $P(s' | s, a)$
+          的方法。Agent 通过经验而非模型来得到最优策略。
+        </p>
+
+        <p>MC方法实现了从Model-based到Model-free的飞跃。</p>
+
+        <h1>蒙特卡洛（MC）方法</h1>
+
+        <p>
+          这是最朴素的Model-Free方法，基本思想是借助大数定律来用均值估计
+          $q_{\pi_k}(s,a)$，从而更新策略。在这里我们可以看到
+          <em>exploration</em> 和 <em>exploitation</em> 的思想。
+        </p>
+
+        <p>
+          要注意的是，为了充分利用一个episode，我们会把它的sub-episode一起利用起来。这就引出了
+          <em>every-visit</em> 和
+          <em>first-visit</em>
+          两种选择。在遍历sub-episode时，前者每当遇到一个以$(s_k,a_k)$开头的序列就利用一次，后者只利用最长的那个以$(s_k,a_k)$开头的序列。
+        </p>
+
+        <img src="sub-episode.png" style="max-width: 100%; height: auto" />
+
+        <p>
+          为了在一个episode中经过所有的state-action
+          pair，我们就不能简单地使用确定性策略，而是需要加入一定随机性。这就引出了
+          <em>exploration</em> 和 <em>exploitation</em> 之间的权衡。
+        </p>
+
+        <p>
+          下面是 $\epsilon$-Greedy 算法，是一个经典的权衡
+          <em>exploration</em> 和 <em>exploitation</em> 的算法。
+        </p>
+
+        <img
+          src="mc-epsilon-greedy.png"
+          style="max-width: 100%; height: auto"
+        />
+
+        <p>
+          从model-free开始，我们就丧失了一些严谨性了。因为我们终究不可能有充分大的数据量，从而得不到精确估计。
+        </p>
+
+        <p>因此，我们要寄期望于采样，让采样得到的样本尽可能接近真实分布。</p>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../scripts.js" defer></script>
+  </body>
+</html>

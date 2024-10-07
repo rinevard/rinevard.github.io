@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>价值迭代、策略迭代和阶段策略迭代</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>价值迭代、策略迭代和阶段策略迭代</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>我们先给出贝尔曼最优方程，这里的迭代都基于它和压缩映像原理。</p>
+
+        $$ v^*=\underset{\pi}{\max}(r_\pi + \gamma P_\pi v^*) $$
+
+        <h1>价值迭代算法（Value Iteration）</h1>
+
+        <p>
+          <strong>价值迭代算法</strong>
+          通过价值迭代让我们逼近到最优策略。它的更新顺序是 $v_k$ → $\pi_{k+1}$ →
+          $v_{k+1}$.
+        </p>
+
+        $$ \pi_{k+1} = \arg\max_\pi (r_\pi + \gamma P_\pi v_k) $$ $$ v_{k+1} =
+        \max_\pi (r_\pi + \gamma P_\pi v_k) = r_{\pi_{k+1}} + \gamma
+        P_{\pi_{k+1}} v_k $$
+
+        <p>
+          在具体实现时，我们也需要关注每个状态 $s$ 下的更新公式，即 element-wise
+          形式。这有助于在算法实现时处理每一个具体的状态和动作。
+        </p>
+
+        <p>策略 $\pi_{k+1}$ 的更新公式为：</p>
+
+        $$ \pi_{k+1}(s)=\arg\max_\pi \sum_{a}\pi(a|s)q_k(s,a) $$
+
+        <p>若令</p>
+
+        $$ a_{k+1}^*(s) = \arg\max_aq_k(s, a) $$
+
+        <p>则有</p>
+
+        $$ \pi_{k+1}(a_{k+1}^*(s)|s) = 1 $$
+
+        <p>价值 $v_{k+1}$ 的更新公式为：</p>
+
+        $$ v_{k+1}(s) = \max_a q_k(s, a) $$
+
+        <h1>策略迭代（Policy Iteration）</h1>
+
+        <p>
+          策略迭代：$\pi_k$ → $v_{\pi_k}$ → $\pi_{k+1}$，下面给出
+          $v_{\pi_{k+1}}$ 是为了更好地和价值迭代对比。
+        </p>
+
+        $$ v_{\pi_k}=r_{\pi_k}+\gamma P_{\pi_k}v_{\pi_k} $$ $$
+        \pi_{k+1}=\arg\max_\pi (r_{\pi}+\gamma P_\pi v_{\pi_k}) $$ $$
+        v_{\pi_{k+1}}=r_{\pi_{k+1}}+\gamma P_{\pi_{k+1}}v_{\pi_{k+1}} $$
+
+        <p>
+          注意，策略迭代和价值迭代的一个重要区别就是策略迭代在求解
+          $v_{\pi_{k+1}}$ 时在解关于 $v_{\pi_{k+1}}$
+          的贝尔曼方程，而价值迭代在求解 $v_{k+1}$ 时用了之前的 $v_k$ .
+        </p>
+
+        <p>
+          你应当可以由这个"解贝尔曼方程"的行为注意到策略迭代的每一轮迭代比价值迭代要慢不少。不过好处是，它的每一轮迭代也比价值迭代更靠近最佳策略。
+        </p>
+
+        <h1>截断策略迭代 Truncated policy iteration</h1>
+
+        <p>
+          这是把策略迭代和价值迭代结合起来的产物。它的核心思想是，在策略迭代中我们要解关于价值函数的贝尔曼方程，而我们不想用大量的迭代来找到一个很精确的解。因此我们指定迭代的次数，在达到次数后停止迭代，并来得到一个大差不差的价值函数，再借助这个价值函数进一步更新策略。
+        </p>
+
+        <p>
+          特别地，当迭代次数是 1，截断策略迭代就是价值迭代；当迭代次数是
+          ∞，截断策略迭代就是策略迭代。
+        </p>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../scripts.js" defer></script>
+  </body>
+</html>

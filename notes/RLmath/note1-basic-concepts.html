@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>强化学习的数学原理 - Rinevard</title>
+    <title>基本概念和定义</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
@@ -11,6 +11,10 @@
       rel="stylesheet"
     />
     <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
     <script>
       (function () {
         var savedTheme = localStorage.getItem("theme");
@@ -40,51 +44,38 @@
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>强化学习的数学原理</h1>
+        <h1>基本概念和定义</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
+        <h2>环境</h2>
+
         <p>
-          这里是<a href="https://www.bilibili.com/video/BV1sd4y167NS"
-            >强化学习的数学原理</a
-          >的课程笔记：
+          我们有状态空间、行为空间、转移概率、奖励函数
+          $\mathbb{}$$\mathcal{S,A,P,R}$ 和折扣因子 $\gamma$ ，并假设转移概率
+          $\mathcal{P}$ 有马尔科夫特性，或者说无记忆性。
         </p>
-        <ul>
-          <li>
-            <a href="note1-basic-concepts.html">Note 1 基本概念和定义</a>
-          </li>
-          <li>
-            <a href="note2-bellman-optimal-equation.html"
-              >Note 2 贝尔曼最优方程</a
-            >
-          </li>
-          <li>
-            <a href="note3-value-policy-iteration.html"
-              >Note 3 价值迭代、策略迭代和阶段策略迭代</a
-            >
-          </li>
-          <li><a href="note4-model-free-methods.html">Note 4 无模型方法</a></li>
-          <li>
-            <a href="note5-rm-algorithm.html">Note 5 求方程的根：RM算法</a>
-          </li>
-          <li>
-            <a href="note6-td-learning.html">Note 6 时序差分（TD）学习</a>
-          </li>
-          <li><a href="note7-q-learning.html">Note 7 Q-learning</a></li>
-          <li>
-            <a href="note8-value-function-approximation.html"
-              >Note 8 值函数近似</a
-            >
-          </li>
-          <li>
-            <a href="note9-deep-q-learning.html">Note 9 Deep Q-learning</a>
-          </li>
-          <li>
-            <a href="note10-policy-gradient-a2c.html"
-              >Note 10 Policy Gradient 和 A2C</a
-            >
-          </li>
-        </ul>
+
+        <p>至此，我们就完成了对环境的定义。</p>
+
+        <h2>策略和价值</h2>
+
+        <p>
+          我们定义 <strong><em>Trajectory</em></strong> 为一个状态 - 行为 -
+          奖励链，并定义 <strong><em>Return</em></strong> 为 $G_t =
+          \sum_{k=0}^\infty \gamma^kR_{t + k + 1}$.
+        </p>
+
+        <p>
+          定义 <strong><em>Policy</em> $\pi(a|s)$</strong> 给定了在状态 $s$
+          下选择行为 $a$ 的概率，从而可以定义
+          <strong><em>State Value</em></strong> $v_{\pi}(s) = \mathbb{E}(G_t |
+          S_t=s)$ 和
+          <strong><em>Q-value</em></strong> $q_\pi(s,a)=\mathbb{E}(G_t |
+          S_t=s,A_t=a)$.
+        </p>
+
+        <p>不难发现如果已经求得了 $v$，就能求出 $q$.</p>
       </main>
     </div>
     <footer>
@@ -104,5 +95,8 @@
         >.
       </p>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../scripts.js" defer></script>
   </body>
 </html>

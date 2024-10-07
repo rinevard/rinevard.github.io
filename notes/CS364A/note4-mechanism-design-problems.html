@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>机制设计——问题</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>机制设计——问题</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          之前提到，我们希望拍卖机制同时满足DSIC、最大化社会剩余、多项式运行时间。我们有一个很好的结果：
+        </p>
+
+        <p>
+          <strong>结论：</strong>对任意一个单参数环境，假设其feasible set为
+          $X$，最大化剩余的分配规则是 $\mathbf x(b) = \arg
+          \max_{(x_1,...,x_n)\in X}
+          \sum_{i=1}^{n}b_ix_i$，则这个分配规则是单调的。（假设平局以一种确定性且一致的方式被打破，比如词典顺序。）
+        </p>
+
+        <p>
+          由Myerson's
+          lemma，在给定了单调的分配规则后，我们可以轻易构建一个满足DSIC的拍卖机制
+          $(\mathbf x,\mathbf p)$，那么<strong>问题</strong>在哪里呢？
+        </p>
+
+        <h1>坏消息</h1>
+
+        <p>问题在于，最大化社会剩余和多项式运行时间往往不能同时满足。</p>
+
+        <p>
+          以电视广告时长拍卖为例，bidders希望在电视上播放广告，每个bidder都有一个公开的广告时长
+          $w_i$ 和私人的估价 $v_i$，广告时长的总上限为 $W$.
+        </p>
+
+        <p>为了最大化社会剩余，我们不得不解决这个优化问题：</p>
+
+        $$ \text{Maximize:} \quad \sum_{i} v_i x_i $$ $$ \text{s.t.} \quad
+        \sum_{i} w_i x_i \leq W $$ $$ x_i \in \{0, 1\} \quad \forall i $$
+
+        <p>
+          这是一个<strong>0-1背包问题</strong>。众所周知，背包问题是NP-hard的，因此我们（目前）没有很好的多项式时间算法来最大化社会剩余。
+        </p>
+
+        <p>
+          这就是<strong>问题所在</strong>，最大化剩余和多项式运行时间往往是矛盾的。因此，我们需要一些启发式算法近似最优解。不过用启发式算法得到的分配规则就不一定是单调的了。更糟糕的是，<strong>已经证明</strong>不存在一个像黑盒一样的，输入启发式算法就能输出一个monotone版本启发式算法的规则。(参考
+          On the Limits of Black-Box Reductions in MechanismDesign)
+        </p>
+
+        <p>说完了坏消息，有没有<strong>好消息</strong>呢？</p>
+
+        <h1>好消息</h1>
+
+        <p>
+          好消息是，对给定的机制 $M$，假设每个bidder都有dominated
+          strategy，那么我们可以轻易地得到一个满足DSIC的机制 $M'$.
+          具体来说，假设bidder在 $M$ 中的dominated strategy是输入
+          $b_i$，那么我们在 $M'$ 中加一层复合函数 $s_i$，令
+          $s_i(v_i)=b_i$，并把经过 $s_i$ 的输入再输入到 $M$ 中即可。由于在 $M$
+          中输入 $b_i$ 是支配策略，那么在 $M'$ 中输入真实估值 $v_i$
+          就成了支配策略。
+        </p>
+        <img
+          src="mach-design-problem.png"
+          style="max-width: 100%; height: auto"
+        />
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../scripts.js" defer></script>
+  </body>
+</html>
