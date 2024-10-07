@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vickrey拍卖 - Rinevard</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>Vickrey拍卖</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          在拍卖中，每个biller有一个心理价位 $v_i$ 和一个出价 $p_i$.
+          获胜的拍卖者的收益是 $v_i - p_i$，失败的拍卖者的收益是 $0$ .
+          要注意的是，我们不一定要把出价最高的拍卖者作为获胜的拍卖者。
+        </p>
+
+        <p>
+          Vickrey auction，又称second-price sealed-bid
+          auction，让出价最高的biller以第二高的价格拿走物品。这样的机制有如下好处：
+        </p>
+
+        <ol>
+          <li>
+            <p>
+              <strong
+                >支配策略激励相容（Dominant-strategy
+                incentive-compatible，即DSIC）：</strong
+              >
+            </p>
+            <p>
+              对于每个参与者来说，无论其他参与者采取什么策略，诚实地报告自己的真实信息（如偏好或估值）总是最优策略。
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>社会剩余最大化（Social surplus maximization）：</strong>
+            </p>
+            <p>
+              即最大化 $\sum_{i=1}^nv_ix_i$，其中 $$x_i = \begin{cases} 1, &
+              \text{if player } i \text{ is the winner} \\ 0, & \text{otherwise}
+              \end{cases}$$
+            </p>
+          </li>
+          <li>
+            <p><strong>Polynomial running time：</strong></p>
+            <p>可以在多项式时间内得出结果（在这个例子中，是线性时间）</p>
+          </li>
+        </ol>
+
+        <p>在未来的机制设计中，我们也希望能满足以上三个性质。</p>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+  </body>
+</html>

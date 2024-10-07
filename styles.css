@@ -1,9 +1,11 @@
+/* 全局样式 */
 * {
   box-sizing: border-box;
   font-family: "Noto Sans", sans-serif;
   line-height: 1.6;
 }
 
+/* 颜色变量 */
 :root {
   --background-color: #fff;
   --text-color: #444;
@@ -11,13 +13,15 @@
   --accent-color: #085;
 }
 
+/* 暗色主题 */
 html[theme="dark"] {
-  --background-color: #111;
-  --text-color: #ccc;
-  --primary-color: #0af;
-  --accent-color: #3b8;
+  --background-color: #2d2d2d;
+  --text-color: #e0e0e0;
+  --primary-color: #4a9eff;
+  --accent-color: #50c878;
 }
 
+/* 基本页面结构 */
 html,
 body {
   height: 100%;
@@ -32,23 +36,74 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-.content-wrapper {
-  flex: 1 0 auto;
-  width: 100%;
+/* 页面顶部导航栏 */
+.top-nav {
+  background-color: var(--primary-color);
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-content {
   max-width: 1000px;
-  margin: 80px auto;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0 20px;
 }
 
+.nav-logo {
+  color: var(--background-color);
+  text-decoration: none;
+  padding: 5px 10px;
+  font-weight: bold;
+  transition: background-color 0.3s, border-radius 0.3s;
+  border-radius: 5px;
+}
+
+.nav-items {
+  display: flex;
+}
+
+.nav-item {
+  color: var(--background-color);
+  text-decoration: none;
+  padding: 5px 10px;
+  margin-right: 40px;
+  font-weight: bold;
+  transition: background-color 0.3s, border-radius 0.3s;
+  border-radius: 5px;
+}
+
+.nav-item:hover,
+.nav-item:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--background-color);
+  border-radius: 15px;
+}
+
+/* 正文 */
+.content-wrapper {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 820px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+/* 页头 */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* 页脚 */
 footer {
   flex-shrink: 0;
   text-align: center;
@@ -56,10 +111,12 @@ footer {
   border-top: 1px solid var(--text-color);
 }
 
+/* MathJax 样式 */
 .MathJax {
   font-size: 0.9em;
 }
 
+/* 列表样式 */
 ul {
   list-style-type: "- ";
   padding-left: 1em;
@@ -69,12 +126,14 @@ li {
   margin-bottom: 10px;
 }
 
+/* 导航和章节样式 */
 nav[aria-label="site"],
 nav[aria-label="page"],
 section {
   margin-bottom: 60px;
 }
 
+/* 目录样式 */
 #table-of-contents {
   list-style-type: none;
   padding-left: 0;
@@ -88,6 +147,7 @@ section {
   margin-left: 0.5em;
 }
 
+/* 链接样式 */
 a {
   color: var(--primary-color);
   transition: 0.25s;
@@ -98,8 +158,10 @@ a:hover,
 a:active {
   background-color: var(--primary-color);
   color: var(--background-color);
+  border-radius: 5px;
 }
 
+/* 按钮样式 */
 button {
   background-color: var(--primary-color);
   border: none;
@@ -115,12 +177,14 @@ button:hover {
   background-color: var(--accent-color);
 }
 
+/* 小字体样式 */
 .small-text {
   font-size: 0.8em;
   color: var(--text-color);
   opacity: 0.7;
 }
 
+/* 页脚链接样式 */
 footer a {
   color: inherit;
   text-decoration: underline;

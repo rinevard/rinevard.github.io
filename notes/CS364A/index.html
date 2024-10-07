@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rinevard</title>
+    <title>CS364A：算法博弈论 - Rinevard</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
       rel="stylesheet"
     />
-    <link href="styles.css" rel="stylesheet" type="text/css" />
-    <!-- 加入内敛脚本以避免打开网页时的从白到黑的闪烁现象 -->
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
     <script>
       (function () {
         var savedTheme = localStorage.getItem("theme");
@@ -22,7 +21,7 @@
         document.documentElement.setAttribute("theme", theme);
       })();
     </script>
-    <script src="scripts.js" defer></script>
+    <script src="../../scripts.js" defer></script>
     <script
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
       defer
@@ -34,36 +33,38 @@
       <div class="nav-content">
         <a class="nav-logo">Rinevard</a>
         <div class="nav-items">
-          <a href="index.html" class="nav-item">首页</a>
-          <a href="notes/notes.html" class="nav-item">笔记</a>
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../../notes.html" class="nav-item">笔记</a>
         </div>
       </div>
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>鲤鱼</h1>
+        <h1>CS364A：算法博弈论</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
-        <p>你好呀！👋</p>
-        <p>
-          我是一名大二本科生，就读于<a href="https://bit.edu.cn/">
-            北京理工大学</a
-          >的人工智能专业。我对概率论、强化学习和游戏设计感兴趣。
-        </p>
-        <p>这里是我做的一些东西：</p>
+        <p>以下是CS364A课程的笔记：</p>
         <ul>
+          <li><a href="note1-introduction.html">Note1 导论</a></li>
           <li>
-            一个叫做星轨的
-            <a href="https://github.com/rinevard/SummerGamejam">游戏原型</a>。
+            <a href="note2-auctions-and-mechanism-design.html"
+              >Note2 拍卖和机制设计——入门</a
+            >
+          </li>
+          <li><a href="note3-myersons-lemma.html">Note3 Myerson's Lemma</a></li>
+          <li>
+            <a href="note4-mechanism-design-problems.html"
+              >Note4 机制设计——问题</a
+            >
           </li>
           <li>
-            一个用 DQN 来训练 AI 玩贪吃蛇的
-            <a href="https://github.com/rinevard/SnakeDRL">小项目</a>。
+            <a href="note5-revenue-maximization.html">Note5 收益最大化</a>
           </li>
-          <li>一些公开课的中文<a href="notes/notes.html">课程笔记</a>。</li>
+          <li>
+            <a href="note6-near-optimal-auctions.html">Note6 接近最优的拍卖</a>
+          </li>
         </ul>
-        <p>欢迎常来拜访！</p>
       </main>
     </div>
     <footer>

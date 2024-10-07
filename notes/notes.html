@@ -1,3 +1,73 @@
-TODO
-<br />
-加入课程notes的超链接，包括但不限于CS126、CS364
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>课程笔记 - Rinevard</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../styles.css" rel="stylesheet" type="text/css" />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+      })();
+    </script>
+    <script src="../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../index.html" class="nav-item">首页</a>
+          <a href="notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>课程笔记</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>以下是我的一些课程笔记：</p>
+
+        <li><a href="MIT6-031/index.html">MIT 6.031</a>：软件工程。</li>
+        <li><a href="RLmath/index.html">强化学习的数学原理</a>。</li>
+        <li><a href="CS126/index.html">CS126</a>：概率论与随机过程。</li>
+        <li><a href="CS364A/index.html">CS364A</a>：算法博弈论。</li>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+  </body>
+</html>

@@ -27,11 +27,23 @@ function initializeTheme() {
   setTheme(theme);
 }
 
+function updateButtonText() {
+  const invertThemeButton = document.getElementById("invert-theme");
+  const currentTheme =
+    document.documentElement.getAttribute("theme") || "light";
+  invertThemeButton.textContent =
+    currentTheme === "light" ? "深色模式" : "浅色模式";
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   initializeTheme();
 
   const invertThemeButton = document.getElementById("invert-theme");
   if (invertThemeButton) {
-    invertThemeButton.addEventListener("click", toggleTheme);
+    updateButtonText();
+    invertThemeButton.addEventListener("click", function () {
+      toggleTheme();
+      updateButtonText();
+    });
   }
 });
