@@ -7,13 +7,6 @@ window.MathJax = {
   },
 };
 
-function toggleTheme() {
-  const currentTheme =
-    document.documentElement.getAttribute("theme") || "light";
-  const newTheme = currentTheme === "light" ? "dark" : "light";
-  setTheme(newTheme);
-}
-
 function setTheme(themeName) {
   localStorage.setItem("theme", themeName);
   document.documentElement.setAttribute("theme", themeName);

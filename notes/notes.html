@@ -19,6 +19,7 @@
           window.matchMedia("(prefers-color-scheme: dark)").matches;
         var theme = savedTheme || (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
       })();
     </script>
     <script src="../scripts.js" defer></script>
@@ -50,22 +51,33 @@
         <li><a href="RLmath/index.html">强化学习的数学原理</a></li>
         <li><a href="CS126/index.html">CS126</a>：概率论与随机过程</li>
         <li><a href="CS364A/index.html">CS364A</a>：算法博弈论（施工中）</li>
-        <script
-          src="https://giscus.app/client.js"
-          data-repo="rinevard/rinevard.github.io"
-          data-repo-id="R_kgDOLkoe9A"
-          data-category-id="DIC_kwDOLkoe9M4CjJnR"
-          data-mapping="pathname"
-          data-strict="1"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="top"
-          data-theme="light"
-          data-lang="zh-CN"
-          data-loading="lazy"
-          crossorigin="anonymous"
-          async
-        ></script>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
       </main>
     </div>
     <footer>
