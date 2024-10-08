@@ -50,22 +50,7 @@
         <li><a href="RLmath/index.html">强化学习的数学原理</a></li>
         <li><a href="CS126/index.html">CS126</a>：概率论与随机过程</li>
         <li><a href="CS364A/index.html">CS364A</a>：算法博弈论（施工中）</li>
-        <script
-          src="https://giscus.app/client.js"
-          data-repo="rinevard/rinevard.github.io"
-          data-repo-id="R_kgDOLkoe9A"
-          data-category-id="DIC_kwDOLkoe9M4CjJnR"
-          data-mapping="pathname"
-          data-strict="1"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="top"
-          data-theme="preferred_color_scheme"
-          data-lang="zh-CN"
-          data-loading="lazy"
-          crossorigin="anonymous"
-          async
-        ></script>
+        <div class="giscus"></div>
       </main>
     </div>
     <footer>
@@ -85,5 +70,59 @@
         >.
       </p>
     </footer>
+    <script>
+      function loadGiscus() {
+        const theme = document.documentElement.getAttribute("theme");
+        const giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+
+        const script = document.createElement("script");
+        script.src = "https://giscus.app/client.js";
+        script.setAttribute("data-repo", "rinevard/rinevard.github.io");
+        script.setAttribute("data-repo-id", "R_kgDOLkoe9A");
+        script.setAttribute("data-category-id", "DIC_kwDOLkoe9M4CjJnR");
+        script.setAttribute("data-mapping", "pathname");
+        script.setAttribute("data-strict", "1");
+        script.setAttribute("data-reactions-enabled", "1");
+        script.setAttribute("data-emit-metadata", "0");
+        script.setAttribute("data-input-position", "top");
+        script.setAttribute("data-theme", giscusTheme);
+        script.setAttribute("data-lang", "zh-CN");
+        script.setAttribute("data-loading", "lazy");
+        script.setAttribute("crossorigin", "anonymous");
+        script.async = true;
+
+        const giscusContainer = document.querySelector(".giscus");
+        giscusContainer.innerHTML = "";
+        giscusContainer.appendChild(script);
+      }
+
+      // 初始加载 Giscus
+      loadGiscus();
+
+      // 监听主题变化
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "theme"
+          ) {
+            loadGiscus();
+          }
+        });
+      });
+
+      observer.observe(document.documentElement, { attributes: true });
+
+      // 修改主题切换按钮的点击事件处理程序
+      document
+        .getElementById("invert-theme")
+        .addEventListener("click", function () {
+          const currentTheme = document.documentElement.getAttribute("theme");
+          const newTheme = currentTheme === "light" ? "dark" : "light";
+          document.documentElement.setAttribute("theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+          this.textContent = newTheme === "light" ? "深色模式" : "浅色模式";
+        });
+    </script>
   </body>
 </html>
