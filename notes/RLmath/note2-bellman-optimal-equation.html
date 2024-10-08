@@ -23,6 +23,7 @@
           window.matchMedia("(prefers-color-scheme: dark)").matches;
         var theme = savedTheme || (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
       })();
     </script>
     <script src="../../scripts.js" defer></script>
@@ -138,6 +139,33 @@
           此外，在reward线性变化时，最优策略是不变的。具体来说，如果令 $r_{new}
           = ar+b$，其中 $a>0$，那么可以证明最优策略不变。
         </p>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
       </main>
     </div>
     <footer>

@@ -23,6 +23,7 @@
           window.matchMedia("(prefers-color-scheme: dark)").matches;
         var theme = savedTheme || (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
       })();
     </script>
     <script src="../../scripts.js" defer></script>
@@ -116,6 +117,33 @@
         <p>
           A：我<strong>猜测（没有严格证明）</strong>，这是因为我们要求机制是DSIC的。之前的等式仅仅在DSIC的机制中成立，对非DSIC的机制，我们目前没有学到什么结果。而我<strong>进一步猜测</strong>，对所有的能产生DSIC机制的分配策略来说，有时不把物品分配给任何人才能最大化收益。
         </p>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
       </main>
     </div>
     <footer>
