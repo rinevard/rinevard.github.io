@@ -7,13 +7,6 @@ window.MathJax = {
   },
 };
 
-function toggleTheme() {
-  const currentTheme =
-    document.documentElement.getAttribute("theme") || "light";
-  const newTheme = currentTheme === "light" ? "dark" : "light";
-  setTheme(newTheme);
-}
-
 function setTheme(themeName) {
   localStorage.setItem("theme", themeName);
   document.documentElement.setAttribute("theme", themeName);
@@ -28,6 +21,13 @@ function initializeTheme() {
     window.matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = savedTheme || (prefersDark ? "dark" : "light");
   setTheme(theme);
+}
+
+function toggleTheme() {
+  const currentTheme =
+    document.documentElement.getAttribute("theme") || "light";
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+  setTheme(newTheme);
 }
 
 function updateButtonText() {

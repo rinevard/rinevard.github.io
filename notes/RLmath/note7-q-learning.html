@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Robbin-Monro定理</title>
+    <title>Q-learning</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
@@ -45,32 +45,72 @@
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>Robbin-Monro定理</h1>
+        <h1>Q-learning</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
-        <p style="color: red">此处待施工TODO</p>
-
-        <img src="RMtheorem.png" style="max-width: 100%; height: auto" />
+        <p>终于到了大名鼎鼎的Q-learning算法。</p>
 
         <p>
-          值得一提的是，随机梯度下降（SGD）也是一种 RM算法。我们可以用
-          RM定理来证明 SGD 的收敛性。（当然只对满足一定条件的凸函数有用）
+          on-policy 算法和 off-policy
+          算法的区别在于采集数据的策略和需要更新的策略是否相同。
         </p>
 
-        <p>可以通过下面的定理来证明Robbin-Monro定理。</p>
+        <p>
+          Q-learning也是一个TD算法，不过它与我们之前介绍的TD算法的区别在于，它的采集数据的策略和需要更新的策略可以不同，因此它<strong>可以（但不一定）</strong>是一个
+          off-policy 算法，而之前的是 on-policy 算法。
+        </p>
 
         <img
-          src="dvoretzky-theorem.png"
+          src="differentTDsolveDifferentProblems.png"
           style="max-width: 100%; height: auto"
         />
 
-        <p>在施工时可能会用到的参考资料：</p>
+        <p>
+          通过比较这些TD算法解决的不同数学问题，我们会注意到其他几个算法解决的方程与策略
+          $\pi$ 有关，而Q-learning尝试解决的数学问题是贝尔曼最优方程：
+        </p>
+
+        $$ q(s, a) = \mathbb{E} \left[ R_{t+1} + \gamma \max_{a'} q(S_{t+1}, a')
+        \mid S_t = s, A_t = a \right] $$
+
+        <p>这与策略 $\pi$ 无关。</p>
 
         <p>
-          <a href="https://www.di.ens.fr/~fbach/orsay2016/lecture3.pdf"
-            >stochastic approximation methods</a
-          >
+          为什么说这是贝尔曼最优方程呢？因为我们可以证明，如果令 $v(s) = \max_a
+          q(s,a)$，则这个方程组的解 $(q,v)$ 和贝尔曼最优方程的解 $(q,v)$
+          是相同的。（证明它们的解集互相包含即可）
+        </p>
+
+        <p>
+          由于Q-learning可以是on-policy算法，也可以是off-policy算法，我们同时给出两种形式：
+        </p>
+
+        <img
+          src="onPolicyQ-learning.png"
+          style="max-width: 100%; height: auto"
+        />
+
+        <img
+          src="offPolicyQ-learning.png"
+          style="max-width: 100%; height: auto"
+        />
+
+        <p>
+          类似之前的TD方法，我们把 $\max_{a'}q(s,a')$ 换成了 $\max_{a'}
+          q_t(s_{t+1},a')$.
+        </p>
+
+        <p>
+          这里的 off-policy 似乎有一处typo，在 TD error 那里， $q(s_t,a_t)$
+          似乎应为 $q_t(s_t,a_t)$.
+        </p>
+
+        <p>
+          此外，我们指出，单知道 $q$ 或者 $v$ 是无法推出策略的。即使同时知道 $q$
+          和 $v$
+          也无法推出策略。考虑一个每个状态都是结束状态的网格，agent只要走出一步就会结束行动，那么我们已经知道$q$
+          了。如果所有的奖励都相同，那么我们也知道了 $v$，但我们明显不知道策略。
         </p>
 
         <div class="comments-header">

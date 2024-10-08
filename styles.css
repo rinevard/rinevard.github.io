@@ -13,6 +13,7 @@
   --accent-color: #085;
   --primary-color-rgb: 0, 102, 255;
   --text-color-rgb: 68, 68, 68;
+  --table-border-color: #ddd;
 }
 
 /* 暗色主题 */
@@ -23,6 +24,7 @@ html[theme="dark"] {
   --accent-color: #50c878;
   --primary-color-rgb: 74, 158, 255;
   --text-color-rgb: 224, 224, 224;
+  --table-border-color: #555;
 }
 
 /* 基本页面结构 */
@@ -360,4 +362,40 @@ html[theme="dark"] .token.important {
   color: var(--text-color);
   background-color: rgba(var(--primary-color-rgb), 0.1);
   border-radius: 15px;
+}
+
+/* 表格样式 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1em;
+  table-layout: fixed;
+}
+
+th,
+td {
+  border: 1px solid var(--table-border-color);
+  padding: 8px;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+th {
+  background-color: transparent;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(var(--text-color-rgb), 0.05);
+}
+
+/* 深色模式下的表格样式调整 */
+html[theme="dark"] th {
+  background-color: transparent;
+}
+
+html[theme="dark"] tr:nth-child(even) {
+  background-color: rgba(var(--text-color-rgb), 0.1);
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Robbin-Monro定理</title>
+    <title>值函数近似</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
@@ -45,33 +45,57 @@
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>Robbin-Monro定理</h1>
+        <h1>值函数近似</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
-        <p style="color: red">此处待施工TODO</p>
-
-        <img src="RMtheorem.png" style="max-width: 100%; height: auto" />
+        <h1>动机</h1>
 
         <p>
-          值得一提的是，随机梯度下降（SGD）也是一种 RM算法。我们可以用
-          RM定理来证明 SGD 的收敛性。（当然只对满足一定条件的凸函数有用）
+          当状态过多，简单地枚举每个状态的价值的成本较高，因此我们尝试用函数来近似状态函数。这是从表格形式到函数形式的转化。
         </p>
-
-        <p>可以通过下面的定理来证明Robbin-Monro定理。</p>
-
-        <img
-          src="dvoretzky-theorem.png"
-          style="max-width: 100%; height: auto"
-        />
-
-        <p>在施工时可能会用到的参考资料：</p>
 
         <p>
-          <a href="https://www.di.ens.fr/~fbach/orsay2016/lecture3.pdf"
-            >stochastic approximation methods</a
-          >
+          现在我们有近似的状态函数 $\hat{v}(s,w)$，其中 $w$ 是待学习的权重，$s$
+          是状态。对TD算法来说，只要确定一个目标函数，再把值更新过程换成对状态函数的梯度下降或者梯度上升，就可以开始学习近似的状态函数了。
         </p>
+
+        <h1>目标函数</h1>
+
+        <p>
+          关键在于，如何找到这样的目标函数 $J(w)$
+          以及如何对它进行梯度下降或梯度上升。
+        </p>
+
+        <p>我们常用均方误差作为目标函数：</p>
+
+        $$ J(w)=\mathbb{E}_S[(v_\pi(S) - \hat v(S,w))^2] $$
+
+        <p>然而这要求我们知道状态的分布 $d_\pi(s)$.</p>
+
+        <p>
+          而状态的分布 $d_\pi (s)$
+          往往与策略有关。对给定的模型和策略，马尔可夫决策过程就变成了马尔可夫过程。由马尔科夫链的知识，我们知道对
+          irreducible 的马尔科夫链，$d_\pi (s)$ 是 stationary
+          distribution，即满足：
+        </p>
+
+        $$ d_\pi^T=d_\pi^TP_\pi $$
+
+        <h1>优化算法</h1>
+
+        <p>不难求得：</p>
+
+        $$ \nabla J(w)=-2\mathbb{E}_S\left[(v_{\pi}(S) - \hat{v}(S, w_k))
+        \nabla_w \hat{v}(S, w_k)\right] $$
+
+        <h1>Sarsa with function approximation</h1>
+
+        <p>利用随机梯度下降，则更新 $w$ 的式子就是下式：</p>
+
+        $$ \begin{align*} w_{t+1} &= w_t +\alpha_t\left[ r_{t+1}
+        +\gamma\hat{q}(s_{t+1}, a_{t+1}, w_t) -\hat{q}(s_t, a_t, w_t)\right]
+        \nabla_w\hat{q}(s_t, a_t, w_t) \end{align*} $$
 
         <div class="comments-header">
           <div class="comments-header-left"></div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Robbin-Monro定理</title>
+    <title>Deep Q-learning</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
@@ -45,33 +45,45 @@
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>Robbin-Monro定理</h1>
+        <h1>Deep Q-learning</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
-        <p style="color: red">此处待施工TODO</p>
+        <p>Deep Q-learning = Q-learning + Value approximation</p>
 
-        <img src="RMtheorem.png" style="max-width: 100%; height: auto" />
+        <p>我们希望最小化的目标函数是</p>
+
+        $$ J(w) = \mathbb{E}\bigg \{ \big( R + \gamma \max_a \hat q(S',a,w)-\hat
+        q(S,A,w) \big)^2 \bigg \} $$
 
         <p>
-          值得一提的是，随机梯度下降（SGD）也是一种 RM算法。我们可以用
-          RM定理来证明 SGD 的收敛性。（当然只对满足一定条件的凸函数有用）
+          注意到目标函数的 $w$ 参与了 $\max$
+          的计算，对这玩意求梯度很困难，因此我们假装 $R+\gamma \max_a\hat
+          q(S',a,w)$ 是一个定值 $R+\gamma \max_a\hat q(S',a,w_T)$。$w_T$ 就是
+          target network 的参数。
         </p>
 
-        <p>可以通过下面的定理来证明Robbin-Monro定理。</p>
-
-        <img
-          src="dvoretzky-theorem.png"
-          style="max-width: 100%; height: auto"
-        />
-
-        <p>在施工时可能会用到的参考资料：</p>
+        <h1>两个网络</h1>
 
         <p>
-          <a href="https://www.di.ens.fr/~fbach/orsay2016/lecture3.pdf"
-            >stochastic approximation methods</a
+          Main network 和 target
+          network，这是为了方便求梯度，也方便各种深度学习包自动处理损失函数的梯度。
+        </p>
+
+        <h1>经验回放</h1>
+
+        <p>
+          Experience replay
+          把样本打乱再让神经网络学习，而非直接把按时间顺序得到的样本给神经网络。似乎这样能让样本更加
+          i.i.d.<span style="color: red"
+            >TODO:真的是这样吗?我们为什么需要它i.i.d?</span
           >
         </p>
+
+        <img
+          src="offPolicyDeepQ-learning.png"
+          style="max-width: 100%; height: auto"
+        />
 
         <div class="comments-header">
           <div class="comments-header-left"></div>
