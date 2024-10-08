@@ -12,6 +12,7 @@
   --primary-color: #06f;
   --accent-color: #085;
   --primary-color-rgb: 0, 102, 255;
+  --text-color-rgb: 68, 68, 68;
 }
 
 /* 暗色主题 */
@@ -21,6 +22,7 @@ html[theme="dark"] {
   --primary-color: #4a9eff;
   --accent-color: #50c878;
   --primary-color-rgb: 74, 158, 255;
+  --text-color-rgb: 224, 224, 224;
 }
 
 /* 基本页面结构 */
@@ -336,4 +338,26 @@ html[theme="dark"] .token.keyword {
 html[theme="dark"] .token.regex,
 html[theme="dark"] .token.important {
   color: #fd971f;
+}
+
+/* 评论区标题样式 */
+.comments-header {
+  display: flex;
+  align-items: center;
+  margin: 40px 0 20px;
+}
+
+.comments-header-left,
+.comments-header-right {
+  flex-grow: 1;
+  height: 1px;
+  background-color: rgba(var(--text-color-rgb), 0.3);
+}
+
+.comments-header-center {
+  padding: 0 15px;
+  font-size: 14px;
+  color: var(--text-color);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  border-radius: 15px;
 }
