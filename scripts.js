@@ -18,6 +18,7 @@ function setTheme(themeName) {
   localStorage.setItem("theme", themeName);
   document.documentElement.setAttribute("theme", themeName);
   updateButtonText();
+  updateGiscusTheme(themeName);
 }
 
 function initializeTheme() {
@@ -35,6 +36,17 @@ function updateButtonText() {
     document.documentElement.getAttribute("theme") || "light";
   invertThemeButton.textContent =
     currentTheme === "light" ? "深色模式" : "浅色模式";
+}
+
+function updateGiscusTheme(theme) {
+  const giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+  const iframe = document.querySelector("iframe.giscus-frame");
+  if (iframe) {
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: giscusTheme } } },
+      "https://giscus.app"
+    );
+  }
 }
 
 function addCopyButtons() {
