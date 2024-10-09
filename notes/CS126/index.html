@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CS126-待施工</title>
+    <title>CS126：概率论与随机过程</title>
     <link href="https://fonts.googleapis.com/" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
     <link
@@ -19,9 +19,15 @@
           window.matchMedia("(prefers-color-scheme: dark)").matches;
         var theme = savedTheme || (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
       })();
     </script>
     <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
   </head>
   <body>
     <nav class="top-nav">
@@ -35,11 +41,119 @@
     </nav>
     <div class="content-wrapper">
       <header>
-        <h1>CS126-待施工</h1>
+        <h1>CS126：概率论与随机过程</h1>
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
-        <p>正在施工中......</p>
+        <p>这里是CS126的课程笔记（笔记尚未加入到网页中，待施工）：</p>
+        <ul>
+          <li><a href="note1-basic-concepts.html">Note1</a> 基本概念</li>
+          <li>
+            <a href="note2-common-distributions.html">Note2</a> 常见的分布
+          </li>
+          <li>
+            <a href="note3-expectation-variance-order-statistics.html">Note3</a>
+            期望、方差、顺序统计量相关的公式
+          </li>
+          <li>
+            <a href="note4-convolution-mgf-inequalities.html">Note4</a>
+            卷积、矩生成函数（MGF）、不等式
+          </li>
+          <li>
+            <a href="note5-convergence-theorems.html">Note5</a>
+            收敛类型、与收敛相关的定理
+          </li>
+          <li><a href="note6-information-theory.html">Note6</a> 信息论简介</li>
+          <li><a href="note7-poisson-process.html">Note7</a> 泊松过程</li>
+          <li><a href="note8-markov-chains.html">Note8</a> 马尔科夫链</li>
+          <li><a href="note9-mle-map.html">Note9</a> MLE和MAP</li>
+        </ul>
+
+        <ul>
+          <li>
+            <a href="misc1-matrix-multiplication-approximation.html">杂记1</a>
+            用矩阵草图乘法来近似矩阵乘法
+          </li>
+          <li>
+            <a href="misc2-conditional-expectation-multivariate-gaussian.html"
+              >杂记2</a
+            >
+            多元高斯分布中的条件期望
+          </li>
+          <li><a href="misc3-perlin-noise.html">杂记3</a> 柏林噪声</li>
+          <li>
+            <a href="misc4-sum-distribution-algorithm.html">杂记4</a>
+            算出i.i.d.的 取值在[0,N]间的 离散随机变量的和 的分布的算法
+          </li>
+          <li>
+            <a href="misc5-metropolis-hastings-algorithm.html">杂记5</a>
+            Metropolis-Hastings algorithm——一种MCMC方法
+          </li>
+          <li>
+            <a href="misc6-information-theory-wordle.html">杂记6</a>
+            借助信息论玩Wordle
+          </li>
+        </ul>
+
+        <h2>课程资料</h2>
+        <p>这里是我用到的主要学习资料：</p>
+        <ul>
+          <li>
+            126提供的note相当不全面，我在学习时大量参考了prob140 textbook：
+            <a href="http://prob140.org/textbook" target="_blank"
+              >prob140 textbook</a
+            ><br />
+            prob140没开源作业，但textbook相当不错。126开源了作业，但note并不全面，感觉非常互补。
+          </li>
+          <li>
+            在随机过程的部分，我参考张颢老师网课的后半部分：
+            <a
+              href="https://www.bilibili.com/video/BV11b421E7nh"
+              target="_blank"
+              >随机过程 2024春</a
+            >
+          </li>
+          <li>
+            我还找到了一点笔记：
+            <a href="https://alexyfu.github.io/probability/" target="_blank"
+              >一个Berkeley学生的126笔记</a
+            >。顺提一句，这也是本站外观的灵感来源。
+          </li>
+        </ul>
+
+        <div class="comments-header">
+          <div class="comments-header-left"></div>
+          <div class="comments-header-center">评论区</div>
+          <div class="comments-header-right"></div>
+        </div>
+        <div style="margin-bottom: 1.6em"></div>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
       </main>
     </div>
     <footer>

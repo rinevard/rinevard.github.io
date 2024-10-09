@@ -198,14 +198,13 @@
           在value
           update中，有时候我们也会看见有人直接用均方误差MSE来backward（参考下面的代码），
           这实际上和我们的方法是一样的。这不过是 $\nabla (\hat v_{w} - v)^2 =
-          2(\hat v_{w} - v)\nabla \hat v_w$ 罢了，只要注意使用no_grad就行。
+          2(\hat v_{w} - v)\nabla \hat v_w$ 罢了，只要注意阻断梯度就行。
         </p>
         <pre><code class="language-python">
-with torch.no_grad():
-    target_value = reward + gamma * value_net(next_state)
-    predicted_value = value_net(state)
-# 使用 MSE 损失
-value_loss = nn.MSELoss()(predicted_value, target_value)
+target_value = reward + gamma * value_net(next_state)
+predicted_value = value_net(state)
+# 使用MSE loss, 注意用'.detach()'来阻断梯度
+value_loss = nn.MSELoss()(predicted_value, target_value.detach())
 optimizer.zero_grad()
 value_loss.backward()
 optimizer.step()
