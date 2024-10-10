@@ -92,7 +92,9 @@
             $$ \lim_{n \to \infty} \frac{1}{n} \mathbb{E}\left[ \sum_{t=0}^{n-1}
             R_{t+1} \right] = \bar{r}_\pi. $$
 
-            <p style="color: red">这个式子不好证明，TODO</p>
+            <p style="color: red">
+              这个式子不好证明，TODO. 不能直接用大数定律是因为并非独立。
+            </p>
           </li>
 
           <li>
@@ -240,8 +242,8 @@ optimizer.step()
           </li>
           <li>
             policy-based的算法是不是有更好的理论基础？在DQN中，无论是"两个网络"还是"replay
-            buffer"，似乎都没有很好的理论支持，更像是实验得到的trick。而policy-based有policy
-            gradient theorem作为支撑。
+            buffer"，似乎都没有很好的理论支持。而policy-based有policy gradient
+            theorem作为支撑。
           </li>
         </ol>
 
