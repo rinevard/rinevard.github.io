@@ -49,6 +49,12 @@
         <button id="invert-theme">深色模式</button>
       </header>
       <main>
+        <p>
+          如果读者对Policy Gradient有兴趣，欢迎移步
+          <a href="../DRL/note1-policy-gradient.html">Policy Gradient笔记</a
+          >来看我的最新笔记，其中详细谈了Policy
+          Gradient的四种常见的目标函数，并对Policy Gradient给出了严格证明。
+        </p>
         <h1>基本思想</h1>
 
         <p>
@@ -91,10 +97,6 @@
 
             $$ \lim_{n \to \infty} \frac{1}{n} \mathbb{E}\left[ \sum_{t=0}^{n-1}
             R_{t+1} \right] = \bar{r}_\pi. $$
-
-            <p style="color: red">
-              这个式子不好证明，TODO. 不能直接用大数定律是因为并非独立。
-            </p>
           </li>
 
           <li>
@@ -124,8 +126,6 @@
           undiscounted case. 对不同的 $J(\theta)$ 和 discounted or undiscounted
           case，等号可能要换成约等于号。
         </p>
-
-        <p style="color: red">这个定理的证明是困难的。TODO</p>
 
         <h1>算法实现</h1>
 
@@ -233,6 +233,9 @@ optimizer.step()
         <ol>
           <li>
             value-based和policy-based的方法有很大的区别吗？如果我对value-based的输出做一个softmax，得到的东西是不是也可以解释成概率？
+          </li>
+          <li>
+            对于上面这个问题，首先要分离散和连续的情况。在连续状态空间中，策略网络通常输出动作的概率分布参数。之所以不把它当成概率密度函数，是因为我们几乎做不了归一化。而在离散情况中，我目前没有找到很好的资料来分析这个问题。
           </li>
           <li>
             policy-based的优越性在于随机策略（更自然地探索）和连续动作空间？

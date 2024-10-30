@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Policy Gradient Theorem 策略梯度定理 笔记</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>Policy Gradient Theorem 策略梯度定理 笔记</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <h1>目标函数</h1>
+        <p>
+          目前为止，我见过这几种目标函数：$\mathbb
+          E_{\tau\sim\pi(\tau)}[R(\tau)]$、$\mathbb E_{S_0\sim
+          d_0}[V^\pi(S_0)]$、$\lim_{n\rightarrow \infty}\mathbb
+          E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]$、$\mathbb E_{S\sim
+          d^\pi(s)}[R^\pi(S)]$ .
+          根据原始论文和我自己的推导，我认为前两者应该都是原始论文中的start-state
+          formulation，后两者应该都是原始论文中的average-reward formulation.
+          更具体地讲：
+        </p>
+
+        <h2>Discounted case</h2>
+
+        <p>
+          $\mathbb E_{\tau\sim\pi(\tau)}[R(\tau)]$ 和 $\mathbb E_{S_0\sim
+          d_0}[V^\pi(S_0)]$ 都是在discounted
+          case下的目标函数，且它们相等。在discounted case下，我们把 $Q$ 和 $V$
+          定义如下：
+        </p>
+
+        $$ \begin{align*} Q^\pi(s,a)&:=\mathbb
+        E[\sum_{t=1}^{\infty}\gamma^{k-1}R^\pi_{t} | S_0=s,A_0=a], \\
+        V^\pi(s)&:=\mathbb E_{A\sim\pi(\cdot|s)}[Q^\pi(s,a)] \end{align*} $$
+
+        <p>这应该是我们都很熟悉的形式。</p>
+
+        <p>用iterated expectation可以证明这两个目标函数等价：</p>
+
+        $$ \begin{align*} \mathbb E_{\tau\sim\pi(\tau)}[R(\tau)] &= \mathbb
+        E_{S_0\sim d_0}\bigg [ \mathbb E_{\tau\sim\pi(\tau)}[R(\tau)|S_0] \bigg]
+        \\ &=\mathbb E_{S_0\sim d_0}[V^\pi(S_0)] \end{align*} $$
+
+        <p>
+          这两个目标函数被称作start-state formulation，毕竟 $\mathbb E_{S_0\sim
+          d_0}[V^\pi(S_0)]$ 表示的就是从出发开始获得的总收益的期望嘛。
+        </p>
+
+        <h2>Undiscounted case</h2>
+
+        <p>
+          $\mathbb \lim_{n\rightarrow \infty}\mathbb
+          E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]$ 和 $\mathbb E_{S\sim
+          d^\pi(s)}[R^\pi(S)]$ 都是undiscounted
+          case下的目标函数，且它们相等。在undiscounted case下，我们把 $Q$ 和 $V$
+          定义如下：
+        </p>
+
+        $$ \begin{align*} Q^{\pi}(s,a) &:= \sum_{t=1}^{\infty} \mathbb E[R^\pi_t
+        - J(\theta) | S_0=s, A_0=a] \\ V^\pi(s)&:=\mathbb
+        E_{A\sim\pi(\cdot|s)}[Q^\pi(s,a)] \end{align*} $$
+
+        <p>其中</p>
+
+        $$ J(\theta):= \lim_{n\rightarrow \infty}\mathbb
+        E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t] $$
+
+        <p>
+          这里对 $Q$
+          的定义看起来稍微有点奇怪。赵世钰老师的书里说这个定义是为了让 $Q$
+          收敛，毕竟 $\sum_{t=1}^{\infty} \mathbb E[R^\pi_t | S_0=s, A_0=a]$
+          看起来就感觉收敛不了。虽然在实践中我目前还没有学过哪个算法用上面那个
+          $Q$ 作为定义，但据ChatGPT说，R-Learning、Differential
+          Q-Learning确实采取了这个定义。
+        </p>
+
+        <p>类似地用iterated expectation可以证明这两个目标函数相等，即</p>
+
+        $$ \mathbb \lim_{n\rightarrow \infty}\mathbb
+        E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]=\mathbb E_{S\sim d^\pi(s)}[R^\pi(S)]
+        $$
+
+        <p>
+          不过这里略微复杂一点，还用到了
+          $\lim_{n\rightarrow\infty}\frac{1}{n}\sum_{k=1}^n
+          a_k=\lim_{n\rightarrow\infty}a_n$ 和Markov chain的极限分布性质。
+        </p>
+
+        <p>
+          为了利用 $\lim_{n\rightarrow\infty}\frac{1}{n}\sum_{k=1}^n
+          a_k=\lim_{n\rightarrow\infty}a_n$，让我们先求出 $\mathbb
+          E[R_t^\pi]$吧：
+        </p>
+
+        $$ \begin{align*} \mathbb E[R_t^\pi] &= \mathbb E\bigg[\mathbb
+        E[R_t^\pi|S_t]\bigg] \\ &=\mathbb E[R^\pi(S_t)] \\ &=\sum_{s}\mathbb
+        P(S_t=s)R^\pi(s) \end{align*} $$
+
+        <p>从而有</p>
+
+        $$ \begin{align*} \lim_{n\rightarrow \infty}\mathbb
+        E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t] &=\lim_{n\rightarrow
+        \infty}\frac{1}{n}\mathbb E[\sum_{t=1}^{n}R^\pi_t] \\
+        &=\lim_{n\rightarrow \infty}\mathbb E[R_n^\pi] \\ &=\lim_{n\rightarrow
+        \infty}\sum_{s}\mathbb P(S_n=s)R^\pi(s) \\ &=\sum_s d^\pi(s)R^\pi(s) \\
+        &=\mathbb E_{S\sim d^\pi}[R^\pi(S)] \end{align*} $$
+
+        <p>
+          倒数第三个等号用到了我们之前求的 $\mathbb
+          E[R_t^\pi]$，倒数第二个等号用到了马尔科夫链的极限分布的性质。（让我们假设极限分布存在呗）
+        </p>
+
+        <h1>策略梯度定理</h1>
+
+        <p>
+          既然目标函数分为discounted case和undiscounted
+          case，那么策略梯度定理自然也分成discounted case和undiscounted case.
+          接下来我们将分别求出discounted case和undiscounted
+          case中目标函数的梯度。
+        </p>
+
+        <p>
+          我们设 $\pi_\theta$ 为策略，这里的 $\theta$
+          是决定策略的参数。在实践中，我们常用神经网络表示
+          $\pi_\theta$，那么这里的 $\theta$
+          就是整个网络的各种权重。为了讨论方便，下面用 $\pi$ 表示 $\pi_\theta$.
+        </p>
+
+        <h2>Discounted case</h2>
+
+        <p>在这里，我们将证明"start-state formulation"形式的策略梯度定理。</p>
+
+        <p>令 $J(\theta)=\mathbb E_{S_0\sim d_0}[V^\pi(S_0)]$，则</p>
+
+        $$ \begin{align*} \nabla J(\theta) &=\nabla \mathbb E_{S_0\sim
+        d_0}[V^\pi(S_0)] \\ &=\nabla\sum_{s_0}d_0(s_0)V^\pi(s_0) \\
+        &=\sum_{s_0}d_0(s_0)\nabla V^\pi(s_0) \end{align*} $$
+
+        <p>其中 $d_0(s_0)=\mathbb P(S_0=s)$，即出发点在 $s_0$ 的概率。</p>
+
+        <p>上面的式子提示我们求 $\nabla V^\pi(s)$. 我们有</p>
+
+        $$ \begin{align*} \forall s, \ \ \nabla V^\pi(s) &=\nabla \bigg(\sum_a
+        \pi(a|s)Q^\pi(s,a) \bigg) \\&= \bigg(\sum_a Q^\pi(s,a)
+        \nabla\pi(a|s)\bigg)+\bigg(\sum_a \pi(a|s)\nabla Q^\pi(s,a) \bigg)
+        \end{align*} $$
+
+        <p>
+          第一项 $\sum_a Q^\pi(s,a) \nabla\pi(a|s)$
+          在实践中是能求出来的，那么接下来的关键就是求第二项 $\sum_a
+          \pi(a|s)\nabla Q^\pi(s,a)$ 了。
+        </p>
+
+        <p>
+          如果用 $P_{ss'}^a$ 表示 $\mathbb P(S_{t+1}=s'|S_t=s,A_t=a)$，即从 $s$
+          采取行动 $a$ 而转移到 $s'$
+          的概率，经过繁琐但并不很困难的计算，我们将会得到：
+        </p>
+
+        $$ \begin{align*} &\sum_a \pi(a|s)\nabla Q^\pi(s,a) \\ =&\sum_a
+        \pi(a|s)\nabla \big( R(s,a) + \gamma \sum_{s'}P_{ss'}^aV^\pi(s') \big)
+        \\ =&\sum_{s'}\gamma P_\pi(s\rightarrow s', 1) \nabla V^\pi(s')
+        \end{align*} $$
+
+        <p>
+          其中 $P_\pi(s\rightarrow s', 1)=\mathbb
+          P(S_{t+1}=s'|S_t=s)$，即沿着策略 $\pi$ 从 $s$ 出发走了一步恰走到 $s'$
+          的概率。由于我们通常假设环境有time-homogenous性质，即 $\mathbb
+          P(S_{t+1}=s'|S_t=s)$ 与时间 $t$ 无关，我们也可以把上式写成
+          $P_\pi(s\rightarrow s', 1)=\mathbb P(S_{1}=s'|S_0=s)$.
+        </p>
+
+        <p>
+          如果你有兴趣，可以自己推导一下计算过程，不过不推也无所谓，我可以向你保证这是正确的（我推过了）。重要的是，我们把
+          $\sum_a \pi(a|s)\nabla Q^\pi(s,a)$ 写成了与 $\nabla V^\pi(s')$
+          相关的形式，把式子代入回之前的 $\nabla V^\pi(s)$ 可得：
+        </p>
+
+        $$ \begin{align*} \nabla V^\pi(s) &=\bigg(\sum_a Q^\pi(s,a)
+        \nabla\pi(a|s)\bigg)+\bigg(\sum_a \pi(a|s)\nabla Q^\pi(s,a) \bigg) \\
+        &=\bigg(\sum_a Q^\pi(s,a) \nabla\pi(a|s)\bigg)+\bigg(\sum_{s'}\gamma
+        P_\pi(s\rightarrow s', 1) \nabla V^\pi(s')\bigg) \end{align*} $$
+
+        <p>显然这允许我们递推得到 $\nabla V^\pi(s)$.</p>
+
+        <p>
+          递推的过程也是繁琐但不困难的，我们在这里除了给出最终结果外，还给出递推一次后的结果，以更好把握规律：
+        </p>
+
+        $$ \begin{align*} \nabla V^\pi(s) =&\bigg(\sum_a Q^\pi(s,a)
+        \nabla\pi(a|s)\bigg)+ \\&\bigg(\sum_{s'}\gamma P_\pi(s\rightarrow s', 1)
+        \nabla V^\pi(s')\bigg) \\ =&\bigg(\sum_a Q^\pi(s,a)
+        \nabla\pi(a|s)\bigg)+ \\ & \bigg(\gamma\sum_{s'}P_\pi(s\rightarrow s',
+        1)\sum_{a'} Q^\pi(s',a') \nabla\pi(a'|s')\bigg)+ \\ &
+        \bigg(\sum_{s''}\gamma^2 P_\pi(s\rightarrow s'', 2) \nabla
+        V^\pi(s'')\bigg) \\ =&\sum_{k=0}^{\infty}\sum_{x} \gamma^k
+        P_\pi(s\rightarrow x, k)\sum_a Q^\pi(x,a) \nabla\pi(a|x) \end{align*} $$
+
+        <p>
+          其中 $P_\pi(s\rightarrow s', k)=\mathbb
+          P(S_{t+k}=s'|S_t=s)$，即沿着策略 $\pi$ 从 $s$ 出发走了 $k$ 步恰走到
+          $s'$ 的概率。由于我们通常假设环境有time-homogenous性质，即 $\mathbb
+          P(S_{t+k}=s'|S_t=s)$ 与时间 $t$ 无关，我们也可以把上式写成
+          $P_\pi(s\rightarrow s', k)=\mathbb P(S_{k}=s'|S_0=s)$.
+        </p>
+
+        <p>
+          写到这里，我感觉我的注意力已经要涣散了……最后让我们写出
+          $J(\theta)=\mathbb E_{S_0\sim d_0}[V^\pi(S_0)]$ 的梯度吧：
+        </p>
+
+        $$ \begin{align*} \nabla J(\theta) =&\nabla\mathbb E_{S_0\sim
+        d_0}[V^\pi(S_0)] \\ =&\sum_{s_0} d_0(s_0)\nabla V^\pi(s_0) \\
+        =&\sum_{s_0}d_0(s_0)\sum_{k=0}^{\infty}\sum_{s} \gamma^k
+        P_\pi(s_0\rightarrow s, k)\sum_a Q^\pi(s,a) \nabla\pi(a|s) \\ =&\sum_s
+        \sum_{k=0}^{\infty}\gamma^k\mathbb P(S_k=s)\sum_{a}^{}Q^\pi(s,a)
+        \nabla\pi(a|s) \\ =&\mathbb E_{S\sim p_\pi, A\sim \pi(\cdot |
+        S)}[Q^\pi(S,A)\nabla \pi(A|S)] \end{align*} $$
+
+        <p>其中 $p_\pi(s)=\sum_{k=0}^{\infty}\gamma^k \mathbb P(S_k=s)$.</p>
+
+        <p>
+          严格来说它并不是一个概率分布，毕竟求和为
+          $\frac{1}{1-\gamma}$，但做个归一化就行啦。
+        </p>
+
+        <p>综上，我们有</p>
+
+        $$ \nabla J(\theta) =\mathbb E_{S\sim p_\pi, A\sim \pi(\cdot |
+        S)}[Q^\pi(S,A)\nabla \pi(A|S)] $$
+
+        <p>
+          谢天谢地，我们总算证完了。为了把 $S$ 服从的分布和稳态分布 $d^\pi$
+          区分，我没有采用和原始论文一样的符号，而是使用了
+          $p_\pi$.（原始论文使用是 $d^\pi$）
+        </p>
+
+        <h2>Undiscounted case</h2>
+
+        <p>
+          在这里，我们将证明"average-reward formulation"形式的策略梯度定理。
+        </p>
+
+        <p>
+          令 $J(\theta)=\mathbb \lim_{n\rightarrow \infty}\mathbb
+          E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]$，在求梯度之前，我们回顾一下 $Q$
+          和 $V$ 的定义，毕竟在undiscounted case下，它们和常见的定义不同：
+        </p>
+
+        $$ \begin{align*} Q^{\pi}(s,a) &:= \sum_{t=1}^{\infty} \mathbb E[R^\pi_t
+        - J(\theta) | S_0=s, A_0=a] \\ V^\pi(s)&:=\mathbb
+        E_{A\sim\pi(\cdot|s)}[Q^\pi(s,a)] \end{align*} $$
+
+        <p>
+          可以发现 $J(\theta)$ 出现在了 $Q$ 的定义中。因此，我们不选择直接对
+          $J(\theta)$ 求梯度，而是尝试间接求出其梯度。先写出 $V^\pi$ 的表达式：
+        </p>
+
+        $$ \forall s,\ \ V^\pi(s)= \sum_a \pi(a|s)\bigg (
+        R(s,a)-J(\theta)+\sum_{s'}P_{ss'}^aV^\pi(s') \bigg ) $$
+
+        <p>两边同时求梯度得</p>
+
+        $$ \nabla V^\pi(s)=\bigg(\sum_a
+        Q^\pi(s,a)\nabla\pi(a|s)\bigg)+\bigg(\sum_{s'}P(s\rightarrow s', 1)
+        \nabla V^\pi(s') \bigg) -\nabla J(\theta) $$
+
+        <p>移项，左右同时对 $d^\pi$ 求期望得</p>
+
+        $$ \begin{align*} \nabla J(\theta) =&\sum_s d^\pi(s)\nabla J(\theta) \\
+        =&\sum_s d^\pi(s)\bigg(\big(\sum_a Q^\pi(s,a)\nabla\pi(a|s)\big)+
+        \\&\big(\sum_{s'}P(s\rightarrow s', 1) \nabla V^\pi(s') \big)-\nabla
+        V^\pi(s)\bigg) \\ =&\sum_s d^\pi(s)\sum_a Q^\pi(s,a)\nabla \pi(a|s) \\
+        =&\mathbb E_{S\sim d^\pi,A\sim \pi(\cdot | S)}\bigg[Q^\pi(S,A)\nabla
+        \pi(A|S)\bigg] \end{align*} $$
+
+        <p>倒数第二个等号需要用到稳态分布的性质：</p>
+
+        $$ \begin{align*} &\sum_{s}d^\pi(s) P(s\rightarrow s',1) \\
+        =&\sum_s\lim_{n\rightarrow \infty}\mathbb P(S_n=s)\mathbb
+        P(S_{n+1}=s'|S_n=s) \\ =&\lim_{n\rightarrow \infty}\sum_s\mathbb
+        P(S_{n+1}=s',S_n=s) \\ =&\lim_{n\rightarrow \infty}\mathbb
+        P(S_{n+1}=s')=d^\pi(s') \end{align*} $$
+
+        <p>综上，我们有</p>
+
+        $$ \nabla J(\theta) =\mathbb E_{S\sim d^\pi,A\sim \pi(\cdot |
+        S)}\bigg[Q^\pi(S,A)\nabla \pi(A|S)\bigg] $$
+
+        <h1>总结</h1>
+
+        <p>
+          本文讨论了策略梯度定理的目标函数的四种形式：$\mathbb
+          E_{\tau\sim\pi(\tau)}[R(\tau)]$、$\mathbb E_{S_0\sim
+          d_0}[V^\pi(S_0)]$、$\lim_{n\rightarrow \infty}\mathbb
+          E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]$、$\mathbb E_{S\sim
+          d^\pi(s)}[R^\pi(S)]$，又指出前两种形式相等，且是discounted
+          case下的start-state formulation；后两种形式相等，且都是undiscounted
+          case下的average-value formulation.
+        </p>
+
+        <p>
+          此外，本文证明了在discounted case下，如果令 $J(\theta)=\mathbb
+          E_{S_0\sim d_0}[V^{\pi_\theta}(S_0)]$，则
+        </p>
+
+        $$ \nabla J(\theta) =\mathbb E_{S\sim p_\pi, A\sim \pi(\cdot |
+        S)}[Q^\pi(S,A)\nabla \pi(A|S)] $$
+
+        <p>其中 $p_\pi(s)=\sum_{k=0}^{\infty}\gamma^k \mathbb P(S_k=s)$.</p>
+
+        <p>
+          在undiscounted case下，如果令 $J(\theta)=\mathbb \lim_{n\rightarrow
+          \infty}\mathbb E[\frac{1}{n}\sum_{t=1}^{n}R^\pi_t]$，则
+        </p>
+
+        $$ \nabla J(\theta) =\mathbb E_{S\sim d^\pi,A\sim \pi(\cdot |
+        S)}\bigg[Q^\pi(S,A)\nabla \pi(A|S)\bigg] $$
+
+        <p>其中 $d^\pi$ 是状态 $S$ 的稳态分布。</p>
+
+        <p>
+          要注意的是，在discounted case和undiscounted case种，我们对 $Q$
+          的定义不同。
+        </p>
+
+        <h1>思考</h1>
+
+        <p>
+          我们一般用discounted case比较多，那么为什么不对 $k$ 时刻的梯度乘上
+          $\gamma^k$
+          呢？我猜是因为我们希望梯度具有一定程度上的"时序无关性"。也就是说，如果我们在
+          $k_1$ 时刻和 $k_2$ 时刻采集到的sample都是 $(s, a, r,
+          s')$，那么我们希望它们贡献的梯度也是一样的。
+        </p>
+
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="scripts.js" defer></script>
+  </body>
+</html>
