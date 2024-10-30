@@ -374,6 +374,12 @@
           $k_1$ 时刻和 $k_2$ 时刻采集到的sample都是 $(s, a, r,
           s')$，那么我们希望它们贡献的梯度也是一样的。
         </p>
+        <p>
+          在赵世钰老师的书中，老师在证明的中途使用了vectorize的视角，借助kronecker-product完成了证明。
+          虽然在我看来这个行为没有让证明简化许多，但或许我们可以一开始就采取vectorize视角，从bellman
+          equation ${v_\pi=r_\pi}+{\gamma}{P_\pi v_\pi}$ 出发，直接求得
+          $\frac{\partial v_\pi}{\partial \theta}$，从而简化证明。
+        </p>
 
         <script>
           var giscusTheme = window.giscusTheme || "light";
