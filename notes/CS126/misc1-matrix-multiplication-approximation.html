@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用矩阵草图乘法近似矩阵乘法</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>用矩阵草图乘法近似矩阵乘法</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          假设 $n \gg d > m$ ，对 $A$ 和 $B$ 两个 $n \times m$
+          的矩阵，如果我们希望直接用矩阵乘法计算 $A^TB$，时间复杂度是 $O(mn^2)$.
+          （对 $n \times n$ 的矩阵乘法，现在最好的结果是
+          $O(n^{2.37286})$，不过在实践中由于常数因子的存在，我们一般还是用
+          $O(n^3)$ 的算法）
+        </p>
+
+        <p>
+          矩阵草图乘法的思路是，构造一个 $d \times n$ 的矩阵 $S$，使得 $(SA)^TSB
+          \approx A^TB$，并计算 $(SA)^TSB$. 而计算 $SA$ 和 $SB$
+          的时间复杂度通常是 $O(mdn)$，计算 $(SA)^T$ 乘 $SB$ 的时间复杂度是
+          $O(m^2d)$，从而比起直接计算 $A^TB$，计算 $(SA)^TSB$
+          往往有更低的时间复杂度。
+        </p>
+
+        <p>
+          为了保证"近似"，令 $\hat I = S^TS$，我们希望 $\mathbb E[\hat
+          I]=I$，同时希望 $\text{Var}[\hat I_{ij}]$ 尽可能小。常见的对 $S$
+          的选择有两种：
+        </p>
+
+        <h1>Gaussian-sketch</h1>
+
+        <p>
+          令独立同分布的 $S_{ij} \sim \frac{1}{\sqrt{d}}\mathcal{N}(0, 1)$，则
+          $\hat I = S^TS$ 满足：
+        </p>
+
+        $$ \mathbb{E}[\hat I_{ij}] = \begin{cases} 1, & \text{if} ~i=j\\ 0, &
+        \text{otherwise}. \end{cases} ~~~~~~~~~~ \text{Var}[\hat I_{ij}] =
+        \begin{cases} 2/d, & \text{if} ~i=j\\ 1/d, & \text{otherwise}.
+        \end{cases} $$
+
+        <p>
+          用 Gaussian-sketch 来计算矩阵乘法的时间复杂度为 $O(mdn)$. 先算出 $S$
+          再做三个矩阵乘法即可。（分别是 $S \times A$、$S \times B$、$(SA)^T
+          \times SB$）
+        </p>
+
+        <h1>Count-sketch</h1>
+
+        <p>
+          对 $d \times n$ 的矩阵的每一列 $j \in
+          [1,n]$，等概率地(uniformly)选一个 $i \in [1,d]$,令
+        </p>
+
+        $$ S_{ij}= \begin{cases} 1,& \text{with probability} ~0.5\\ -1, &
+        \text{with probability}~ 0.5 \end{cases} $$
+
+        <p>并令该列的其余值都为0，则 $\hat I = S^TS$ 满足：</p>
+
+        $$ \mathbb{E}[\hat I_{ij}] = \begin{cases} 1, & \text{if} ~i=j\\ 0, &
+        \text{otherwise}. \end{cases} ~~~~~~~~~~ \text{Var}[\hat I_{ij}] =
+        \begin{cases} 0, & \text{if} ~i=j\\ 1/d, & \text{otherwise}. \end{cases}
+        $$
+
+        <p>我们给出一个例子：</p>
+
+        $$ \mathbf{S} = \begin{bmatrix} 0 & -1 & 1 & 0 & 0 & 1 & 0 & 0\\ 1 & 0 &
+        0 & 0 & -1 & 0 & -1 & 0\\ 0 & 0 & 0 & -1 & 0 & 0 & 0 & -1 \end{bmatrix}
+        $$
+
+        <p>
+          用 Count-sketch 来计算矩阵乘法的时间复杂度是 $O(m^2d+mn)$. 它并不像
+          Gaussian-sketch 一样先算出 $S$ 再计算 $S\times A$，而是直接以 $O(mn)$
+          的时间复杂度算出 $SA$.
+        </p>
+
+        <p>
+          这里是我们使用的算法，它遍历 $A$ 的每一行，并把它加到一个 $d \times m$
+          的零矩阵的随机一行上。
+        </p>
+        <pre><code class="language-python">def calc_count_sketch(d, A):
+    n, m = np.shape(A)
+    C = np.zeros(shape=(d, m))
+    signs = np.random.choice([-1, 1], size=n)
+    row_idxs = np.random.randint(low=0, high=d, size=n)
+    for i in range(n):
+        C[row_idxs[i], :] += signs[i] * A[i, :]
+    return C</code></pre>
+        <p>用分块矩阵，不难证明我们返回的结果就是 $SA$.</p>
+
+        <div class="comments-header">
+          <div class="comments-header-left"></div>
+          <div class="comments-header-center">评论区</div>
+          <div class="comments-header-right"></div>
+        </div>
+        <div style="margin-bottom: 1.6em"></div>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="scripts.js" defer></script>
+  </body>
+</html>

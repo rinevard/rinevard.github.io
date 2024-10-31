@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卷积、矩生成函数（MGF）、不等式</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>卷积、矩生成函数（MGF）、不等式</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <h1>卷积（Convolution）</h1>
+
+        <p>
+          对两个<strong>相互独立的</strong>随机变量 $X$ 和 $Y$，设它们的分布为
+          $F_X$ 和 $F_Y$，则定义<strong>卷积</strong> $F_X*F_Y$ 为它们的和
+          $Z=X+Y$ 的分布，即
+        </p>
+
+        $$ F_X*X_Y(z):=\mathbb P(X+Y \leq z)=F_Z(z) $$
+
+        <p>对连续型随机变量，</p>
+
+        $$ f_Z(z)=\int_{X}f_X(x)f_Y(z-x)dx =:f_X*f_Y(z) $$
+
+        <p>对离散型随机变量，</p>
+
+        $$ p_Z(z)=\sum_{X}p_X(x)p_Y(z-x) =: p_X*p_Y(z) $$
+
+        <h1>矩生成函数（MGF）</h1>
+
+        <p>
+          定义一个随机变量 $X$ 的<strong>矩生成函数</strong>（Moment-generating
+          Function）如下：
+        </p>
+
+        $$ \begin{align*} M_X(s) :&=\mathbb E[e^{sX}] \\ &= \sum_{k=0}^\infty
+        \frac{s^k\mathbb E[X^k]}{k!} \end{align*} $$
+
+        <p>
+          由定义，如果我们知道了一个随机变量的MGF，我们就能相对简单地算出其
+          <strong>moment</strong> $\mathbb E[X^n]$
+        </p>
+
+        $$ \mathbb E[X^n] = \frac{d^n}{ds^n}M_X(s)\Big|_{s=0} $$
+
+        <p>在MGF的视角下，对两个随机变量来说，卷积就成了简单的乘法：</p>
+
+        $$ \begin{align*} M_{X+Y}(s) &=\mathbb E[e^{s(X+Y)}] \\ &=\mathbb
+        E[e^{sX}]*\mathbb E[e^{sY}] \\ &=M_X(s)*M_Y(s) \end{align*} $$
+
+        <p>倒数第二个等号是因为卷积要求随机变量相互独立。</p>
+
+        <p>
+          有趣的是，MGF是<strong>拉普拉斯变换</strong>的一种特殊形式，而拉普拉斯变换是可逆的。这表明如果两个随机变量的MGF相同，那么这两个随机变量具有相同的分布。<span
+            style="color: red"
+            >（似乎要求MGF在某个包含0的邻域内不发散）【TODO此处待施工】</span
+          >
+        </p>
+
+        <p>
+          更有趣的是，即使两个随机变量的所有 moment
+          都相同，它们也<strong>不一定</strong>具有相同的分布。比如：
+        </p>
+
+        $$ f_Z(z) = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}}, \quad -\infty < z
+        < \infty $$ $$ f_X(x) = \frac{1}{x\sqrt{2\pi}} e^{-\frac{(\ln x)^2}{2}},
+        \quad x > 0 $$ $$ f_a(x) = f_X(x)(1 + a\sin(2\pi \log x)), \quad x > 0,
+        \quad -1 \leq a \leq 1 $$
+
+        <p>
+          在这里，$f_X$ 和 $f_a$ 有着完全相同的
+          moment，但它们不是同一个分布。而且，它们的 MGF 都在 $s ≠ 0$ 处发散。
+        </p>
+
+        <p>类似地，可以定义多元随机变量的矩生成函数：</p>
+
+        $$ M_X : \mathbb{R}^n \to \mathbb{R}, \quad M_X(\mathbf{t}) =
+        \mathbb{E}(\exp(\mathbf{t}^T X)) $$
+
+        <p>
+          与 MGF 紧密相关的是非负整型随机变量 $X$ 的
+          <strong>probability generating function(PGF)</strong> 概率生成函数：
+        </p>
+
+        $$ G_X(t):=\sum_{k=0}^{N}p_kt^k=\mathbb E[t^X] $$
+
+        <p>
+          它与 MGF 包含的信息完全相同：$G_X(t)=\mathbb E[t^X]=\mathbb
+          E[e^{X\ln{t}}]=M_X(\ln{t})$.
+        </p>
+
+        <h1>不等式</h1>
+
+        <p>在这里，我们总假设 $\mathbb E[|X|] < \infty$.</p>
+
+        <h2>Markov Inequality</h2>
+
+        <p>对<strong>不小于零</strong>的随机变量 $X$，有</p>
+
+        $$ a\mathbb P(X \geq a) \leq \mathbb E[X] $$
+
+        <h2>Chebyshev's Inequality</h2>
+
+        <p>对随机变量 $X$，有</p>
+
+        $$ \mathbb P(|X-\mu| \geq a) \leq \frac{\text{Var}(X)}{a^2} $$
+
+        <h2>Chernoff Bound</h2>
+
+        <p>对随机变量 $X$，有</p>
+
+        $$ \mathbb P(sX \geq sa) \leq \frac{\mathbb E[e^{sX}]}{e^{as}} $$
+
+        <p>其中 $s$ 可以取任意值，当 $s \geq 0$，</p>
+
+        $$ \mathbb P(X \geq a) \leq \frac{\mathbb E[e^{sX}]}{e^{as}} $$
+
+        <p>当 $s \leq 0$，</p>
+
+        $$ \mathbb P(X \leq a) \leq \frac{\mathbb E[e^{sX}]}{e^{as}} $$
+
+        <p>
+          要注意的是，Chernoff 并不总是比 Markov 更强。Chernoff
+          也可以看作是对不同 moment 形成的 Markov 做平均：
+        </p>
+
+        $$ \frac{\mathbb E[e^{sX}]}{e^{as}} = \sum_k
+        \big(\frac{(as)^ke^{-as}}{k!} \big)\frac{\mathbb E[{X^k}]}{a^k} $$
+
+        <p>因此对不小于零的随机变量 $X$，总有</p>
+
+        $$ \inf_{k>0} \frac{\mathbb E[{X^k}]}{a^k} \leq \inf_{s>0} \frac{\mathbb
+        E[e^{sX}]}{e^{as}} $$
+
+        <h2>Jensen's inequality</h2>
+
+        <p>对随机变量 $X$，设 $\varphi$ 为凸函数(convex function)，有：</p>
+
+        $$ \mathbb E[\varphi (X)] \geq \varphi (\mathbb E[X]) $$
+
+        <div class="comments-header">
+          <div class="comments-header-left"></div>
+          <div class="comments-header-center">评论区</div>
+          <div class="comments-header-right"></div>
+        </div>
+        <div style="margin-bottom: 1.6em"></div>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="scripts.js" defer></script>
+  </body>
+</html>

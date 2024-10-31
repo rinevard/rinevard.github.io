@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>收敛类型、与收敛相关的定理</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>收敛类型、与收敛相关的定理</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <h1>各种收敛</h1>
+
+        <h2>几乎必然收敛 (almost surely)</h2>
+
+        <p>若随机变量序列 $\{X_n\}_{n=1}^{\infty}$ 满足</p>
+
+        <p>$$\mathbb P(\lim_{n\rightarrow \infty} X_n=X)=1$$</p>
+
+        <p>则称其几乎必然收敛于 $X$. 记作：</p>
+
+        <p>$${X_n} \xrightarrow{\text{a.s.}} X$$</p>
+
+        <h2>依概率收敛 (in probability)</h2>
+
+        <p>
+          若随机变量序列 $\{X_n\}_{n=1}^{\infty}$ 对任意 $\epsilon > 0$，都满足
+        </p>
+
+        <p>$$\lim_{n\rightarrow \infty}\mathbb P( |X_n-X|\geq \epsilon)=0$$</p>
+
+        <p>则称其依概率收敛于 $X$. 记作：</p>
+
+        <p>$${X_n} \xrightarrow{\mathbb P} X$$</p>
+
+        <h2>依分布收敛 (in distribution)</h2>
+
+        <p>
+          若随机变量序列 $\{X_n\}_{n=1}^{\infty}$ 对所有满足 $\mathbb P[X=x]=0$
+          的 $x$ 满足
+        </p>
+
+        <p>
+          $$\lim_{n\rightarrow \infty} \mathbb P( X_n\leq x)=\mathbb P[ X\leq
+          x]$$
+        </p>
+
+        <p>则称其依分布收敛于 $X$. 记作：</p>
+
+        <p>$${X_n} \xrightarrow{\text{d}} X$$</p>
+
+        <p>
+          对连续型随机变量来说，这个定义等价于 $f_{X_n} \rightarrow
+          f_X$；对离散型随机变量来说，这个定义等价于 $p_{X_n} \rightarrow p_X$.
+        </p>
+
+        <h2>关系</h2>
+
+        <p>
+          $${X_n} \xrightarrow{\text{a.s.}} X \Rightarrow {X_n}
+          \xrightarrow{\mathbb P} X \Rightarrow {X_n} \xrightarrow{\text{d}} X$$
+        </p>
+
+        <h2>依期望收敛 (in expectation)</h2>
+
+        <p>若随机变量序列 $\{X_n\}_{n=1}^{\infty}$ 满足</p>
+
+        <p>$$\lim_{n\rightarrow \infty}\mathbb E[X_n]=\mathbb E[X]$$</p>
+
+        <p>则称其依期望收敛，记作：</p>
+
+        <p>$${X_n} \xrightarrow{\mathbb E} X$$</p>
+
+        <p>
+          有趣的是，即使是几乎必然收敛也推不出依期望收敛。但用Markov
+          inequality不难证明依期望收敛能推出依概率收敛。
+        </p>
+
+        <p>
+          几乎必然收敛的表述是$\lim_{n \rightarrow \infty}X_n\stackrel{a.s.}{=}
+          X$，我们也知道如果 $X \stackrel{a.s.}{=} Y$，那么 $\mathbb
+          E[X]=\mathbb E[Y]$.
+          但几乎必然收敛也推不出依期望收敛，因为期望和极限不一定可以交换。
+        </p>
+
+        <p>
+          一个例子是 $\Omega=[0,1], X_n=n\cdot{1}_{\omega\in
+          [0,\frac{1}{n}]},X=0$，在这个例子中，${X_n} \xrightarrow{\text{a.s.}}
+          X$，但 $\mathbb E[X_n]=1,\mathbb E[X]=0$.
+        </p>
+
+        <h1>与收敛相关的定理</h1>
+
+        <h2>Borel-Cantelli Lemma</h2>
+
+        <p>博雷尔-康德利引理 (Borel–Cantelli Lemma)</p>
+
+        <p>
+          设 $(\Omega, \mathcal{F}, \mathbb P)$
+          是一个概率空间，$\{A_n\}_{n=1}^{\infty}$ 是 $\mathcal{F}$
+          中的一个事件序列。
+        </p>
+
+        <ol>
+          <li>
+            第一个 borel-cantelli 引理：若 $\sum_{n=1}^{\infty} \mathbb P(A_n) <
+            \infty$，则
+          </li>
+        </ol>
+
+        <p>$$\mathbb P(A_n \text{ i.o.}) = 0$$</p>
+
+        <ol start="2">
+          <li>
+            第二个 borel-cantelli 引理：若事件 $\{A_n\}_{n=1}^{\infty}$
+            <strong>相互独立</strong>，且 $\sum_{n=1}^{\infty} \mathbb P(A_n) =
+            \infty$，则
+          </li>
+        </ol>
+
+        <p>$$\mathbb P(A_n \text{ i.o.}) = 1$$</p>
+
+        <p>
+          这里，$A_n \text{ i.o.} = \limsup_{n \to \infty} A_n =
+          \bigcap_{n=1}^{\infty} \bigcup_{k=n}^{\infty} A_k$ 表示无穷多个 $A_n$
+          发生的事件。
+        </p>
+
+        <p>
+          Borel lemma 的一个应用是证明几乎必然收敛 (convergence almost surely).
+        </p>
+
+        <p>
+          如果我们定义 $A_n := \{\omega \in \Omega : |X_n(\omega) - X(\omega)|
+          \geq \varepsilon\}$，那么 $A_n \text{ i.o.}$ 是序列发散的事件
+          $\{\lim_{n\to\infty} X_n(\omega) \neq X(\omega)\}$.
+        </p>
+
+        <p>
+          因此，如果 $\sum_{n=1}^{\infty} \mathbb{P}(A_n)< \infty$，则
+          $\mathbb{P}(A_n \text{ i.o.}) = 0$，即 $X_n \overset{a.s.}{\to} X$.
+          因此，第一个Borel-Cantelli引理是证明几乎必然收敛 (convergence almost
+          surely) 的常用方法。
+        </p>
+
+        <h2>大数定律</h2>
+
+        <h3>弱大数定律</h3>
+
+        <p>
+          对独立同分布的随机变量序列 $\{X_n\}_{n=1}^{\infty}$，若 $|\mathbb
+          E[X_1]|<\infty$，则
+        </p>
+
+        <p>
+          $$\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{\mathbb P}
+          \mathbb E[X_1]$$
+        </p>
+
+        <p>
+          课上提到："The WLLN is implied by the SLLN with the given assumptions,
+          but the weak law actually holds in more general cases than the strong
+          law, making the WLLN its own law and not just a corollary."
+        </p>
+
+        <p>
+          简单地搜索了一下，这些"more general cases"好像有点杂乱，不够优雅。<a
+            href="https://en.wikipedia.org/wiki/Law_of_large_numbers#Borel.27s_law_of_large_numbers"
+            >维基百科</a
+          >上略提了一些 ，<a
+            href="https://terrytao.wordpress.com/2015/10/23/275a-notes-3-the-weak-and-strong-law-of-large-numbers/"
+            >陶哲轩的blog</a
+          >里也讲了些变体。
+        </p>
+
+        <h3>强大数定律（SLLN）</h3>
+
+        <p>
+          对独立同分布的随机变量序列 $\{X_n\}_{n=1}^{\infty}$，若 $|\mathbb
+          E[X_1]|<\infty$，则
+        </p>
+
+        <p>
+          $$\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{a.s.} \mathbb
+          E[X_1]$$
+        </p>
+
+        <h2>中心极限定理</h2>
+
+        <p>
+          对期望和方差为 $\mu$ 和 $\sigma^2$ 的独立同分布的随机变量序列
+          $\{X_n\}_{n=1}^{\infty}$，有
+        </p>
+
+        <p>
+          $$\frac{\bar X_n -\mu}{\sqrt{\frac{\sigma^2}{n}}} =\frac{1}{\sqrt
+          n}(\sum_{k=1}^{n}\frac{X_k-\mu}{\sigma}) \xrightarrow{\text{d}}
+          \mathcal{N}(0,1)$$
+        </p>
+
+        <div class="comments-header">
+          <div class="comments-header-left"></div>
+          <div class="comments-header-center">评论区</div>
+          <div class="comments-header-right"></div>
+        </div>
+        <div style="margin-bottom: 1.6em"></div>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="scripts.js" defer></script>
+  </body>
+</html>

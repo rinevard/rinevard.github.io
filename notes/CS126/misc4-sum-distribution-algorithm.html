@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>算出i.i.d.的 取值在[0,N]间的 离散随机变量的和 的分布的算法</title>
+    <link href="https://fonts.googleapis.com/" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("theme", theme);
+        window.giscusTheme = theme === "dark" ? "dark_dimmed" : "light";
+      })();
+    </script>
+    <script src="../../scripts.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+      id="MathJax-script"
+    ></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="nav-content">
+        <a class="nav-logo">Rinevard</a>
+        <div class="nav-items">
+          <a href="../../index.html" class="nav-item">首页</a>
+          <a href="../notes.html" class="nav-item">笔记</a>
+        </div>
+      </div>
+    </nav>
+    <div class="content-wrapper">
+      <header>
+        <h1>算出i.i.d.的 取值在[0,N]间的 离散随机变量的和 的分布的算法</h1>
+        <button id="invert-theme">深色模式</button>
+      </header>
+      <main>
+        <p>
+          设 $\mathbb P[X=i]=p_i$，且 $X$ 的所有可能取值为 $0,1,...,N$，即 $X$
+          是一个取值为<span style="font-weight: bold">有限个整数</span
+          >的随机变量。考虑 i.i.d. 的随机变量和 $Y=\sum_{j=1}^n
+          X_j$，我们尝试找到一个算法来求出 $Y$ 的分布。
+        </p>
+
+        <p>
+          如果直接用算出卷积的算法当然也是可以的，不过介于我们希望利用 numpy
+          库，我们可以构建一个多项式，使得 $s^k$ 的系数为 $\mathbb P(Y=k)$.
+        </p>
+
+        <p>
+          定义 $X$ 的
+          <span style="font-weight: bold"
+            >probability generating function(PGF)</span
+          >
+          为下式：
+        </p>
+
+        $$ G_X(s)=\sum_{k=0}^{N}p_ks^k=\mathbb E[s^X] $$
+
+        <p>则有</p>
+
+        $$ \begin{align*} G_{Y}(s) &=\mathbb E[s^Y] \\ &=\mathbb
+        E[s^{\sum_{j=1}^{n}X_j}] \\ &=\prod_{j=1}^{n}\mathbb E[s^{X_j}] \text{
+        (by independence)} \\ &=\prod_{j=1}^{n}G_{X_j}(s) \\ &=(G_X(s))^n
+        \end{align*} $$
+
+        <p>
+          在 $G_Y(s)$ 中，$s^k$ 的系数即为 $\mathbb P[Y=k]$.
+          因此，我们只要计算多项式的次幂。
+        </p>
+
+        <p>代码：</p>
+
+        <pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+
+def dist_sum(n, probs_0_through_N):
+    """Return the distribution of S_n,
+    the sum of n i.i.d. copies
+    of a random variable with distribution probs_0_through_N
+    on the integers 0, 1, 2, ..., N"""
+    
+    N = len(probs_0_through_N) - 1   
+    # highest order is n*N. To contain the x^0, we need to add one to n*N.
+    values_Sn = np.arange(n*N + 1)
+    
+    coeffs_X1 = np.flipud(probs_0_through_N)
+    pgf_X1 = np.poly1d(coeffs_X1)
+    pgf_Sn = pgf_X1 ** n
+    coeffs_Sn = pgf_Sn.c
+    probs_Sn = np.flipud(coeffs_Sn)
+    
+    return values_Sn, probs_Sn
+
+# Create the probability distribution  
+probs_X1 = np.array([1/10, 0, 1/10, 0, 0, 1/5, 0, 1/5, 1/5, 1/5])
+
+# Calculate the distribution sum
+values, probabilities = dist_sum(50, probs_X1)
+
+# ---------------------- Plot Code --------------------------
+# Plot the results
+plt.figure(figsize=(10, 6))
+plt.bar(values, probabilities, width=0.8, align='center')
+plt.xlabel('Values')
+plt.ylabel('Probabilities')
+plt.title('Distribution of S_n')
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Improve the layout
+plt.tight_layout()
+
+# Show the plot
+plt.show()</code></pre>
+
+        <div class="comments-header">
+          <div class="comments-header-left"></div>
+          <div class="comments-header-center">评论区</div>
+          <div class="comments-header-right"></div>
+        </div>
+        <div style="margin-bottom: 1.6em"></div>
+        <script>
+          var giscusTheme = window.giscusTheme || "light";
+          var giscusAttributes = {
+            src: "https://giscus.app/client.js",
+            "data-repo": "rinevard/rinevard.github.io",
+            "data-repo-id": "R_kgDOLkoe9A",
+            "data-category-id": "DIC_kwDOLkoe9M4CjJnR",
+            "data-mapping": "pathname",
+            "data-strict": "1",
+            "data-reactions-enabled": "1",
+            "data-emit-metadata": "0",
+            "data-input-position": "top",
+            "data-theme": giscusTheme,
+            "data-lang": "zh-CN",
+            "data-loading": "lazy",
+            crossorigin: "anonymous",
+            async: "",
+          };
+          var giscusScript = document.createElement("script");
+          Object.entries(giscusAttributes).forEach(([key, value]) =>
+            giscusScript.setAttribute(key, value)
+          );
+          document.currentScript.parentNode.insertBefore(
+            giscusScript,
+            document.currentScript.nextSibling
+          );
+        </script>
+      </main>
+    </div>
+    <footer>
+      <p class="small-text">
+        Inspired by
+        <a
+          href="https://alexyfu.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Alex Fu</a
+        >. © 2024 Rinevard.
+        <a
+          href="https://opensource.org/licenses/MIT"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT License</a
+        >.
+      </p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="scripts.js" defer></script>
+  </body>
+</html>
