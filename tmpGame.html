@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .container {
+        display: flex;
+        gap: 20px;
+      }
+      .game-container {
+        flex-shrink: 0;
+      }
+      .explanation {
+        flex-grow: 1;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        max-width: 400px;
+      }
+      .explanation h3 {
+        margin-top: 0;
+        color: #2c3e50;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(9, 50px);
+        gap: 2px;
+        background: #eee;
+        padding: 10px;
+      }
+      .cell {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        background: white;
+      }
+      .cell.core {
+        background: #666;
+        color: white;
+      }
+      .cell.gun {
+        background: #ff9999;
+      }
+      .cell.shield {
+        background: #99ff99;
+      }
+      .cell.plus {
+        background: #9999ff;
+      }
+      .energies {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 12px;
+        color: #666;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .max-energy {
+        color: red;
+        font-weight: bold;
+      }
+      .controls {
+        margin-top: 20px;
+      }
+      .selected {
+        outline: 2px solid blue;
+      }
+      button {
+        margin: 5px;
+        padding: 5px 10px;
+      }
+      .highlight {
+        animation: pulse 0.5s;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .step {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="game-container">
+        <div class="grid" id="grid"></div>
+        <div class="controls">
+          <button onclick="selectType('gun')">Gun</button>
+          <button onclick="selectType('shield')">Shield</button>
+          <button onclick="selectType('plus')">+1</button>
+          <button onclick="startBFS()">Start BFS</button>
+        </div>
+      </div>
+
+      <div class="explanation">
+        <h3>能量传递系统说明</h3>
+
+        <div class="step">
+          <strong>核心机制：</strong>
+          <ul>
+            <li>中心为能量源，初始能量为1</li>
+            <li>能量按照四个方向传递</li>
+            <li>只能在已有方块旁边放置新方块</li>
+          </ul>
+        </div>
+
+        <div class="step">
+          <strong>节点行为：</strong>
+          <ul>
+            <li>每个节点可被多条路径触发，即同时触发多次</li>
+            <li>显示所有接收到的能量值</li>
+            <li>传递时使用最大能量值</li>
+          </ul>
+        </div>
+
+        <div class="step">
+          <strong>方块行为：</strong>
+          <ul>
+            <li>战斗方块（枪/盾）：能量经过后重置为能量值1</li>
+            <li>增幅器（+1）：能量值+1后传递</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const size = 9;
+      const board = Array(size)
+        .fill()
+        .map(() => Array(size).fill(null));
+      let selectedType = null;
+      let bfsRunning = false;
+
+      board[4][4] = { type: "core", energies: [1] };
+
+      function createGrid() {
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
+        for (let i = 0; i < size; i++) {
+          for (let j = 0; j < size; j++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.onclick = () => handleClick(i, j);
+            if (board[i][j]) {
+              cell.classList.add(board[i][j].type);
+              if (board[i][j].energies.length > 0) {
+                const energies = document.createElement("div");
+                energies.className = "energies";
+                const maxEnergy = Math.max(...board[i][j].energies);
+                board[i][j].energies.forEach((energy) => {
+                  const energyDiv = document.createElement("div");
+                  energyDiv.textContent = energy;
+                  if (energy === maxEnergy) {
+                    energyDiv.className = "max-energy";
+                  }
+                  energies.appendChild(energyDiv);
+                });
+                cell.appendChild(energies);
+              }
+            }
+            grid.appendChild(cell);
+          }
+        }
+      }
+
+      function selectType(type) {
+        selectedType = type;
+        document.querySelectorAll("button").forEach((btn) => {
+          btn.classList.remove("selected");
+          if (btn.textContent.toLowerCase() === type) {
+            btn.classList.add("selected");
+          }
+        });
+      }
+
+      function isAdjacent(i, j) {
+        const directions = [
+          [0, 1],
+          [1, 0],
+          [0, -1],
+          [-1, 0],
+        ];
+        return directions.some(([di, dj]) => {
+          const ni = i + di;
+          const nj = j + dj;
+          return ni >= 0 && ni < size && nj >= 0 && nj < size && board[ni][nj];
+        });
+      }
+
+      function handleClick(i, j) {
+        if (bfsRunning || !selectedType || board[i][j] || !isAdjacent(i, j))
+          return;
+        board[i][j] = { type: selectedType, energies: [] };
+        createGrid();
+      }
+
+      async function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function startBFS() {
+        if (bfsRunning) return;
+        bfsRunning = true;
+
+        // 重置所有能量值
+        for (let i = 0; i < size; i++) {
+          for (let j = 0; j < size; j++) {
+            if (board[i][j] && board[i][j].type !== "core") {
+              board[i][j].energies = [];
+            }
+          }
+        }
+
+        const visited = new Set();
+        let currentLayer = [
+          {
+            pos: [4, 4],
+            energies: [1],
+          },
+        ];
+
+        while (currentLayer.length > 0) {
+          const nextLayer = new Map(); // key: "row,col", value: {pos: [row, col], energies: []}
+
+          // 处理当前层的每个节点
+          for (const {
+            pos: [row, col],
+            energies,
+          } of currentLayer) {
+            const key = `${row},${col}`;
+
+            // 高亮显示当前处理的节点
+            const cells = document.querySelectorAll(".cell");
+            const currentCell = cells[row * size + col];
+            currentCell.classList.add("highlight");
+            await delay(500);
+            currentCell.classList.remove("highlight");
+
+            // 记录所有到达的能量值
+            if (board[row][col].type !== "core") {
+              board[row][col].energies = [...energies];
+            }
+            createGrid();
+
+            // 获取最大能量值用于传递
+            const maxEnergy = Math.max(...energies);
+
+            // 探索相邻节点
+            const directions = [
+              [0, 1],
+              [1, 0],
+              [0, -1],
+              [-1, 0],
+            ];
+            for (const [di, dj] of directions) {
+              const ni = row + di;
+              const nj = col + dj;
+              const nextKey = `${ni},${nj}`;
+
+              if (
+                ni >= 0 &&
+                ni < size &&
+                nj >= 0 &&
+                nj < size &&
+                board[ni][nj] &&
+                !visited.has(nextKey)
+              ) {
+                let newEnergy = maxEnergy;
+                if (board[row][col].type === "plus") {
+                  newEnergy = maxEnergy + 1;
+                } else if (board[row][col].type !== "core") {
+                  newEnergy = 1;
+                }
+
+                if (nextLayer.has(nextKey)) {
+                  // 如果下一层已经有这个节点，添加新的能量值
+                  nextLayer.get(nextKey).energies.push(newEnergy);
+                } else {
+                  // 否则创建新的节点
+                  nextLayer.set(nextKey, {
+                    pos: [ni, nj],
+                    energies: [newEnergy],
+                  });
+                }
+              }
+            }
+          }
+
+          // 更新已访问节点
+          currentLayer.forEach(({ pos: [row, col] }) => {
+            visited.add(`${row},${col}`);
+          });
+
+          // 准备下一层
+          currentLayer = Array.from(nextLayer.values());
+        }
+
+        bfsRunning = false;
+      }
+
+      createGrid();
+    </script>
+  </body>
+</html>
