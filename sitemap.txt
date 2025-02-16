@@ -1,3 +1,4 @@
+http://rinevard.github.io/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/
 http://rinevard.github.io/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/
 http://rinevard.github.io/secret/index.html
 http://rinevard.github.io/secret/many-people-path.html
@@ -10,4 +11,6 @@ http://rinevard.github.io/tags/index.html
 http://rinevard.github.io/
 http://rinevard.github.io/categories/%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99/
 http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/
+http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/
 http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/%E4%BD%93%E9%AA%8C/
+http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E4%BA%8C%E6%AC%A1%E5%85%83/
