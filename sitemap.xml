@@ -2,7 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://rinevard.github.io/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/</loc>
+    
+    <lastmod>2025-03-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/</loc>
+    
+    <lastmod>2025-03-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/</loc>
+    
+    <lastmod>2025-03-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/</loc>
+    
+    <lastmod>2025-03-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Datalab/</loc>
     
     <lastmod>2025-03-13</lastmod>
     
@@ -14,24 +50,6 @@
     <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/</loc>
     
     <lastmod>2025-03-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/</loc>
-    
-    <lastmod>2025-03-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Datalab/</loc>
-    
-    <lastmod>2025-03-08</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -56,27 +74,9 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/</loc>
-    
-    <lastmod>2025-03-02</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://rinevard.github.io/wiki/others/thoughts/%E5%86%99%E5%AE%8C%E4%BA%86datalab%EF%BC%8C%E7%AA%81%E7%84%B6%E6%84%9F%E8%A7%89%E5%A5%BD%E5%AD%A4%E5%8D%95/</loc>
     
     <lastmod>2025-03-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/</loc>
-    
-    <lastmod>2025-02-15</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -173,13 +173,6 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2025-03-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/</loc>
     <lastmod>2025-03-13</lastmod>
     <changefreq>weekly</changefreq>
@@ -187,14 +180,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/</loc>
-    <lastmod>2025-03-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
+    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2025-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -209,6 +195,20 @@
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/%E4%BD%93%E9%AA%8C/</loc>
+    <lastmod>2025-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/</loc>
+    <lastmod>2025-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
     <lastmod>2025-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -236,14 +236,14 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/</loc>
+    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/</loc>
     <lastmod>2025-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/</loc>
+    <loc>http://rinevard.github.io/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/</loc>
     <lastmod>2025-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

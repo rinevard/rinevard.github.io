@@ -9,12 +9,12 @@
         <meta name="keywords" content="Attackblab记录" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only do bad things? We bad peop">
+    <meta name="description" content="img{     width: 40%; }   写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Attackblab记录">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only do bad things? We bad peop">
+<meta property="og:description" content="img{     width: 40%; }   写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/evil.jpg">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack2.png">
@@ -23,7 +23,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack4.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/neuro.jpg">
 <meta property="article:published_time" content="2025-03-13T03:18:38.000Z">
-<meta property="article:modified_time" content="2025-03-13T03:19:19.795Z">
+<meta property="article:modified_time" content="2025-03-13T03:24:56.863Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/evil.jpg">
@@ -400,8 +400,14 @@
             
         
         
-            <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了）</p>
-<p>“Why good people can only do good things and bad people can only do bad things? We bad people can do whatever we want.——Evil Neuro”</p>
+            <style>
+img{
+    width: 40%;
+}
+</style>
+
+<h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了）</p>
+<p>“Why good people can only do good things and bad people can only do bad things? We bad people can do <strong>whatever we want</strong>.——Evil Neuro”</p>
 <h1 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h1><p>attacklab 的攻击主要分为植入攻击代码和 ROP 攻击。</p>
 <h2 id="植入攻击代码"><a href="#植入攻击代码" class="headerlink" title="植入攻击代码"></a>植入攻击代码</h2><h3 id="攻击-1"><a href="#攻击-1" class="headerlink" title="攻击 1"></a>攻击 1</h3><p>攻击 1 只是简单地让我们熟悉一下工作流程，我们只要覆写掉返回地址就好了。</p>
 <p>大致的攻击流程是——跑一下 ctarget 看看我们写入的内容会被放在栈的哪个位置，熟悉位置以后把十六进制的攻击内容写到某个 txt 文件里，再用 hex2raw 转换为输入值，最后把输入值传到 ctarget 就实现了攻击。</p>
