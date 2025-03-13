@@ -3,23 +3,30 @@
 <head>
     <meta charset="utf-8">
     
-    <title>建站过程 | Rinevard</title>
+    <title>Attackblab记录 | Rinevard</title>
     
     
-        <meta name="keywords" content="建站过程" />
+        <meta name="keywords" content="Attackblab记录" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="本站成功搭建的最大功臣是 Claude-3.5-sonnet，在这类复杂但并不困难的任务上，和 AI 合作真是再合适不过了。本文简要复盘一下整个网站的搭建过程，顺便提醒一下未来的自己一些 Hexo 的基本操作。 网站搭建写完 2024 年度总结之后，就有了重新搭建博客的想法。随便翻了翻几个同学的博客，感觉挺不错的，于是决定去问 Claude 怎么搭博客。这次肯定不会像第一次建站一样随便挑个主题就用">
+    <meta name="description" content="写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only do bad things? We bad peop">
 <meta property="og:type" content="article">
-<meta property="og:title" content="建站过程">
-<meta property="og:url" content="http://rinevard.github.io/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:title" content="Attackblab记录">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="本站成功搭建的最大功臣是 Claude-3.5-sonnet，在这类复杂但并不困难的任务上，和 AI 合作真是再合适不过了。本文简要复盘一下整个网站的搭建过程，顺便提醒一下未来的自己一些 Hexo 的基本操作。 网站搭建写完 2024 年度总结之后，就有了重新搭建博客的想法。随便翻了翻几个同学的博客，感觉挺不错的，于是决定去问 Claude 怎么搭博客。这次肯定不会像第一次建站一样随便挑个主题就用">
+<meta property="og:description" content="写在前面非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了） “Why good people can only do good things and bad people can only do bad things? We bad peop">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-02-06T02:34:53.000Z">
-<meta property="article:modified_time" content="2025-02-06T05:01:57.758Z">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/evil.jpg">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack2.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack2_2.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack3.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/attack4.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/neuro.jpg">
+<meta property="article:published_time" content="2025-03-13T03:18:38.000Z">
+<meta property="article:modified_time" content="2025-03-13T03:19:19.795Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Attacklab/evil.jpg">
     
 
     
@@ -167,43 +174,43 @@
         
         
          <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            关于本站
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/">建站过程</a></li>  </ul> 
+                    </li> 
+                    
                     <li class="directory open">
                         <a href="#" data-role="directory">
                             <i class="fa fa-folder-open"></i>
                             &nbsp;
-                            关于本站
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file active"><a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/">建站过程</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            &nbsp;
                             学习
                         </a>
                          <ul class="unstyled" id="tree" > 
-                    <li class="directory">
+                    <li class="directory open">
                         <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
+                            <i class="fa fa-folder-open"></i>
                             &nbsp;
                             公开课
                         </a>
                          <ul class="unstyled" id="tree" > 
-                    <li class="directory">
+                    <li class="directory open">
                         <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
+                            <i class="fa fa-folder-open"></i>
                             &nbsp;
                             CMU-15-213
                         </a>
                          <ul class="unstyled" id="tree" > 
-                    <li class="directory">
+                    <li class="directory open">
                         <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
+                            <i class="fa fa-folder-open"></i>
                             &nbsp;
                             Labs
                         </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/">Datalab解析</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">Bomblab感想</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">Attackblab记录</a></li>  </ul> 
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/">Datalab解析</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">Bomblab感想</a></li>  <li class="file active"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">Attackblab记录</a></li>  </ul> 
                     </li> 
                     
                     <li class="directory">
@@ -345,7 +352,7 @@
     <div id="toTop" class="fa fa-angle-up"></div>
 </aside>
             
-            <section id="main"><article id="post-about-blog/建站过程" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-learning/open-course/CMU-15-213/Labs/Attacklab" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -355,15 +362,15 @@
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99/">关于本站</a>
+        <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/">CMU-15-213</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/">Labs</a>
     </div>
 
                         
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/">
-            <time datetime="2025-02-06T02:34:53.000Z" itemprop="datePublished">2025-02-06</time>
+        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">
+            <time datetime="2025-03-13T03:18:38.000Z" itemprop="datePublished">2025-03-13</time>
         </a>
     </div>
 
@@ -375,7 +382,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            建站过程
+            Attackblab记录
         </h1>
     
 
@@ -388,45 +395,38 @@
             
                 <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%AB%99%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">网站搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">基本操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%EF%BC%88%E5%8F%AF%E8%83%BD%E7%9A%84%EF%BC%89%E5%90%8E%E7%BB%AD%E6%94%B9%E8%BF%9B"><span class="toc-number">3.</span> <span class="toc-text">（可能的）后续改进</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%94%BB%E5%87%BB"><span class="toc-number">2.</span> <span class="toc-text">攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A4%8D%E5%85%A5%E6%94%BB%E5%87%BB%E4%BB%A3%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">植入攻击代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB-1"><span class="toc-number">2.1.1.</span> <span class="toc-text">攻击 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB-2"><span class="toc-number">2.1.2.</span> <span class="toc-text">攻击 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB-3"><span class="toc-number">2.1.3.</span> <span class="toc-text">攻击 3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ROP-%E6%94%BB%E5%87%BB"><span class="toc-number">2.2.</span> <span class="toc-text">ROP 攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB-4"><span class="toc-number">2.2.1.</span> <span class="toc-text">攻击 4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB-5"><span class="toc-number">2.2.2.</span> <span class="toc-text">攻击 5</span></a></li></ol></li></ol></li></ol>
                 </div>
             
         
         
-            <p>本站成功搭建的最大功臣是 Claude-3.5-sonnet，在这类复杂但并不困难的任务上，和 AI 合作真是再合适不过了。本文简要复盘一下整个网站的搭建过程，顺便提醒一下未来的自己一些 Hexo 的基本操作。</p>
-<h1 id="网站搭建"><a href="#网站搭建" class="headerlink" title="网站搭建"></a>网站搭建</h1><p>写完 2024 年度总结之后，就有了重新搭建博客的想法。随便翻了翻几个同学的博客，感觉挺不错的，于是决定去问 Claude 怎么搭博客。这次肯定不会像第一次建站一样随便挑个主题就用上去，也不会像（这次之前的）最后一次建站一样从头开始自己写。认真找找合适的主题，然后用上就好了。</p>
-<p>我的主要诉求是：写作方便、用树状结构收纳文章，小克推荐了 Hexo 的 NexT.Pisces 和 Wikitten 两个主题以及 VitePress。由于有 Hexo 的使用经验，就选了 Hexo。由于一时半会没找到 NexT.Pisces 是什么，就用了 Wikitten.</p>
-<p>写得我都困了，我们的建站过程没有什么<strong>奇幻色彩</strong>吗？</p>
-<p>有的有的，今天早上断网了，把路由器复位了一下才重新开始建站。</p>
-<p>选好了方案之后，就可以按部就班地和 Claude 一起建站了。不懂的就去问 Claude，它都懂的。</p>
-<h1 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h1><p>最常用的三件套：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  <span class="comment"># 清理缓存，似乎在修改了配置文件以后可以用一用</span></span><br><span class="line">hexo g      <span class="comment"># g 是 generate 的缩写。生成静态文件</span></span><br><span class="line">hexo s      <span class="comment"># s 是 server 的缩写。服务器，启动！</span></span><br></pre></td></tr></table></figure>
-
-<p>增删文章、文件夹设置、部署到 GitHub page：</p>
-<ol>
-<li><strong>删除文章</strong></li>
-</ol>
-<p>直接删除 <code>source/_posts</code> 目录下的对应 .md 文件即可</p>
-<ol start="2">
-<li><strong>新增文章</strong></li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;我是一只鲤鱼。我是一只鲤鱼吗？我觉得我是。&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>这会生成一个标题为”我是一只鲤鱼。我是一只鲤鱼吗？我觉得我是。”的文章。</p>
-<ol start="3">
-<li><strong>设置多层文件夹</strong></li>
-</ol>
-<p>在文章头部这样写：</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 睡觉入门到精通</span><br><span class="line">categories:</span><br><span class="line"><span class="bullet">  -</span> 生活</span><br><span class="line"><span class="section">  - 睡觉技巧</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li><strong>生成和部署</strong></li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>如果是新建的站，部署前要修改配置文件的 deploy 部分哦，修改过一次以后就不用再改了。不懂问 Claude。</p>
-<p>可以在根目录的 _config.yml 和的 themes 的 _config.yml 里调整配置文件。</p>
-<h1 id="（可能的）后续改进"><a href="#（可能的）后续改进" class="headerlink" title="（可能的）后续改进"></a>（可能的）后续改进</h1><p>我比较关心的改进是侧边栏收缩来全屏浏览笔记、配色调整。</p>
+            <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>非常有趣的 lab！做了一大半以后感觉自己已经是 super 嗨客了。我不打算做最后一个，毕竟读汇编来做 ROP 攻击挺麻烦的，我感觉这对我的水平提升也不大（而且拿到 95&#x2F;100 我已经很满足了）</p>
+<p>“Why good people can only do good things and bad people can only do bad things? We bad people can do whatever we want.——Evil Neuro”</p>
+<h1 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h1><p>attacklab 的攻击主要分为植入攻击代码和 ROP 攻击。</p>
+<h2 id="植入攻击代码"><a href="#植入攻击代码" class="headerlink" title="植入攻击代码"></a>植入攻击代码</h2><h3 id="攻击-1"><a href="#攻击-1" class="headerlink" title="攻击 1"></a>攻击 1</h3><p>攻击 1 只是简单地让我们熟悉一下工作流程，我们只要覆写掉返回地址就好了。</p>
+<p>大致的攻击流程是——跑一下 ctarget 看看我们写入的内容会被放在栈的哪个位置，熟悉位置以后把十六进制的攻击内容写到某个 txt 文件里，再用 hex2raw 转换为输入值，最后把输入值传到 ctarget 就实现了攻击。</p>
+<p>下面给一些小 hints。</p>
+<p>用 <code>./hex2raw &lt; rinevinput.txt &gt; evil</code> 来把内容从十六进制转换为输入值, 并把输入值写入 evil（我把攻击文件叫做 evil）</p>
+<p>注意, 不要把内容写入形如 <code>evil.txt</code> 这样的<strong>有格式的文件</strong>里! 这可能修改一些特殊字符。我之前就踩了这个坑。</p>
+<p>使用 <code>./ctarget -q &lt; evil</code> 来运行，因为我们不能连接到 CMU 服务器（唉，CMU）.</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/evil.jpg"></p>
+<h3 id="攻击-2"><a href="#攻击-2" class="headerlink" title="攻击 2"></a>攻击 2</h3><p>攻击 2 就是典型的“植入攻击代码”了。一开始我的思路如下图：</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/attack2.png"></p>
+<p>这确实能跑，也确实顺利执行了 touch2，但执行完之后发生了<strong>segmentation fault</strong>！这是为什么？<strong>我至今没有搞清楚</strong>，如果有朋友知道可以跟我说一下。但我可以排除一些疑点。</p>
+<p>首先，segmentation fault 不是因为栈指针跑到了预期位置之外。因为在 phase-2-level2 中，我们的栈指针跑得老远了。</p>
+<p>segmentation fault 的发生<strong>大概率是因为栈指针没有对齐</strong>。给能通过的 phase2-level2 再加一句 ret，就造成了 segmentation fault。再在造成了 segmentation fault 的基础上多 ret 一次就又没有 segmentation fault 了。</p>
+<p>所以我觉得大概率是栈指针的对齐问题。那栈指针，你究竟该在哪里呢？</p>
+<p>回到攻击 2，既然我们猜测是栈指针对齐问题，只要让它对齐就行了。我们微调一下，通过 push 让栈指针的位置偏移 8，然后就通过了。</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/attack2_2.png"></p>
+<h3 id="攻击-3"><a href="#攻击-3" class="headerlink" title="攻击 3"></a>攻击 3</h3><p>攻击 3 和攻击 2 差不多，唯一要注意的是 hexmatch 和 strncmp 会覆写栈，所以我们要把字符串藏在更下面的位置（即栈地址比较大的位置）。造成了 segmentation fault 怎么办？我们已经有了攻击 2 的经验，所以借助 pop，push，ret 来微调一下栈指针位置就行。</p>
+<p>作业 PDF 里还提到，”Make position of check string unpredictable”。这有什么意义？我猜是为了防止我们把 sval 指向 cbuf 来实现攻击，这或许不符合 attacklab 的世界观，因为连字符串都不用注入了。</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/attack3.png"></p>
+<h2 id="ROP-攻击"><a href="#ROP-攻击" class="headerlink" title="ROP 攻击"></a>ROP 攻击</h2><h3 id="攻击-4"><a href="#攻击-4" class="headerlink" title="攻击 4"></a>攻击 4</h3><p>我是笨蛋，又踩了一个坑。考虑指令<br>4017fc: 3b 3d e2 3c 20 00 cmp 0x203ce2(%rip),%edi # 6054e4 <cookie><br>401802: 75 20 jne 401824 &lt;touch2+0x38&gt;<br>在执行 cmp 指令时：RIP 的值是 0x401802，而不是 0x4017fc。我之前还想了半天为什么我们能指向 cookie。</p>
+<p>回到题目上来，根据提示，我们要用 mov，pop，ret，那么思路是写入 cookie 到栈中，pop 它到某个地方（addval_219 有 pop %rax），最后移动到 rdi 中（addval_273 有 movl %eax %edi）</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/attack4.png"></p>
+<p>我们在攻击 2 里已经讨论过 segmentation fault 的发生原因，最合理的猜测是栈指针的对齐问题。所以如果发生了 segmentation fault，找个 ret 再用一下就行了。</p>
+<h3 id="攻击-5"><a href="#攻击-5" class="headerlink" title="攻击 5"></a>攻击 5</h3><p>没做，we bad people can do whatever we want！</p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Attacklab/neuro.jpg"></p>
 
             </div>
         
@@ -439,19 +439,10 @@
     
 <nav id="article-nav">
     
-        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    探索
-                
-            </div>
-        </a>
     
-    
-        <a href="/wiki/%E6%AC%A2%E8%BF%8E%EF%BC%81/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">欢迎！</div>
+            <div class="article-nav-title">技巧的分类，冰山之下的深度</div>
         </a>
     
 </nav>
