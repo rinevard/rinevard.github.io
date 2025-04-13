@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>第十章——系统级I/O | Rinevard</title>
+    
+    
+        <meta name="keywords" content="第十章——系统级I/O" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第十章——系统级I&#x2F;O">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png">
+<meta property="article:published_time" content="2025-04-11T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-13T02:02:21.876Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/jurorara.png" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            gamejam
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">Ludum Dare参加指南</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            关于本站
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/">建站过程</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            学习
+                        </a>
+                         <ul class="unstyled" id="tree" > 
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            公开课
+                        </a>
+                         <ul class="unstyled" id="tree" > 
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            CMU-15-213
+                        </a>
+                         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Labs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/">Datalab解析</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">Bomblab感想</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">Attackblab记录</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/">Cachelab理论分析</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Shlab/">Shlab调试记录和一键测试脚本</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Notes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/">第二章——计算机内的信息表示</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/">第三章——程序的机器级别表示</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/">第五章——性能优化</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter6-memory-and-cache/">第六章——存储器层次结构</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/">第八章——异常控制流</a></li>  <li class="file active"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/">第十章——系统级I/O</a></li>  </ul> 
+                    </li> 
+                     </ul> 
+                    </li> 
+                     </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/learning/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">这里有什么？</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            杂谈
+                        </a>
+                         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            二次元
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">母鸡卡的各种神奇假药</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            碎碎念
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">写完了datalab，突然感觉好孤单</a></li>  <li class="file"><a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">玩乐的人</a></li>  </ul> 
+                    </li> 
+                     </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            游戏设计
+                        </a>
+                         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            体验
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">探索</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            技巧
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">技巧的分类，冰山之下的深度</a></li>  </ul> 
+                    </li> 
+                     </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/%E6%AC%A2%E8%BF%8E%EF%BC%81/">欢迎！</a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-learning/open-course/CMU-15-213/Notes/Chapter10-system-io" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/">CMU-15-213</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/">Notes</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/">
+            <time datetime="2025-04-11T02:00:00.000Z" itemprop="datePublished">2025-04-11</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            第十章——系统级I/O
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+                <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">读写文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%88file-descriptor%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">文件描述符（file descriptor）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E8%B6%B3%E5%80%BC%EF%BC%88short-count%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">不足值（short count）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E3%80%81%E6%96%87%E4%BB%B6%E8%A1%A8%E3%80%81v-node-%E8%A1%A8"><span class="toc-number">2.3.</span> <span class="toc-text">描述符表、文件表、v-node 表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8-open-%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E7%9A%84%E5%85%B7%E4%BD%93%E8%BF%87%E7%A8%8B"><span class="toc-number">2.3.1.</span> <span class="toc-text">调用 open 打开文件的具体过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#open-%E4%B8%A4%E6%AC%A1%EF%BC%9A"><span class="toc-number">2.3.2.</span> <span class="toc-text">open 两次：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fork%EF%BC%9A"><span class="toc-number">2.3.3.</span> <span class="toc-text">fork：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E8%AF%BB%E5%86%99"><span class="toc-number">3.</span> <span class="toc-text">基于缓冲区的读写</span></a></li></ol>
+                </div>
+            
+        
+        
+            <style>
+img{
+    width: 75%;
+}
+</style>
+
+<h1 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h1><p>所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。</p>
+<p>文件类型分为以下几类</p>
+<ul>
+<li>普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe）</li>
+<li>目录：包含一系列链接，每个连接将一个文件名映射到一个文件</li>
+<li>套接字（socket）：跨网络通信用的文件</li>
+</ul>
+<h1 id="读写文件"><a href="#读写文件" class="headerlink" title="读写文件"></a>读写文件</h1><h2 id="文件描述符（file-descriptor）"><a href="#文件描述符（file-descriptor）" class="headerlink" title="文件描述符（file descriptor）"></a>文件描述符（file descriptor）</h2><p>文件描述符是一个非负整数，代表进程打开的文件的标识符。在进程中，每当打开一个文件时，操作系统会分配一个文件描述符给它。</p>
+<p>默认情况下，0 表示标准输入（stdin），1 表示标准输出（stdout），2 表示标准错误（stderr）。通过系统调用（如 open）打开文件后，会返回一个新的文件描述符（如 3、4 等），具体值取决于当前进程中已使用的描述符情况。</p>
+<p>以下是一个使用 <code>open</code> 系统调用的示例，展示如何打开一个文件并获取文件描述符：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 打开文件 &quot;example.txt&quot;，以只读模式</span></span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;example.txt&quot;</span>, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;open failed&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;文件描述符: %d\\n&quot;</span>, fd);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用文件描述符进行操作（如读取）</span></span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">100</span>];</span><br><span class="line">    <span class="type">ssize_t</span> bytes_read = read(fd, buffer, <span class="keyword">sizeof</span>(buffer));</span><br><span class="line">    <span class="keyword">if</span> (bytes_read == <span class="number">-1</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;read failed&quot;</span>);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭文件描述符</span></span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不足值（short-count）"><a href="#不足值（short-count）" class="headerlink" title="不足值（short count）"></a>不足值（short count）</h2><p>“不足值”是指在读写操作中，实际读取或写入的字节数少于请求的字节数。原因有遇到 EOF、从终端读文本行（如果读终端，read 一次只传输一个文本行）、读写网络套接字。</p>
+<p>比如调用 read(fd, buffer, 100)请求读取 100 字节，但文件只剩 50 字节可用，则返回 50（不足值）。</p>
+<p>我们需要检查返回值，确认实际读写字节数，并根据需要调整逻辑（如循环读取剩余数据）。</p>
+<h2 id="描述符表、文件表、v-node-表"><a href="#描述符表、文件表、v-node-表" class="headerlink" title="描述符表、文件表、v-node 表"></a>描述符表、文件表、v-node 表</h2><p>操作系统在内核中维护了三层数据结构来管理文件：</p>
+<ul>
+<li><strong>描述符表</strong>：每个进程独有，记录该进程打开的所有文件描述符及其对应的文件表项。</li>
+<li><strong>文件表</strong>：所有进程共享，表项包括偏移值、引用计数（即当前指向该表的描述符表项数）、指向 v-node 表中对应项的指针。关闭一个描述符会减少相应的文件表表项的引用计数，减到零会删除。</li>
+<li><strong>v-node 表</strong>（或 inode 表）：与具体文件系统相关，记录文件的元数据（如文件大小、权限、存储位置）。每个文件在 v-node 表中有一个唯一条目。</li>
+</ul>
+<h3 id="调用-open-打开文件的具体过程"><a href="#调用-open-打开文件的具体过程" class="headerlink" title="调用 open 打开文件的具体过程"></a>调用 open 打开文件的具体过程</h3><p>当调用 <code>open</code> 系统调用打开一个文件时，操作系统会执行以下步骤：</p>
+<ol>
+<li><strong>验证和查找文件</strong>：<ul>
+<li>内核检查文件路径、权限等，确定文件是否存在且进程有权访问。</li>
+<li>找到文件对应的 v-node（或 inode），如果文件已在 v-node 表中，则复用，否则创建新条目。</li>
+</ul>
+</li>
+<li><strong>分配文件表项</strong>：<ul>
+<li>内核在文件表（file table）中创建一个新表项，记录文件的偏移量（初始为 0）、访问模式（如只读、读写）、引用计数（初始为 1）以及指向对应 v-node 的指针。</li>
+</ul>
+</li>
+<li><strong>更新描述符表</strong>：<ul>
+<li>内核在调用进程的描述符表（file descriptor table）中分配一个未使用的最小描述符编号（如 3，若 0、1、2 已占用）。</li>
+<li>将该描述符指向新创建的文件表项。</li>
+</ul>
+</li>
+<li><strong>返回文件描述符</strong>：<ul>
+<li><code>open</code> 调用返回分配的文件描述符给进程，供后续操作（如 <code>read</code>、<code>write</code>）使用。</li>
+</ul>
+</li>
+</ol>
+<h3 id="open-两次："><a href="#open-两次：" class="headerlink" title="open 两次："></a><strong>open 两次：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png"></p>
+<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png"></p>
+<h1 id="基于缓冲区的读写"><a href="#基于缓冲区的读写" class="headerlink" title="基于缓冲区的读写"></a>基于缓冲区的读写</h1><p>基于缓冲区的读写将数据先写入内存缓冲区，等缓冲区满或显式刷新（如 fflush）时再一次性与底层设备做数据交换，降低了 I&#x2F;O 开销。</p>
+<p>在使用读写时，我们应尽可能使用 stdio 标准库。stdio（标准输入输出库）提供了基于缓冲区的 I&#x2F;O 操作（如 fopen、fread、fwrite、printf 等），相比直接使用低级系统调用（如 read、write），它的<strong>效率更高</strong>而且更不易出错。</p>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Ludum Dare参加指南
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Shlab/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Shlab调试记录和一键测试脚本</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+     
+<section id="comments">
+<div class="giscus"></div>
+<script
+  src="https://giscus.app/client.js"
+  data-repo="rinevard/rinevard.github.io"
+  data-repo-id="R_kgDOLkoe9A"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOLkoe9M4CjJnR"
+  data-mapping="pathname"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+
+</section>
+ 
+
+
+
+
+<!-- baidu url auto push script -->
+<script type="text/javascript">
+    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
+</script>     
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025 
+            <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/zthxxx/hexo-theme-Wikitten">wikitten</a>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>
