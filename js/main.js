@@ -1,5 +1,5 @@
 (function($){
-    var toTop = ($('#sidebar').height() - $(window).height()) + 60;
+    // 初始化变量
     // Caption
     $('.article-entry').each(function(i) {
         $(this).find('img').each(function() {
@@ -41,23 +41,7 @@
         e.stopPropagation();
     });
 
-    // To Top
-    if ($('#sidebar').length) {
-        $(document).on('scroll', function () {
-            if ($(document).width() >= 800) {
-                if(($(this).scrollTop() > toTop) && ($(this).scrollTop() > 0)) {
-                    $('#toTop').fadeIn();
-                    $('#toTop').css('left', $('#sidebar').offset().left);
-                } else {
-                    $('#toTop').fadeOut();
-                }
-            } else {
-                $('#toTop').fadeOut();
-            }
-        }).on('click', '#toTop', function () {
-            $('body, html').animate({ scrollTop: 0 }, 600);
-        });
-    }
+    // 回到顶部按钮逻辑已移至layout.ejs中
     
     // Task lists in markdown
     $('.article-entry ul > li').each(function() {
