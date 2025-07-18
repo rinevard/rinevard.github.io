@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang=zh>
-<head>
-    <meta charset="utf-8">
-    
-    <title>Bomblab感想 | Rinevard</title>
-    
-    
-        <meta name="keywords" content="Bomblab感想" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 o">
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Bomblab感想 | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Bomblab感想" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 o">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bomblab感想">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/index.html">
@@ -20,56 +25,105 @@
 <meta property="article:modified_time" content="2025-03-05T10:57:21.211Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-    
+                            
 
-    
+                                
 
-    
-        <link rel="icon" href="/css/images/logo-apple.png" />
-    
+                                        
+                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            
 
-    
+                                                
 <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
 
-    
+                                                    
 <link rel="stylesheet" href="/libs/open-sans/styles.css">
 
-    
+                                                        
 <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
 
 
-    
+                                                            
 <link rel="stylesheet" href="/css/style.css">
 
-    
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
 <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
 
-    
-<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
 
-    
-    
-        
-<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
 
+                                                                                    
     
-    
-        
-<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
 
-    
-    
-    
-    
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
 
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
 
-    
-<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
 </head>
 
-<body>
-    <div id="container">
-        <header id="header">
+    <body>
+        <div id="container">
+            <header id="header">
     <div id="header-main" class="header-inner">
         <div class="outer">
             <a href="/" id="logo">
@@ -149,223 +203,24 @@
     </div>
 </header>
 
-        <div class="outer">
-            
-            
-                <aside id="sidebar">
-    <div class="sidebar-content">
-        
-            
-    <div class="widget-wrap" id='categories'>
-        <h3 class="widget-title">
-            <span>文章</span>
-        </h3>
-        
-        
-        
-         <ul class="unstyled" id="tree" > 
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            gamejam
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/"><i class="fa fa-file-text-o"></i> Ludum Dare参加指南</a></li>  </ul> 
-                    </li> 
+                <div class="outer">
                     
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            关于本站
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/"><i class="fa fa-file-text-o"></i> 建站过程</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory open">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder-open"></i>
-                            学习
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory open">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder-open"></i>
-                            公开课
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory open">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder-open"></i>
-                            CMU-15-213
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory open">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder-open"></i>
-                            Labs
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/"><i class="fa fa-file-text-o"></i> Datalab解析</a></li>  <li class="file active"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/"><i class="fa fa-file-text-o"></i> Bomblab感想</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/"><i class="fa fa-file-text-o"></i> Attackblab记录</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/"><i class="fa fa-file-text-o"></i> Cachelab理论分析</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Shlab/"><i class="fa fa-file-text-o"></i> Shlab调试记录和一键测试脚本</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Labs/Malloclab/"><i class="fa fa-file-text-o"></i> Malloclab和我不得不说的那些事</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            Notes
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/"><i class="fa fa-file-text-o"></i> 第二章——计算机内的信息表示</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/"><i class="fa fa-file-text-o"></i> 第三章——程序的机器级别表示</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/"><i class="fa fa-file-text-o"></i> 第五章——性能优化</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter6-memory-and-cache/"><i class="fa fa-file-text-o"></i> 第六章——存储器层次结构</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/"><i class="fa fa-file-text-o"></i> 第八章——异常控制流</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/"><i class="fa fa-file-text-o"></i> 第十章——系统级I/O</a></li>  <li class="file"><a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/"><i class="fa fa-file-text-o"></i> 第九章——虚拟内存</a></li>  </ul> 
-                    </li> 
-                     </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            MIT-6.S081
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            Labs
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/"><i class="fa fa-file-text-o"></i> Lab1 Xv6 and Unix utilities</a></li>  <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/"><i class="fa fa-file-text-o"></i> Lab2 System calls</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            Notes
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/"><i class="fa fa-file-text-o"></i> 看我看我</a></li>  <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/"><i class="fa fa-file-text-o"></i> 第一章——系统接口</a></li>  <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/Notes/note2-organization-overview/"><i class="fa fa-file-text-o"></i> 第二章——操作系统概述</a></li>  </ul> 
-                    </li> 
-                     <li class="file"><a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/"><i class="fa fa-file-text-o"></i> 在开始之前</a></li>  </ul> 
-                    </li> 
-                     </ul> 
-                    </li> 
-                     <li class="file"><a href="/wiki/learning/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/"><i class="fa fa-file-text-o"></i> 这里有什么？</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            杂谈
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            二次元
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/"><i class="fa fa-file-text-o"></i> 母鸡卡的各种神奇假药</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            碎碎念
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/"><i class="fa fa-file-text-o"></i> 写完了datalab，突然感觉好孤单</a></li>  <li class="file"><a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/"><i class="fa fa-file-text-o"></i> 玩乐的人</a></li>  <li class="file"><a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/"><i class="fa fa-file-text-o"></i> 慢慢地冲浪</a></li>  <li class="file"><a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/"><i class="fa fa-file-text-o"></i> 我也想做出优秀的作品，可是好难</a></li>  </ul> 
-                    </li> 
-                     </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            游戏设计
-                        </a>
-                         <ul class="unstyled" id="tree" > 
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            体验
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/"><i class="fa fa-file-text-o"></i> 对探索类游戏的思考</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            技巧
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/"><i class="fa fa-file-text-o"></i> 技巧的分类，冰山之下的深度</a></li>  </ul> 
-                    </li> 
-                    
-                    <li class="directory">
-                        <a href="#" data-role="directory">
-                            <i class="fa fa-folder"></i>
-                            经典作品
-                        </a>
-                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/"><i class="fa fa-file-text-o"></i> 杀戮尖塔的框架如此自洽，我们能离开它吗？</a></li>  </ul> 
-                    </li> 
-                     </ul> 
-                    </li> 
-                     <li class="file"><a href="/wiki/%E6%AC%A2%E8%BF%8E%EF%BC%81/"><i class="fa fa-file-text-o"></i> 欢迎！</a></li>  </ul> 
-    </div>
-    <script>
-        $(document).ready(function() {
-            var iconFolderOpenClass  = 'fa-folder-open';
-            var iconFolderCloseClass = 'fa-folder';
-            // Handle directory-tree expansion:
-            // 左键单独展开目录
-            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
-                event.preventDefault();
-
-                var icon = $(this).children('.fa');
-                var expanded = icon.hasClass(iconFolderOpenClass);
-                var subtree = $(this).siblings('ul');
-                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
-                if (expanded) {
-                    if (typeof subtree != 'undefined') {
-                        subtree.slideUp({ duration: 100 });
-                    }
-                    icon.addClass(iconFolderCloseClass);
-                } else {
-                    if (typeof subtree != 'undefined') {
-                        subtree.slideDown({ duration: 100 });
-                    }
-                    icon.addClass(iconFolderOpenClass);
-                }
-            });
-            // 右键展开下属所有目录
-            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
-                event.preventDefault();
-                
-                var icon = $(this).children('.fa');
-                var expanded = icon.hasClass(iconFolderOpenClass);
-                var listNode = $(this).siblings('ul');
-                var subtrees = $.merge(listNode.find('li ul'), listNode);
-                var icons = $.merge(listNode.find('.fa'), icon);
-                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
-                if(expanded) {
-                    subtrees.slideUp({ duration: 100 });
-                    icons.addClass(iconFolderCloseClass);
-                } else {
-                    subtrees.slideDown({ duration: 100 });
-                    icons.addClass(iconFolderOpenClass);
-                }
-            })
-        });
-    </script>
-
-        
-    </div>
-</aside>
-            
-            <section id="main"><article id="post-learning/open-course/CMU-15-213/Labs/Bomblab" class="article article-type-post" itemscope itemprop="blogPost">
+                                <section id="main"><article id="post-learning/open-course/CMU-15-213/Labs/Bomblab" class="article article-type-post" itemscope
+    itemprop="blogPost">
     <div class="article-inner">
         
-        
-            <header class="article-header">
-                
-                    <div class="article-meta">
-                        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
     <div class="article-category">
     	<i class="fa fa-folder"></i>
         <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/">CMU-15-213</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/">Labs</a>
     </div>
 
-                        
-                        
+                                        
+                                            
     <div class="article-date">
         <i class="fa fa-calendar"></i>
         <a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">
@@ -374,37 +229,45 @@
     </div>
 
 
-                        
-                        
-                    </div>
-                
-                
+                                                
+                                                        
+                                </div>
+                                
+                                    
     
         <h1 class="article-title" itemprop="name">
             Bomblab感想
         </h1>
     
 
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-        
-            
-                <div id="toc" class="toc-article">
-                <strong class="toc-title">文章目录</strong>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%86%E5%BC%B9%E8%AE%B0%E5%BD%95"><span class="toc-number">2.</span> <span class="toc-text">拆弹记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.1.</span> <span class="toc-text">第一个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.2.</span> <span class="toc-text">第二个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.3.</span> <span class="toc-text">第三个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.4.</span> <span class="toc-text">第四个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.5.</span> <span class="toc-text">第五个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.6.</span> <span class="toc-text">第六个炸弹</span></a></li></ol></li></ol>
-                </div>
-            
-        
-        
-            <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。</p>
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%86%E5%BC%B9%E8%AE%B0%E5%BD%95"><span class="toc-number">2.</span> <span class="toc-text">拆弹记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.1.</span> <span class="toc-text">第一个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.2.</span> <span class="toc-text">第二个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.3.</span> <span class="toc-text">第三个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.4.</span> <span class="toc-text">第四个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.5.</span> <span class="toc-text">第五个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.6.</span> <span class="toc-text">第六个炸弹</span></a></li></ol></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。</p>
 <h1 id="拆弹记录"><a href="#拆弹记录" class="headerlink" title="拆弹记录"></a>拆弹记录</h1><p>首先肯定要对 bomb 进行反汇编，我是用 objdump 来反汇编，并把结果保存到了 txt 文件中。拿到汇编以后随便翻翻找到 phase 们，之后就进入拆弹阶段了。</p>
 <h2 id="第一个炸弹"><a href="#第一个炸弹" class="headerlink" title="第一个炸弹"></a>第一个炸弹</h2><p>phase_1 简单易懂，只是判断输入是否与某个字符串相等。我一开始以为字符串就是“0x402400”，后面才想到这是那个字符串的地址。用 gdb 设置断点即可得知字符串。<br>（别看我说得那么轻松，也是折腾了两小时多，毕竟完全没有 gdb 经验 🫠）</p>
 <h2 id="第二个炸弹"><a href="#第二个炸弹" class="headerlink" title="第二个炸弹"></a>第二个炸弹</h2><p>这也是一个不难的炸弹，把汇编代码往下读就能解决，喜欢的话可以加点注释帮助自己理解。<br>不过我仍然做了两个小时，主要在疑惑 read_six_numbers 后数字被读到了哪里。还有个有趣的犯蠢的地方，我一开始把 400f35 处的 0x18 当成了十进制 18，疑惑了很久 4n 怎么可能等于 18，后面猛然惊醒发现那是十六进制。🤣</p>
 <p>在这里我用到了这些新指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">si  # 单步执行</span><br><span class="line">x/10xw $sp          # 查看栈指针(sp)处的10个字(word)，以十六进制(x)显示</span><br><span class="line">x/10i $pc      # 查看当前位置之后的10条指令</span><br><span class="line">i registers eax     # 查看寄存器值</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">si  # 单步执行
+x&#x2F;10xw $sp          # 查看栈指针(sp)处的10个字(word)，以十六进制(x)显示
+x&#x2F;10i $pc      # 查看当前位置之后的10条指令
+i registers eax     # 查看寄存器值
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="第三个炸弹"><a href="#第三个炸弹" class="headerlink" title="第三个炸弹"></a>第三个炸弹</h2><p>用时 50 分钟（有进步！），这次有了更系统的拆弹方法——先把代码分段，然后分析代码提出若干个猜测和问题，随着解答问题就逐渐做掉了。🫠<br>我们可以轻松注意到输入的数字不能少于一个，再往下读就会 400f75 这一行，算一算就会很自然地猜测：输入要求我们选一个选项，跳过去然后 cmp。</p>
 <p>这里是我拆弹时提出的问题以及解答：</p>
@@ -415,16 +278,18 @@
 <li>从选项跳到了 400fbe 后，0xc(%rsp)是定值还是会根据输入变化？<br>0xc(%rsp)是输入的第二个值。由于 8 对齐，我们需要用 0xc(%rsp)而非 0x10(%rsp)来得到第二个值。</li>
 </ol>
 <h2 id="第四个炸弹"><a href="#第四个炸弹" class="headerlink" title="第四个炸弹"></a>第四个炸弹</h2><p>用时半小时，我连 func4 都不想读，直接用 gdb 来执行 func4，找到返回 0 的输入就行了。这种解法感觉有逃课的嫌疑，不过你就说快不快吧！<br>在这里我用到了这个新指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) call (int)func4(11, 0, 14)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">(gdb) call (int)func4(11, 0, 14)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <h2 id="第五个炸弹"><a href="#第五个炸弹" class="headerlink" title="第五个炸弹"></a>第五个炸弹</h2><p>用时 1.5h，做到这里，我比起刚开始时已经对汇编代码熟悉不少了。首先把代码分成若干个小部分，然后猜测并验证每个部分的功能就能解决这个炸弹。比较有趣的地方是这里加入了一个金丝雀，我还疑惑了一阵子这是什么，后来才想到这是书上讲的金丝雀。</p>
 <h2 id="第六个炸弹"><a href="#第六个炸弹" class="headerlink" title="第六个炸弹"></a>第六个炸弹</h2><p>用时 4h，对这个炸弹，我感觉“根据运行时的状况猜代码的作用”比“分析代码”更加重要。一开始同样是把代码分成多个小局部，然后分段猜作用。这里引入了链表，还挺有趣。</p>
 <p>彩蛋？什么彩弹？</p>
 
-            </div>
-        
-        <footer class="article-footer">
-        </footer>
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
     </div>
 </article>
 
@@ -450,90 +315,564 @@
 </nav>
 
 
+        
 
-
-
-     
+            
+                 
 <section id="comments">
-<div class="giscus"></div>
-<script
-  src="https://giscus.app/client.js"
-  data-repo="rinevard/rinevard.github.io"
-  data-repo-id="R_kgDOLkoe9A"
-  data-category="Announcements"
-  data-category-id="DIC_kwDOLkoe9M4CjJnR"
-  data-mapping="pathname"
-  data-reactions-enabled="1"
-  data-emit-metadata="0"
-  data-input-position="top"
-  data-theme="preferred_color_scheme"
-  data-lang="zh-CN"
-  data-loading="lazy"
-  crossorigin="anonymous"
-  async
-></script>
-
-</section>
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
  
 
+                    
 
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
 
+        <div class="widget categories-widget">
+            
 
-<!-- baidu url auto push script -->
-<script type="text/javascript">
-    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
-</script>     
-</section>
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        关于本站
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/about-blog/%E5%BB%BA%E7%AB%99%E8%BF%87%E7%A8%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            建站过程
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        学习
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        CMU-15-213
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Datalab解析
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Bomblab感想
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Attackblab记录
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Cachelab理论分析
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Shlab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Shlab调试记录和一键测试脚本
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Malloclab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Malloclab和我不得不说的那些事
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第二章——计算机内的信息表示
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第三章——程序的机器级别表示
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第五章——性能优化
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter6-memory-and-cache/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第六章——存储器层次结构
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第八章——异常控制流
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第十章——系统级I/O
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab2 System calls
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            看我看我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note2-organization-overview/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第二章——操作系统概述
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        体验
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        技巧
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        经典作品
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
         </div>
-        <footer id="footer">
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            Rinevard &copy; 2025 
-            <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
-            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a href="#">Apple-Style Wikitten</a>
-            
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
         </div>
     </div>
 </footer>
-
-        
-
+                    
     
-        
-<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-share.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-video.min.js"></script>
-
-    
-    
-        
-<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
-
-    
-    
-        <script type="text/x-mathjax-config">
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
         tex2jax: {
             inlineMath: [ ["$","$"], ["\\(","\\)"] ],
@@ -553,48 +892,53 @@
     });
 </script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
+                                                                                                                                
+                                                                                                                                    
 
-
-
-<!-- Custom Scripts -->
-
+        <!-- Custom Scripts -->
+        
 <script src="/js/main.js"></script>
 
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
 
-        
+                    
+                        
 <script src="/js/sidebar.js"></script>
 
-    </div>
-    
-    <!-- 固定在左下角的侧边栏切换按钮 -->
-    <div id="sidebar-toggle-btn">
-        <i class="fa fa-angle-double-right"></i>
-    </div>
-    
-    <!-- 回到顶部按钮 -->
-    <div id="toTop" title="回到顶部">
-        <i class="fa fa-arrow-up"></i>
-    </div>
-    
-    <script>
-        $(document).ready(function() {
-            // 回到顶部按钮功能
-            $(window).scroll(function() {
-                if ($(this).scrollTop() > 200) {
-                    $('#toTop').fadeIn();
-                } else {
-                    $('#toTop').fadeOut();
-                }
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
             });
-            
-            $('#toTop').click(function() {
-                $('html, body').animate({
-                    scrollTop: 0
-                }, 400);
-                return false;
-            });
-        });
-    </script>
-</body>
-</html>
+        </script>
+    </body>
+
+    </html>
