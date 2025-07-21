@@ -25,7 +25,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64bad.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64normal.png">
 <meta property="article:published_time" content="2025-03-26T10:37:28.000Z">
-<meta property="article:modified_time" content="2025-07-18T12:36:09.327Z">
+<meta property="article:modified_time" content="2025-07-20T10:07:29.896Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Labs/Cachelab/result.png">
@@ -311,7 +311,7 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
 <p>我参考的文章是这篇： <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/387662272">CSAPP - Cache Lab 的更(最)优秀的解法 - 知乎</a>，作者直接拿到了 64x64 的理论最优解，非常强大。不过我没有在对角线上做微调，而是只参考了作者对一般块的读写顺序。</p>
 <p>我的三个转置都没有特别考虑对角线的情况。一方面是因为嫌麻烦，另一方面是因为我觉得这种“两个内存块位置恰好差 2 的幂次导致缓存抖动”的事情太特殊，所以没额外处理。</p>
 <h2 id="分块大小的确定"><a href="#分块大小的确定" class="headerlink" title="分块大小的确定"></a>分块大小的确定</h2><p>首先，分块优化是一定要做的。但分成多大的块呢？最朴素的想法是，我们希望块尽可能大来装满 cache，但不要太大以至于 cache 装不下。</p>
-<p>我们有 $2^5 &#x3D; 32$ 个 sets，每个 set 一个 line，每个 line 存 8 个 int，也就是说，我们最多能存 $32*8 &#x3D; 256 &#x3D; 2^8$ 个 int. 我们希望同时把 A 的块和 B 的块放到 cache 中，两个块大小应当相同，所以每个块可以放 $256&#x2F;2 &#x3D; 128$ 个 int. 128 不是完全平方数，所以我们可以分块成 8x8.</p>
+<p>我们有 $2^5 &#x3D; 32$ 个 sets，每个 set 一个 line，每个 line 存 8 个 int，也就是说，我们最多能存 $32 \times 8 &#x3D; 256 &#x3D; 2^8$ 个 int. 我们希望同时把 A 的块和 B 的块放到 cache 中，两个块大小应当相同，所以每个块可以放 $256&#x2F;2 &#x3D; 128$ 个 int. 128 不是完全平方数，所以我们可以分块成 8x8.</p>
 <h2 id="初版代码"><a href="#初版代码" class="headerlink" title="初版代码"></a>初版代码</h2><p>回到之前的 8x8 分块的讨论上来。总之，我写出了我的初版代码。思路就是分块，然后把 A 的块存到 tmp 数组里，然后复制到 B 里。为什么要用 tmp 做中转呢？答案是为了避免缓存冲突：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">transpose_submit</span><span class="token punctuation">(</span><span class="token keyword">int</span> M<span class="token punctuation">,</span> <span class="token keyword">int</span> N<span class="token punctuation">,</span> <span class="token keyword">int</span> A<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">int</span> B<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
@@ -346,7 +346,7 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
 <p>也还算不错吧，毕竟 32x32 和 61x67 都满分了。唯一的问题是 64x64 的性能奇差无比。</p>
 <h2 id="分析-64x64-矩阵的-miss-次数"><a href="#分析-64x64-矩阵的-miss-次数" class="headerlink" title="分析 64x64 矩阵的 miss 次数"></a>分析 64x64 矩阵的 miss 次数</h2><p>这时候就要理论分析了。对 64x64 的矩阵，按我们之前的做法，每个 8x8 的块大约发生了多少次 miss 呢？</p>
 <p>答案是 72 次。A 提供了 8 次 miss，B 提供了 64 次 miss</p>
-<p>验证一下结果对不对：64x64 的矩阵共有 64 个 8x8 的块，64 个块每个块 72 次 miss，总计约 $64*72&#x3D;4608$ 次 miss，和结果 4611 次 miss 相差无几。</p>
+<p>验证一下结果对不对：64x64 的矩阵共有 64 个 8x8 的块，64 个块每个块 72 次 miss，总计约 $64 \times 72&#x3D;4608$ 次 miss，和结果 4611 次 miss 相差无几。</p>
 <p>这个 miss 是怎么算出来的呢？让我们看看下图：</p>
 <p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64bad.png"></p>
 <p>对 64x64 的矩阵来说，B[x][y] 和 B[x+4][y] 的 setIdx 相同，这就导致我们之前的方法不断驱逐旧 line. 定量地说，每读 A 的块的一行，大约是 1 个 miss，A 的块共有 8 行，所以 A 的每个块提供 8 次 miss；每对 B 的块写入一个值，都驱逐了一次旧 line（因为 B[x+4][y] 会驱逐 B[x][y]），所以 B 的每个块提供 64 次 miss.</p>
