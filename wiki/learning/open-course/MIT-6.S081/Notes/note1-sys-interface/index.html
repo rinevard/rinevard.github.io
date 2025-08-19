@@ -14,20 +14,20 @@
                     <meta name="keywords" content="第一章——系统接口" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="img{     width: 70%; }   常用的系统接口   系统调用 描述    fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n)">
+                        <meta name="description" content="img{     width: 70%; }   常用的系统接口    系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第一章——系统接口">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="img{     width: 70%; }   常用的系统接口   系统调用 描述    fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n)">
+<meta property="og:description" content="img{     width: 70%; }   常用的系统接口    系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png">
 <meta property="article:published_time" content="2025-06-01T03:18:38.000Z">
 <meta property="article:modified_time" content="2025-07-18T12:37:21.058Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png">
+<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png">
                             
 
                                 
@@ -267,14 +267,16 @@ img{
 }
 </style>
 
-<h1 id="常用的系统接口"><a href="#常用的系统接口" class="headerlink" title="常用的系统接口"></a>常用的系统接口</h1><table>
+<h1 id="常用的系统接口"><a href="#常用的系统接口" class="headerlink" title="常用的系统接口"></a>常用的系统接口</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
 <th><strong>描述</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>fork()</td>
 <td>创建进程</td>
 </tr>
@@ -308,7 +310,7 @@ img{
 </tr>
 <tr>
 <td>open(filename, flags)</td>
-<td>打开文件，flags 指定读&#x2F;写模式</td>
+<td>打开文件，flags 指定读/写模式</td>
 </tr>
 <tr>
 <td>read(fd, buf, n)</td>
@@ -354,15 +356,19 @@ img{
 <td>unlink(filename)</td>
 <td>删除文件</td>
 </tr>
-</tbody></table>
-<h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><table>
+</tbody>
+</table>
+</div>
+<h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
 <th><strong>描述</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>fork()</td>
 <td>创建进程</td>
 </tr>
@@ -390,17 +396,21 @@ img{
 <td>sbrk(n)</td>
 <td>为进程内存空间增加 n 字节</td>
 </tr>
-</tbody></table>
-<h1 id="I-O"><a href="#I-O" class="headerlink" title="I&#x2F;O"></a>I&#x2F;O</h1><table>
+</tbody>
+</table>
+</div>
+<h1 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
 <th><strong>描述</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>open(filename, flags)</td>
-<td>打开文件，flags 指定读&#x2F;写模式</td>
+<td>打开文件，flags 指定读/写模式</td>
 </tr>
 <tr>
 <td>read(fd, buf, n)</td>
@@ -418,7 +428,9 @@ img{
 <td>dup(fd)</td>
 <td>复制 fd</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>代码示例：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">512</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
@@ -456,22 +468,25 @@ img{
     <span class="token punctuation">&#125;</span>
     <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>不妨再来看看CSAPP的两张图</p>
-<h3 id="open两次："><a href="#open两次：" class="headerlink" title="open两次："></a><strong>open两次：</strong></h3><p><img src="/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png"></p>
-<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="/images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png"></p>
-<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><table>
+<h3 id="open两次："><a href="#open两次：" class="headerlink" title="open两次："></a><strong>open两次：</strong></h3><p><img src="images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png" alt=""></p>
+<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png" alt=""></p>
+<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
 <th><strong>描述</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>pipe( p)</td>
 <td>创建管道， 并把读和写的 fd 返回到p，其中p是 int p[2]</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <ul>
 <li>p[0]: 读端(read end)的文件描述符</li>
 <li>p[1]: 写端(write end)的文件描述符</li>
@@ -503,15 +518,16 @@ img{
     <span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">break</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><table>
+<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
 <th><strong>描述</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>chdir(dirname)</td>
 <td>改变当前目录</td>
 </tr>
@@ -535,8 +551,10 @@ img{
 <td>unlink(filename)</td>
 <td>删除文件</td>
 </tr>
-</tbody></table>
-<p>我们通常认为文件名就是文件本身，但实际上名称是一个硬链接(hard link)。一个文件可以有多个硬链接——例如，一个目录至少有两个硬链接：目录名和 <code>.</code> （在目录内时）。它还有来自每个子目录的一个硬链接（每个子目录中的 <code>..</code> 文件）。</p>
+</tbody>
+</table>
+</div>
+<p>我们通常认为文件名就是文件本身，但实际上名称是一个硬链接(hard link)。一个文件可以有多个硬链接——例如，一个目录至少有两个硬链接：目录名和 <code>.</code> （在目录内时）。它还有来自每个子目录的一个硬链接（每个子目录中的 <code>..</code> 文件）。</p>
 <p>那文件是什么呢？一个文件和一个 inode 一一对应，inode存放着这个文件的相关信息</p>
 <p>xv6系统的inode结构包括下面这些内容：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">dinode</span> <span class="token punctuation">&#123;</span>
@@ -547,7 +565,6 @@ img{
     uint size<span class="token punctuation">;</span>               <span class="token comment">// Size of file (bytes)</span>
     uint addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// Data block addresses</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>可以通过 <code>fstat</code> 获取文件描述符指向的文件的信息。dinode是磁盘上存储的详细信息，stat是暴露给用户的文件信息接口</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">stat</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">int</span> dev<span class="token punctuation">;</span>     <span class="token comment">// File system's disk device</span>
@@ -556,7 +573,6 @@ img{
     <span class="token keyword">short</span> nlink<span class="token punctuation">;</span> <span class="token comment">// Number of links to file</span>
     uint64 size<span class="token punctuation">;</span> <span class="token comment">// Size of file in bytes</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>仅当我们把所有指向某个inode的链接都删除，这个inode才会被删除。</p>
 <p>在下面的示例中，我们用 <code>ln</code> 创建了两个连接 file2 和 file3，它们都和 file1 指向的 inode 相同。可以看到，如果用 <code>echo</code> 修改 file2，那么 file1 也会被修改，因为我们修改的实际上是 inode，而它们指向同一个inode。<code>ls -l</code> 列出目录中的文件和目录的详细信息，第二个值是inode的link数。我们可以把链接视作文件的“别名”。</p>
 <pre class="line-numbers language-none"><code class="language-none">$ echo &quot;What&#39;s in a name? That which we call a rose, by any other word would smell as sweet.&quot; &gt; file1.txt
@@ -584,7 +600,6 @@ $ echo &quot;-- William Shakespeare&quot; &gt;&gt; file2.txt
 $ cat file1.txt
 What&#39;s in a name? That which we call a rose, by any other word would smell as sweet.
 -- William Shakespeare<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>你可能会好奇目录的链接数怎么计算，是这样的：</p>
 <ol>
 <li>每个目录默认有2个链接，一个是目录自身的”.”，另一个是父目录中指向该目录的链接</li>
@@ -598,15 +613,13 @@ dir1  dir2  file1.md  file2.md  file3.md
 total <span class="token number">8</span>
 drwxr-xr-x <span class="token number">11</span> rinevard rinevard <span class="token number">4096</span> May <span class="token number">31</span> <span class="token number">16</span>:40 mit-6.828
 drwxr-xr-x  <span class="token number">4</span> rinevard rinevard <span class="token number">4096</span> Jun  <span class="token number">1</span> <span class="token number">10</span>:58 rootdir<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>文件路径格式：以 “&#x2F;” 开头的是从根目录出发的路径，否则是从当前文件夹出发的路径</p>
+<p>文件路径格式：以 “/” 开头的是从根目录出发的路径，否则是从当前文件夹出发的路径</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/open-course$ <span class="token function">ls</span>
 mit-6.828
 ~/open-course$ <span class="token function">ls</span> mit-6.828/
 LICENSE  Makefile  README  conf  grade-lab-util  gradelib.py  kernel  <span class="token function">mkfs</span>  user
 ~/open-course$ <span class="token function">ls</span> /home/rinevard/
 open-course  programs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>unix shell的许多命令都是用户级别的，而非内置的。shell通过fork子进程并调用exec来执行它们。但cd是内置的，因为cd改变了shell自身的工作目录。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// Read and run input commands.</span>
 <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">getcmd</span><span class="token punctuation">(</span>buf<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -742,6 +755,46 @@ open-course  programs<span aria-hidden="true" class="line-numbers-rows"><span></
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -870,6 +923,39 @@ open-course  programs<span aria-hidden="true" class="line-numbers-rows"><span></
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     

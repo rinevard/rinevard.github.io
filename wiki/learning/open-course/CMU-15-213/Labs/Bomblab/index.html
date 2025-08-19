@@ -14,12 +14,12 @@
                     <meta name="keywords" content="Bomblab感想" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 o">
+                        <meta name="description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 objdum">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bomblab感想">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 o">
+<meta property="og:description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 objdum">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-02T06:28:38.000Z">
 <meta property="article:modified_time" content="2025-03-05T10:57:21.211Z">
@@ -258,7 +258,7 @@
                                                                                                                         <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%86%E5%BC%B9%E8%AE%B0%E5%BD%95"><span class="toc-number">2.</span> <span class="toc-text">拆弹记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.1.</span> <span class="toc-text">第一个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.2.</span> <span class="toc-text">第二个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.3.</span> <span class="toc-text">第三个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.4.</span> <span class="toc-text">第四个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.5.</span> <span class="toc-text">第五个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.6.</span> <span class="toc-text">第六个炸弹</span></a></li></ol></li></ol>
                                                                                                                     </div>
                                                                                                                     
-                                                                                                                        <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。</p>
+                                                                                                                        <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 = 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。</p>
 <h1 id="拆弹记录"><a href="#拆弹记录" class="headerlink" title="拆弹记录"></a>拆弹记录</h1><p>首先肯定要对 bomb 进行反汇编，我是用 objdump 来反汇编，并把结果保存到了 txt 文件中。拿到汇编以后随便翻翻找到 phase 们，之后就进入拆弹阶段了。</p>
 <h2 id="第一个炸弹"><a href="#第一个炸弹" class="headerlink" title="第一个炸弹"></a>第一个炸弹</h2><p>phase_1 简单易懂，只是判断输入是否与某个字符串相等。我一开始以为字符串就是“0x402400”，后面才想到这是那个字符串的地址。用 gdb 设置断点即可得知字符串。<br>（别看我说得那么轻松，也是折腾了两小时多，毕竟完全没有 gdb 经验 🫠）</p>
 <h2 id="第二个炸弹"><a href="#第二个炸弹" class="headerlink" title="第二个炸弹"></a>第二个炸弹</h2><p>这也是一个不难的炸弹，把汇编代码往下读就能解决，喜欢的话可以加点注释帮助自己理解。<br>不过我仍然做了两个小时，主要在疑惑 read_six_numbers 后数字被读到了哪里。还有个有趣的犯蠢的地方，我一开始把 400f35 处的 0x18 当成了十进制 18，疑惑了很久 4n 怎么可能等于 18，后面猛然惊醒发现那是十六进制。🤣</p>
@@ -268,7 +268,6 @@ x&#x2F;10xw $sp          # 查看栈指针(sp)处的10个字(word)，以十六�
 x&#x2F;10i $pc      # 查看当前位置之后的10条指令
 i registers eax     # 查看寄存器值
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="第三个炸弹"><a href="#第三个炸弹" class="headerlink" title="第三个炸弹"></a>第三个炸弹</h2><p>用时 50 分钟（有进步！），这次有了更系统的拆弹方法——先把代码分段，然后分析代码提出若干个猜测和问题，随着解答问题就逐渐做掉了。🫠<br>我们可以轻松注意到输入的数字不能少于一个，再往下读就会 400f75 这一行，算一算就会很自然地猜测：输入要求我们选一个选项，跳过去然后 cmp。</p>
 <p>这里是我拆弹时提出的问题以及解答：</p>
 <ol>
@@ -280,7 +279,6 @@ i registers eax     # 查看寄存器值
 <h2 id="第四个炸弹"><a href="#第四个炸弹" class="headerlink" title="第四个炸弹"></a>第四个炸弹</h2><p>用时半小时，我连 func4 都不想读，直接用 gdb 来执行 func4，找到返回 0 的输入就行了。这种解法感觉有逃课的嫌疑，不过你就说快不快吧！<br>在这里我用到了这个新指令：</p>
 <pre class="line-numbers language-none"><code class="language-none">(gdb) call (int)func4(11, 0, 14)
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <h2 id="第五个炸弹"><a href="#第五个炸弹" class="headerlink" title="第五个炸弹"></a>第五个炸弹</h2><p>用时 1.5h，做到这里，我比起刚开始时已经对汇编代码熟悉不少了。首先把代码分成若干个小部分，然后猜测并验证每个部分的功能就能解决这个炸弹。比较有趣的地方是这里加入了一个金丝雀，我还疑惑了一阵子这是什么，后来才想到这是书上讲的金丝雀。</p>
 <h2 id="第六个炸弹"><a href="#第六个炸弹" class="headerlink" title="第六个炸弹"></a>第六个炸弹</h2><p>用时 4h，对这个炸弹，我感觉“根据运行时的状况猜代码的作用”比“分析代码”更加重要。一开始同样是把代码分成多个小局部，然后分段猜作用。这里引入了链表，还挺有趣。</p>
 <p>彩蛋？什么彩弹？</p>
@@ -406,6 +404,46 @@ i registers eax     # 查看寄存器值
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -534,6 +572,39 @@ i registers eax     # 查看寄存器值
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     

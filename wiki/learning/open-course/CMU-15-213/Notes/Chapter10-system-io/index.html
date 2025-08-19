@@ -14,20 +14,20 @@
                     <meta name="keywords" content="第十章——系统级I/O" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descr">
+                        <meta name="description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descriptor">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第十章——系统级I&#x2F;O">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descr">
+<meta property="og:description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descriptor">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png">
 <meta property="article:published_time" content="2025-04-11T02:00:00.000Z">
 <meta property="article:modified_time" content="2025-07-18T12:36:34.477Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
                             
 
                                 
@@ -267,7 +267,7 @@ img{
 }
 </style>
 
-<h1 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h1><p>所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。</p>
+<h1 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h1><p>所有的 I/O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。</p>
 <p>文件类型分为以下几类</p>
 <ul>
 <li>普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe）</li>
@@ -303,7 +303,6 @@ img{
     <span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="不足值（short-count）"><a href="#不足值（short-count）" class="headerlink" title="不足值（short count）"></a>不足值（short count）</h2><p>“不足值”是指在读写操作中，实际读取或写入的字节数少于请求的字节数。原因有遇到 EOF、从终端读文本行（如果读终端，read 一次只传输一个文本行）、读写网络套接字。</p>
 <p>比如调用 read(fd, buffer, 100)请求读取 100 字节，但文件只剩 50 字节可用，则返回 50（不足值）。</p>
 <p>我们需要检查返回值，确认实际读写字节数，并根据需要调整逻辑（如循环读取剩余数据）。</p>
@@ -334,10 +333,10 @@ img{
 </ul>
 </li>
 </ol>
-<h3 id="open-两次："><a href="#open-两次：" class="headerlink" title="open 两次："></a><strong>open 两次：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png"></p>
-<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png"></p>
-<h1 id="基于缓冲区的读写"><a href="#基于缓冲区的读写" class="headerlink" title="基于缓冲区的读写"></a>基于缓冲区的读写</h1><p>基于缓冲区的读写将数据先写入内存缓冲区，等缓冲区满或显式刷新（如 fflush）时再一次性与底层设备做数据交换，降低了 I&#x2F;O 开销。</p>
-<p>在使用读写时，我们应尽可能使用 stdio 标准库。stdio（标准输入输出库）提供了基于缓冲区的 I&#x2F;O 操作（如 fopen、fread、fwrite、printf 等），相比直接使用低级系统调用（如 read、write），它的<strong>效率更高</strong>而且更不易出错。</p>
+<h3 id="open-两次："><a href="#open-两次：" class="headerlink" title="open 两次："></a><strong>open 两次：</strong></h3><p><img src="images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png" alt=""></p>
+<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png" alt=""></p>
+<h1 id="基于缓冲区的读写"><a href="#基于缓冲区的读写" class="headerlink" title="基于缓冲区的读写"></a>基于缓冲区的读写</h1><p>基于缓冲区的读写将数据先写入内存缓冲区，等缓冲区满或显式刷新（如 fflush）时再一次性与底层设备做数据交换，降低了 I/O 开销。</p>
+<p>在使用读写时，我们应尽可能使用 stdio 标准库。stdio（标准输入输出库）提供了基于缓冲区的 I/O 操作（如 fopen、fread、fwrite、printf 等），相比直接使用低级系统调用（如 read、write），它的<strong>效率更高</strong>而且更不易出错。</p>
 
                                                                                                                             
                                                                                                                                 
@@ -460,6 +459,46 @@ img{
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -588,6 +627,39 @@ img{
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     

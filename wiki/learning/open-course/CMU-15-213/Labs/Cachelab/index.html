@@ -269,7 +269,7 @@ img{
 </style>
 
 <p>先放一个最终结果在这里</p>
-<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/result.png"></p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/result.png" alt=""></p>
 <h1 id="Part-A-模拟-cache"><a href="#Part-A-模拟-cache" class="headerlink" title="Part A 模拟 cache"></a>Part A 模拟 cache</h1><p>用时 3h.</p>
 <p>一开始因为 16 进制踩了坑。我第一个看的 trace 文件是 yi.trace，我把里面的地址当成了十进制，分析了半天总感觉不对，后来惊醒这是十六进制。</p>
 <p>part A 不难，正常模拟一遍就好。由于 handout 里说，“you should assume that memory accesses are aligned properly, such that a single memory access never crosses block boundaries”，所以对每行记录，我们只要考虑其指令类型和地址即可，不必考虑操作大小。我使用了这样的数据结构：</p>
@@ -284,7 +284,6 @@ img{
 <span class="token punctuation">&#125;</span> CacheSet<span class="token punctuation">;</span>
 
 CacheSet <span class="token operator">*</span>sets <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> s<span class="token punctuation">)</span><span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>CacheSet<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>在核心循环里，对某个给定的 set，我们在遍历过程中从前往后填充每个 set 的 line，思路如下：</p>
 <p>对每个地址，用位运算得到其 setIdx 和 tag，然后找到对应的 set，遍历里面的所有 line. 如果找到了空 line，直接填充进去；如果找到了对应的 tag，就 hit 了；如果没找到对应 tag，说明需要驱逐某个 line，找到 lru 最大的 line（即最久没有访问过的 line）并把它换掉即可。</p>
 <p>注意正确更新遍历的 set 里的每个 line 的 lruCount.</p>
@@ -293,7 +292,6 @@ CacheSet <span class="token operator">*</span>sets <span class="token operator">
 mask <span class="token operator">=</span> <span class="token operator">~</span><span class="token punctuation">(</span>mask <span class="token operator">&lt;&lt;</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 000...11 (s 个 1)</span>
 <span class="token keyword">unsigned</span> <span class="token keyword">long</span> setIdx <span class="token operator">=</span> <span class="token punctuation">(</span>address <span class="token operator">>></span> b<span class="token punctuation">)</span> <span class="token operator">&amp;</span> mask<span class="token punctuation">;</span>
 <span class="token keyword">unsigned</span> <span class="token keyword">long</span> tag <span class="token operator">=</span> address <span class="token operator">>></span> <span class="token punctuation">(</span>b <span class="token operator">+</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>还有一个小 trick 是可以用这样的写法来简化代码，毕竟我们并不关心操作在类型上的差异，只关心操作的地址：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">switch</span> <span class="token punctuation">(</span>operation<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">case</span> <span class="token char">'M'</span><span class="token operator">:</span>
@@ -305,13 +303,12 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
     <span class="token keyword">case</span> <span class="token char">'S'</span><span class="token operator">:</span>
         <span class="token comment">// 真正的工作</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h1 id="Part-B"><a href="#Part-B" class="headerlink" title="Part B"></a>Part B</h1><p>用时 7 h，拼尽全力也只能把 64x64 拿到 1411 miss，上网找了找别人的思路，最后得到了 1179 miss. 最后结果如下：</p>
 <p>Points Max pts Misses<br>Trans perf 32x32 8.0 8 287<br>Trans perf 64x64 8.0 8 1179<br>Trans perf 61x67 10.0 10 1997</p>
 <p>我参考的文章是这篇： <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/387662272">CSAPP - Cache Lab 的更(最)优秀的解法 - 知乎</a>，作者直接拿到了 64x64 的理论最优解，非常强大。不过我没有在对角线上做微调，而是只参考了作者对一般块的读写顺序。</p>
 <p>我的三个转置都没有特别考虑对角线的情况。一方面是因为嫌麻烦，另一方面是因为我觉得这种“两个内存块位置恰好差 2 的幂次导致缓存抖动”的事情太特殊，所以没额外处理。</p>
 <h2 id="分块大小的确定"><a href="#分块大小的确定" class="headerlink" title="分块大小的确定"></a>分块大小的确定</h2><p>首先，分块优化是一定要做的。但分成多大的块呢？最朴素的想法是，我们希望块尽可能大来装满 cache，但不要太大以至于 cache 装不下。</p>
-<p>我们有 $2^5 &#x3D; 32$ 个 sets，每个 set 一个 line，每个 line 存 8 个 int，也就是说，我们最多能存 $32 \times 8 &#x3D; 256 &#x3D; 2^8$ 个 int. 我们希望同时把 A 的块和 B 的块放到 cache 中，两个块大小应当相同，所以每个块可以放 $256&#x2F;2 &#x3D; 128$ 个 int. 128 不是完全平方数，所以我们可以分块成 8x8.</p>
+<p>我们有 $2^5 = 32$ 个 sets，每个 set 一个 line，每个 line 存 8 个 int，也就是说，我们最多能存 $32 \times 8 = 256 = 2^8$ 个 int. 我们希望同时把 A 的块和 B 的块放到 cache 中，两个块大小应当相同，所以每个块可以放 $256/2 = 128$ 个 int. 128 不是完全平方数，所以我们可以分块成 8x8.</p>
 <h2 id="初版代码"><a href="#初版代码" class="headerlink" title="初版代码"></a>初版代码</h2><p>回到之前的 8x8 分块的讨论上来。总之，我写出了我的初版代码。思路就是分块，然后把 A 的块存到 tmp 数组里，然后复制到 B 里。为什么要用 tmp 做中转呢？答案是为了避免缓存冲突：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">transpose_submit</span><span class="token punctuation">(</span><span class="token keyword">int</span> M<span class="token punctuation">,</span> <span class="token keyword">int</span> N<span class="token punctuation">,</span> <span class="token keyword">int</span> A<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">int</span> B<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
@@ -338,7 +335,6 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
         <span class="token punctuation">&#125;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>结果很不错：</p>
 <p>Cache Lab summary:<br>Points Max pts Misses<br>Trans perf 32x32 8.0 8 261<br>Trans perf 64x64 8.0 8 1029<br>Trans perf 61x67 10.0 10 1725</p>
 <p>正当我觉得 cachelab 不过如此的时候，忽然发现 handout 里写了不允许开数组（哈哈，你想得到的 cmu 老师想不到吗），于是被迫手动展开了 j 循环，使用 8 个变量来读取每行的值。这就得到了下面的结果：</p>
@@ -346,18 +342,18 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
 <p>也还算不错吧，毕竟 32x32 和 61x67 都满分了。唯一的问题是 64x64 的性能奇差无比。</p>
 <h2 id="分析-64x64-矩阵的-miss-次数"><a href="#分析-64x64-矩阵的-miss-次数" class="headerlink" title="分析 64x64 矩阵的 miss 次数"></a>分析 64x64 矩阵的 miss 次数</h2><p>这时候就要理论分析了。对 64x64 的矩阵，按我们之前的做法，每个 8x8 的块大约发生了多少次 miss 呢？</p>
 <p>答案是 72 次。A 提供了 8 次 miss，B 提供了 64 次 miss</p>
-<p>验证一下结果对不对：64x64 的矩阵共有 64 个 8x8 的块，64 个块每个块 72 次 miss，总计约 $64 \times 72&#x3D;4608$ 次 miss，和结果 4611 次 miss 相差无几。</p>
+<p>验证一下结果对不对：64x64 的矩阵共有 64 个 8x8 的块，64 个块每个块 72 次 miss，总计约 $64 \times 72=4608$ 次 miss，和结果 4611 次 miss 相差无几。</p>
 <p>这个 miss 是怎么算出来的呢？让我们看看下图：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64bad.png"></p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64bad.png" alt=""></p>
 <p>对 64x64 的矩阵来说，B[x][y] 和 B[x+4][y] 的 setIdx 相同，这就导致我们之前的方法不断驱逐旧 line. 定量地说，每读 A 的块的一行，大约是 1 个 miss，A 的块共有 8 行，所以 A 的每个块提供 8 次 miss；每对 B 的块写入一个值，都驱逐了一次旧 line（因为 B[x+4][y] 会驱逐 B[x][y]），所以 B 的每个块提供 64 次 miss.</p>
 <p>之后的工作就是找到方法来避免这种驱逐了。</p>
 <h2 id="对-64x64-矩阵的第一次优化——1699"><a href="#对-64x64-矩阵的第一次优化——1699" class="headerlink" title="对 64x64 矩阵的第一次优化——1699"></a>对 64x64 矩阵的第一次优化——1699</h2><p>一开始我的思路是直接用 4x4 的块，这确实有不小优化，但离满分还很远。读者可以试着做一个理论分析看看 4x4 的结果大概是多少 miss。我分析出来会得到 1536 个 miss，实际结果是 1699 个 miss，也差不多吧。</p>
 <p>好吧，这个理论分析看起来值得详细讲解一下。不过在写之前，希望读者自己分析一下，看看得到的结果是不是 2048，并想想哪里出错了：</p>
 <p>如果块的大小是 4x4，每个块发生 4 次 miss，每个矩阵 256 个块，一共 2048 次 miss，看起来很合理。但这是理论最优解，为什么理论最优（2048）比实际结果（1699）还差呢？难道说数学的大厦崩塌了？</p>
 <p>并非如此。事实上，在我们把某个 4x4 的块放入 cache 时，我们也同时把它的右边的那个 4x4 的块放入了 cache。这是因为 cache 的每个 line 能装 8 个 int.</p>
-<p>也就是说，我们可以认为我们实际上是在处理 4x8 的块。对每个 4x8 的块，A 提供了 4 次 miss，B 提供了 8 次 miss，总计 $64 * 4 + 64 * 8 &#x3D; 1536$ 次 miss.</p>
+<p>也就是说，我们可以认为我们实际上是在处理 4x8 的块。对每个 4x8 的块，A 提供了 4 次 miss，B 提供了 8 次 miss，总计 $64 <em> 4 + 64 </em> 8 = 1536$ 次 miss.</p>
 <h2 id="对-64x64-矩阵的第二次优化——1411"><a href="#对-64x64-矩阵的第二次优化——1411" class="headerlink" title="对 64x64 矩阵的第二次优化——1411"></a>对 64x64 矩阵的第二次优化——1411</h2><p>分析了那么多，还是没拿到满分。我的后续思路是把 8x8 的块再分成四个小块，并按下面的顺序来写入 B：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64normal.png"></p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Cachelab/64x64normal.png" alt=""></p>
 <p>理论分析一下，把 A1 写入 B1 时，A miss 4 次，B miss 4 次；</p>
 <p>把 A2 写入 B2 时，A miss 4 次，B 没有 miss（因为写入 B1 时把 B2 放进了 cache）；</p>
 <p>把 A3 写入 B3 时，A 没有 miss，B miss 4 次；（因为读 A2 时把 A3 放入了 cache）；</p>
@@ -438,8 +434,7 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
         <span class="token punctuation">&#125;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="Future-work"><a href="#Future-work" class="headerlink" title="Future work"></a>Future work</h1><p>写文章的时候突然想到我们似乎可以分长方形的 16x8 的块，因为 $16<em>8</em>2 &#x3D; 256$ 可以完全填满 cache. 简单写了下代码得到了下面的结果：</p>
+<h1 id="Future-work"><a href="#Future-work" class="headerlink" title="Future work"></a>Future work</h1><p>写文章的时候突然想到我们似乎可以分长方形的 16x8 的块，因为 $16<em>8</em>2 = 256$ 可以完全填满 cache. 简单写了下代码得到了下面的结果：</p>
 <p>[16x8]<br>Points Max pts Misses<br>Trans perf 32x32 8.0 8 287<br>Trans perf 61x67 10.0 10 1811<br>看起来效果出乎意料地不错？甚至比我的 8x8 分块效果更好。这里没有放进来 64x64 转置的结果，因为我没有做分小块的优化。所以说，这种方法说不定还有不小探索空间？</p>
 <p>下面是我的 8x8 分块的结果，可以用来和上面的结果做比较。两个代码都只用了简单的分块和 8 个 tmp 变量，没有额外优化。</p>
 <p>[8x8]</p>
@@ -605,6 +600,46 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -733,6 +768,39 @@ mask <span class="token operator">=</span> <span class="token operator">~</span>
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     

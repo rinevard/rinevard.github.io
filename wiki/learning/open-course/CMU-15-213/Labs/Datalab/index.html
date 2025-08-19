@@ -271,6 +271,7 @@ img{
 <p>做完以后，感觉自己已经是位运算领域大神了！</p>
 <h1 id="整数部分"><a href="#整数部分" class="headerlink" title="整数部分"></a>整数部分</h1><p>整数部分的技巧性很强，不建议在某道题上死磕，做不出来就换一道，以后再来。</p>
 <h2 id="bitXor"><a href="#bitXor" class="headerlink" title="bitXor"></a>bitXor</h2><p>本题要求用 ‘~’ 和 ‘&amp;’ 实现 ‘^’，简单列个关于 ‘^’ 的真值表：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -279,7 +280,8 @@ img{
 <th>x^y</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>0</td>
 <td>0</td>
 <td>0</td>
@@ -299,7 +301,9 @@ img{
 <td>1</td>
 <td>0</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>关注 x^y 为 1 时 x 和 y 的取值，可以发现 <code>x^y == ((~x) &amp; y) | (x &amp; (~y))</code>，再用德摩根律把 <code>|</code> 换成 <code>~</code> 和 <code>&amp;</code> 即可。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * bitXor - x^y using only ~ and &amp;
@@ -315,8 +319,7 @@ img{
   */</span>
   <span class="token keyword">return</span> <span class="token operator">~</span><span class="token punctuation">(</span><span class="token operator">~</span><span class="token punctuation">(</span>x <span class="token operator">&amp;</span> <span class="token operator">~</span>y<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token operator">~</span><span class="token punctuation">(</span><span class="token operator">~</span>x <span class="token operator">&amp;</span> y<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="tmin"><a href="#tmin" class="headerlink" title="tmin"></a>tmin</h2><p>这是熟知的结论，tmin &#x3D; $-2^{31}$ &#x3D; 1 &lt;&lt; 31</p>
+<h2 id="tmin"><a href="#tmin" class="headerlink" title="tmin"></a>tmin</h2><p>这是熟知的结论，tmin = $-2^{31}$ = 1 &lt;&lt; 31</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * tmin - return minimum two's complement integer
  *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; >>
@@ -328,13 +331,12 @@ img{
   <span class="token comment">/* use left shift to compute tmin */</span>
   <span class="token keyword">return</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token number">31</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="isTmax"><a href="#isTmax" class="headerlink" title="isTmax"></a>isTmax</h2><p>这种“判断 x 是否等于 y”的题目的做法有很多种：</p>
 <ol>
-<li>创建一个 y，把 x 和 y 相减（x - y &#x3D;&#x3D; x + ((~y) + 1)），然后判断结果是否为 0.</li>
+<li>创建一个 y，把 x 和 y 相减（x - y == x + ((~y) + 1)），然后判断结果是否为 0.</li>
 <li>创建一个 y，return !(x^y)</li>
 </ol>
-<p>我这里是直接构建了 -Tmax &#x3D; 100…01，然后检查 x-Tmax 是否为 0.</p>
+<p>我这里是直接构建了 -Tmax = 100…01，然后检查 x-Tmax 是否为 0.</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * isTmax - returns 1 if x is the maximum, two's complement number,
  *     and 0 otherwise
@@ -347,7 +349,6 @@ img{
   <span class="token comment">/* create a '0' and use '!' */</span>
   <span class="token keyword">return</span> <span class="token operator">!</span><span class="token punctuation">(</span>x <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">+</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token number">31</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="allOddBits"><a href="#allOddBits" class="headerlink" title="allOddBits"></a>allOddBits</h2><p>这道题我想了很久。后来根据尝试性地构造了 1010…1010，然后试出了 (x &amp; mask) ^ mask 的写法。大致的思路是，既然我们只在乎奇数位的值，就先用 &amp; 把偶数位的值去掉，后来惊奇地发现再做个 ‘^’ 和 ‘!’ 就能得到结果了。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -364,7 +365,6 @@ img{
   <span class="token keyword">int</span> mask <span class="token operator">=</span> y <span class="token operator">+</span> <span class="token punctuation">(</span>y <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>y <span class="token operator">&lt;&lt;</span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>y <span class="token operator">&lt;&lt;</span> <span class="token number">24</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token operator">!</span><span class="token punctuation">(</span><span class="token punctuation">(</span>x <span class="token operator">&amp;</span> mask<span class="token punctuation">)</span> <span class="token operator">^</span> mask<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="negate"><a href="#negate" class="headerlink" title="negate"></a>negate</h2><p>这是熟知的结果，本质是 $x + \sim x + 1 \equiv<br> 0(\text{mod $2^{32}$})$</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * negate - return -x
@@ -378,7 +378,6 @@ img{
   <span class="token comment">/* well known result */</span>
   <span class="token keyword">return</span> <span class="token operator">~</span>x <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="isAsciiDigit"><a href="#isAsciiDigit" class="headerlink" title="isAsciiDigit"></a>isAsciiDigit</h2><p>这道题我想了很久。后来分析了输入的形式，发现它只能形如 0000 … 0011 0yyy 或是 0000 … 0011 100y，于是决定把自由的位置右移掉，然后用 mask。</p>
 <p>做完后复盘发现还有一种基于比较的方法，直接计算 x - 0x30 和 x - 0x39 并判断其符号位。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
@@ -403,8 +402,7 @@ img{
   <span class="token keyword">int</span> mask2 <span class="token operator">=</span> <span class="token number">0x1C</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token operator">!</span><span class="token punctuation">(</span><span class="token punctuation">(</span>x <span class="token operator">>></span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">^</span> mask1<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token operator">!</span><span class="token punctuation">(</span><span class="token punctuation">(</span>x <span class="token operator">>></span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">^</span> mask2<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="conditional"><a href="#conditional" class="headerlink" title="conditional"></a>conditional</h2><p>这道题我也想了好久。一开始为了方便，我先用 !!x 把 x 归到了 0 或 1. 之后的思路是想构造满足类似 f(0, y) &#x3D; 0，f(1, y) &#x3D; y 的条件的函数 f，然后返回 f(x, y) + f(!x, z). 稍加思考，便发现 ‘&amp;’ 和这里的 f 很像，于是就写下去了。</p>
+<h2 id="conditional"><a href="#conditional" class="headerlink" title="conditional"></a>conditional</h2><p>这道题我也想了好久。一开始为了方便，我先用 !!x 把 x 归到了 0 或 1. 之后的思路是想构造满足类似 f(0, y) = 0，f(1, y) = y 的条件的函数 f，然后返回 f(x, y) + f(!x, z). 稍加思考，便发现 ‘&amp;’ 和这里的 f 很像，于是就写下去了。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * conditional - same as x ? y : z
  *   Example: conditional(2,4,5) = 4
@@ -423,7 +421,6 @@ img{
   <span class="token keyword">int</span> mask <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">~</span><span class="token punctuation">(</span><span class="token operator">!</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// x为0时得到全1，x非0时得到0</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">~</span>mask<span class="token punctuation">)</span> <span class="token operator">&amp;</span> y<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>mask <span class="token operator">&amp;</span> z<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="isLessOrEqual"><a href="#isLessOrEqual" class="headerlink" title="isLessOrEqual"></a>isLessOrEqual</h2><p>好吧，这道题我还是想了很久，毕竟我在做之前对位运算几乎一无所知。这道题更多是分类讨论，分为 xy 同号和 xy 异号的两种情况就行，连溢出都不会有。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * isLessOrEqual - if x &lt;= y  then return 1, else return 0
@@ -447,7 +444,6 @@ img{
 
   <span class="token keyword">return</span> diffSign <span class="token operator">|</span> sameSign<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="logicalNeg"><a href="#logicalNeg" class="headerlink" title="logicalNeg"></a>logicalNeg</h2><p>这道题是我感觉第二难的题目，我的核心思路是“非 0 的 x 的二进制表示中至少有一个 1”，于是我就构造了 11…1 即 -1 这个特殊值，并期盼它能给我一些有趣的结果。</p>
 <p>对正数 x 来说，x + (-1) 的最高位必然是 0，这能把正数和 0 区分开来，因为 0 + (-1) 的最高位是 1.</p>
 <p>但负数怎么办呢？负数要分类讨论，很麻烦。于是我就想取输入值的绝对值，然后用 abs + (-1) 来区分非 0 值和 0. 我这里的代码采用的是类似的思路，不过当时没想到怎么求 abs，就写得更复杂了一些。</p>
@@ -480,12 +476,11 @@ img{
   <span class="token keyword">int</span> negtivex <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">~</span>x<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">~</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> x<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">~</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> negtivex<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">31</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="howManyBits"><a href="#howManyBits" class="headerlink" title="howManyBits"></a>howManyBits</h2><p>这道题是我感觉最难的题目。首先我们画出这个函数的图像（留给读者作为练习），会发现它关于 -0.5 对称，这表明 x 和 -x-1 耗费的位数相同，接下来我们就只要考虑非负数就行了。</p>
 <p>找到非负数的最小 bits 数倒是不难，稍微写几个非负数就能发现，只要找到它值为 1 的最高位数，设其为 k，k + 1 即为结果。</p>
-<p>之后的难点就是，如何找到这个非负数的“值为 1 的最高位数”了。线性搜索显然是可行的，我们可以用 $\sum_{m&#x3D;0}^{31}!!(x &gt;&gt; m)$ 来得到这个位数，然而这样做耗费的操作数超出了限制。既然线性耗费的操作数太多，那我们自然就会想到二分。</p>
+<p>之后的难点就是，如何找到这个非负数的“值为 1 的最高位数”了。线性搜索显然是可行的，我们可以用 $\sum_{m=0}^{31}!!(x &gt;&gt; m)$ 来得到这个位数，然而这样做耗费的操作数超出了限制。既然线性耗费的操作数太多，那我们自然就会想到二分。</p>
 <p>但怎么做二分呢？这里的代码更多是我试出来的，没有什么清晰的理论指导，我们直接看图吧。</p>
-<p><img src="/images/learning/open-course/CMU-15213/Labs/Datalab/binary-search.png"></p>
+<p><img src="/images/learning/open-course/CMU-15213/Labs/Datalab/binary-search.png" alt=""></p>
 <p>怎么做到“砍掉一半”呢？砍掉右边半段用右移就行，所以我们会从 x &gt;&gt; 16 开始，再用 !!(x &gt;&gt; 16) 是 0 还是 1 来判断 1 在右半边还是左半边。</p>
 <p>之后的代码就真的纯粹是试出来的了，我们肯定能在数学上解释我们的操作，但具体的构思纯粹是试错+直觉试出来的，没什么好说的。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* howManyBits - return the minimum number of bits required to represent x in
@@ -542,9 +537,8 @@ img{
 
   <span class="token keyword">return</span> bit16 <span class="token operator">+</span> bit8 <span class="token operator">+</span> bit4 <span class="token operator">+</span> bit2 <span class="token operator">+</span> bit1 <span class="token operator">+</span> bit0 <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h1 id="浮点数部分"><a href="#浮点数部分" class="headerlink" title="浮点数部分"></a>浮点数部分</h1><p>浮点数部分比起整数部分简单得多，只要仔细地分类讨论就行了。</p>
-<h2 id="floatScale2"><a href="#floatScale2" class="headerlink" title="floatScale2"></a>floatScale2</h2><p>分类讨论即可。这里比较有趣的是 exp &#x3D;&#x3D; 0（denormalized case）的情况，无论 frac 部分是否超过 23 位，处理的代码都是一样的。</p>
+<h2 id="floatScale2"><a href="#floatScale2" class="headerlink" title="floatScale2"></a>floatScale2</h2><p>分类讨论即可。这里比较有趣的是 exp == 0（denormalized case）的情况，无论 frac 部分是否超过 23 位，处理的代码都是一样的。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * floatScale2 - Return bit-level equivalent of expression 2*f for
  *   floating point argument f.
@@ -588,7 +582,6 @@ img{
     <span class="token keyword">return</span> <span class="token punctuation">(</span>uf <span class="token operator">&amp;</span> expmask<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>exp <span class="token operator">&lt;&lt;</span> <span class="token number">23</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="floatFloat2Int"><a href="#floatFloat2Int" class="headerlink" title="floatFloat2Int"></a>floatFloat2Int</h2><p>同样是分类讨论。一开始我把 NaN、infin 单独写了一种情况处理，后面发现操作数太多超出了限制，于是把它和绝对值太大的情况统一了起来，毕竟它们的返回值一样。</p>
 <p>这里要仔细考虑的是 Tmin 落入的分支，在我的代码里，Tmin 落入了第一个 if 分支。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
@@ -651,7 +644,6 @@ img{
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="floatPower2"><a href="#floatPower2" class="headerlink" title="floatPower2"></a>floatPower2</h2><p>还是分类讨论，不多说了。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -813,6 +805,46 @@ img{
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -941,6 +973,39 @@ img{
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     

@@ -21,19 +21,19 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="img{     width: 75%; }    汇编简介CSAPP 教的是 x86-64 汇编语言，使用的是 AT&amp;T 语法风格。 下图概述了程序的工作方式，即从内存中读取指令，CPU 根据指令在寄存器上执行操作来修改内存里的数据：  下图描述了借助 gcc 进行编译的过程，其中 .s 就是汇编文件：  一些汇编指令示例： movq 7(%rdx, %rsi, 2), %rax 表示">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/cpu-memory.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/compile.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/register-rax.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/array.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/struct.png">
-<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/union.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/cpu-memory.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/compile.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/register-rax.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/array.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/struct.png">
+<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/union.png">
 <meta property="article:published_time" content="2025-03-14T08:41:28.000Z">
 <meta property="article:modified_time" content="2025-07-18T12:36:11.884Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
+<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png">
                             
 
                                 
@@ -273,12 +273,12 @@ img{
 }
 </style>
 
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/st.png" alt=""></p>
 <h1 id="汇编简介"><a href="#汇编简介" class="headerlink" title="汇编简介"></a>汇编简介</h1><p>CSAPP 教的是 x86-64 汇编语言，使用的是 AT&amp;T 语法风格。</p>
 <p>下图概述了程序的工作方式，即从内存中读取指令，CPU 根据指令在寄存器上执行操作来修改内存里的数据：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/cpu-memory.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/cpu-memory.png" alt=""></p>
 <p>下图描述了借助 gcc 进行编译的过程，其中 .s 就是汇编文件：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/compile.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/compile.png" alt=""></p>
 <p>一些汇编指令示例：</p>
 <p><code>movq 7(%rdx, %rsi, 2), %rax</code> 表示把 2 * %rsi + %rdx + 7 指向的地址的值复制到 %rax 中</p>
 <p><code>leaq 7(%rdx, %rsi, 2), %rax</code> 表示把 2 * %rsi + %rdx + 7 复制到 %rax 中，leaq 常被编译器用来做一些聪明的快速计算，不过 leaq 的第三个项只能是 1, 2, 4, 8.</p>
@@ -286,7 +286,8 @@ img{
 <p><code>imulq %rdx, %rax</code> 表示把 %rdx 中的值与 %rax 中的值相乘，结果存入 %rax (有符号整数乘法)</p>
 <p>操作很多，我们不再列举更多，随便找个书查一查就好。</p>
 <p>我们可以注意到这些操作都以 ‘q’ 结尾，那如果我不喜欢 ‘q’，我可以用 ‘r’ 结尾吗？不行，因为这里的 ‘q’ 实际上是在指定操作的大小。还记得寄存器长什么样吗：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/register-rax.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/register-rax.png" alt=""></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -298,7 +299,8 @@ img{
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>b</code></td>
 <td>byte</td>
 <td>1</td>
@@ -330,7 +332,9 @@ img{
 <td><code>movq</code></td>
 <td>移动四字(64 位)数据</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们也有 pushq 和 popq 之类的和栈相关的操作。栈是什么？请看下集——函数和栈。（在“控制”这一节后面）</p>
 <h1 id="控制"><a href="#控制" class="headerlink" title="控制"></a>控制</h1><p>我已经会加减乘除了，那你能教教我怎么写条件（if）和循环（for, while）吗？</p>
 <p>乐意效劳。😎</p>
@@ -346,12 +350,12 @@ n in <span class="token operator">%</span><span class="token register variable">
 <span class="token number">6</span>   cmpq <span class="token number">$1</span>, <span class="token operator">%</span><span class="token register variable">rdi</span>     Compare n:<span class="token number">1</span>
 <span class="token number">7</span>   jg .L2            If <span class="token operator">></span>, goto loop
 <span class="token number">8</span>   rep <span class="token comment">; ret         Return</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>在这里，我们通过“cmpq”和“jg”来判断条件是否满足，通过“jg”来跳转以执行循环。那么，cmpq 实际上是在做什么呢？</p>
 <p>在汇编中，我们有几个特殊的标志寄存器 CF、ZF、SF、OF 来记录最近的操作是否产生了 unsigned 的溢出、产生 0、产生负数、产生了补码溢出。cmp 和 test 两个指令假装执行减法和按位与并修改这些标志寄存器。</p>
 <p>在上面的代码中，cmpq $1, %rdi 就是在假装做 %rdi - 1，并根据计算结果修改标志寄存器。而 jg 则根据标志寄存器的值来进行跳转。jg 的效果是，如果 ~(SF ^ OF) &amp; ~ZF 为真，就进行跳转。</p>
 <p>jg 的跳转条件看起来很复杂，但它和 cmpq x, y 联动的效果是——如果 y &gt; x，跳转，因此它叫做 jg.</p>
 <p>下表是 CMP 和 TEST 的概述：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -360,7 +364,8 @@ n in <span class="token operator">%</span><span class="token register variable">
 <th>Description</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>CMP S₁, S₂</td>
 <td>S₂ - S₁</td>
 <td>Compare</td>
@@ -370,8 +375,11 @@ n in <span class="token operator">%</span><span class="token register variable">
 <td>S₁ &amp; S₂</td>
 <td>Test</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>这里是一些跳转语句示例：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -381,7 +389,8 @@ n in <span class="token operator">%</span><span class="token register variable">
 <th>Description</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>jmp Label</td>
 <td></td>
 <td>1</td>
@@ -397,7 +406,7 @@ n in <span class="token operator">%</span><span class="token register variable">
 <td>je Label</td>
 <td>jz</td>
 <td>ZF</td>
-<td>Equal &#x2F; zero</td>
+<td>Equal / zero</td>
 </tr>
 <tr>
 <td>js Label</td>
@@ -415,9 +424,11 @@ n in <span class="token operator">%</span><span class="token register variable">
 <td>jge Label</td>
 <td>jnl</td>
 <td>~(SF ^ OF)</td>
-<td>Greater or equal (signed &gt;&#x3D;)</td>
+<td>Greater or equal (signed &gt;=)</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h2 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h2><p>要注意的是，switch 和 if 的汇编有本质区别。switch 基于跳转表（类似哈希表），它先把 case 同时增减一个值来让最小的 case 变为 0，然后建立跳转表，并根据 case 的值来计算合适的跳转地址。</p>
 <p>以这个 C 代码为例，它可能被编译成下面的汇编代码：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">switch</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -425,7 +436,6 @@ n in <span class="token operator">%</span><span class="token register variable">
     <span class="token keyword">case</span> <span class="token number">3</span><span class="token operator">:</span> <span class="token keyword">return</span> <span class="token string">"three"</span><span class="token punctuation">;</span>
     <span class="token keyword">default</span><span class="token operator">:</span> <span class="token keyword">return</span> <span class="token string">"other"</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <pre class="line-numbers language-nasm" data-language="nasm"><code class="language-nasm">cmpl    <span class="token number">$2</span>, <span class="token operator">%</span><span class="token register variable">eax</span>                        # 检查是否超出范围(<span class="token operator">></span><span class="token number">2</span>), 这里<span class="token operator">%</span><span class="token register variable">eax</span> <span class="token operator">=</span> x<span class="token operator">-</span><span class="token number">1</span>,
                                         # 因为最小case是<span class="token number">1</span>
         ja      .L_default              # 如果超出范围则跳转到default
@@ -437,9 +447,8 @@ n in <span class="token operator">%</span><span class="token register variable">
         .long   .L_case1                # case <span class="token number">1</span>, <span class="token operator">%</span><span class="token register variable">eax</span> <span class="token operator">=</span> <span class="token number">0</span>
         .long   .L_default              # case <span class="token number">2</span>, <span class="token operator">%</span><span class="token register variable">eax</span> <span class="token operator">=</span> <span class="token number">1</span>
         .long   .L_case2                # case <span class="token number">3</span>, <span class="token operator">%</span><span class="token register variable">eax</span> <span class="token operator">=</span> <span class="token number">2</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h1 id="函数和栈"><a href="#函数和栈" class="headerlink" title="函数和栈"></a>函数和栈</h1><p>啊哈哈，我们又要讨论寄存器了。还记得 %rsp 吗？它就是存储栈指针的寄存器。下图左边是栈的结构，右边是寄存器：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/st.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/st.png" alt=""></p>
 <p>那么，栈和函数有什么关系呢？</p>
 <h2 id="借助栈来控制转移"><a href="#借助栈来控制转移" class="headerlink" title="借助栈来控制转移"></a>借助栈来控制转移</h2><p>栈的第一个作用是“passing control“，即控制转移。</p>
 <p>调用函数（callq）本质上就是让程序计数器跳转（jmp）到了函数所在的汇编地址，并把调用完成后应该执行的指令地址压入栈中（pushq）。而函数返回（retq）本质上就是把调用完成后应该执行的指令地址 pop 出来（popq），并跳转回去（jmp）。</p>
@@ -458,27 +467,25 @@ n in <span class="token operator">%</span><span class="token register variable">
             |  本地变量2            |
             |  ...                 |   ← 当前rsp指向这里
 低地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>对了，根据上面的描述，递归就成了自然涌现出的结果，真神奇！</p>
 <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>我们来聊聊 array、struct、union 都是怎么表示在内存中的。</p>
 <h2 id="array-和寻址"><a href="#array-和寻址" class="headerlink" title="array 和寻址"></a>array 和寻址</h2><p>先说 Array，二维 array 如下图：</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/array.png"></p>
-<p>简单易懂。假设我们有 T A[R][C]，那么&amp;D[i][j] &#x3D; x0 + L(C * i + j). 其中 x0 为数组的起始地址，L 是 sizeof(T). 编译器在寻址时也就是这么做的。不过编译器会做一些聪明的优化来避免乘法，比如用 leaq 来加快计算：</p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/array.png" alt=""></p>
+<p>简单易懂。假设我们有 T A[R][C]，那么&amp;D[i][j] = x0 + L(C * i + j). 其中 x0 为数组的起始地址，L 是 sizeof(T). 编译器在寻址时也就是这么做的。不过编译器会做一些聪明的优化来避免乘法，比如用 leaq 来加快计算：</p>
 <pre class="line-numbers language-nasm" data-language="nasm"><code class="language-nasm"># A in <span class="token operator">%</span><span class="token register variable">rdi</span>, i in <span class="token operator">%</span><span class="token register variable">rsi</span>, and j in <span class="token operator">%</span><span class="token register variable">rdx</span>
 
 <span class="token number">1</span> leaq (<span class="token operator">%</span><span class="token register variable">rsi</span>,<span class="token operator">%</span><span class="token register variable">rsi</span>,<span class="token number">2</span>), <span class="token operator">%</span><span class="token register variable">rax</span>       # Compute 3i
 <span class="token number">2</span> leaq (<span class="token operator">%</span><span class="token register variable">rdi</span>,<span class="token operator">%</span><span class="token register variable">rax</span>,<span class="token number">4</span>), <span class="token operator">%</span><span class="token register variable">rax</span>       # Compute xA <span class="token operator">+</span> 12i
 <span class="token number">3</span> movl (<span class="token operator">%</span><span class="token register variable">rax</span>,<span class="token operator">%</span><span class="token register variable">rdx</span>,<span class="token number">4</span>), <span class="token operator">%</span><span class="token register variable">eax</span>       # Read from M<span class="token operator">[</span>xA <span class="token operator">+</span> 12i <span class="token operator">+</span> <span class="token number">4</span><span class="token operator">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="struct-和对齐"><a href="#struct-和对齐" class="headerlink" title="struct 和对齐"></a>struct 和对齐</h2><p>再来聊聊 struct，看看这张图就差不多了：</p>
 <pre class="line-numbers language-none"><code class="language-none">struct rec &#123;
     int i;
     int a[2];
     int *p;
 &#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/struct.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/struct.png" alt=""></p>
 <p>上图中，12 到 16 的“填充”是出于数据对齐的需要，对齐原则是——任何 K 字节的基本对象的地址必须是 K 的倍数。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -486,7 +493,8 @@ n in <span class="token operator">%</span><span class="token register variable">
 <th>type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>char</td>
 </tr>
@@ -502,9 +510,11 @@ n in <span class="token operator">%</span><span class="token register variable">
 <td>8</td>
 <td>long, double, char *</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h2 id="union"><a href="#union" class="headerlink" title="union"></a>union</h2><p>union 允许我们用不同方式解释同一段位表示，常用于节省内存。</p>
-<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/union.png"></p>
+<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter3/union.png" alt=""></p>
 <p>最常见的应用是，union 中的东西互斥，比如实现比较基础的动态类型：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">struct</span> <span class="token class-name">DynamicValue</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">enum</span> <span class="token class-name">Type</span> <span class="token punctuation">&#123;</span> INT<span class="token punctuation">,</span> DOUBLE<span class="token punctuation">,</span> STRING <span class="token punctuation">&#125;</span> type<span class="token punctuation">;</span>
@@ -515,14 +525,12 @@ n in <span class="token operator">%</span><span class="token register variable">
         <span class="token keyword">char</span><span class="token operator">*</span> s<span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span> data<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <h2 id="变长栈帧和-rbp"><a href="#变长栈帧和-rbp" class="headerlink" title="变长栈帧和%rbp"></a>变长栈帧和%rbp</h2><p>有时我们会用到长度不定的数组，比如</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">coolArr</span><span class="token punctuation">(</span><span class="token keyword">int</span> n<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">int</span> A<span class="token punctuation">[</span>n<span class="token punctuation">]</span><span class="token punctuation">;</span>
 	<span class="token comment">// 做一些cool things</span>
 	<span class="token keyword">return</span> A<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>这时我们在调用函数前是无法确定要为函数分配多少栈空间的，编译出来的函数会形如</p>
 <pre class="line-numbers language-nasm" data-language="nasm"><code class="language-nasm"><span class="token label function">collArr:</span>
 	pushq <span class="token operator">%</span><span class="token register variable">rbp</span>
@@ -530,7 +538,6 @@ n in <span class="token operator">%</span><span class="token register variable">
 	...            # 做一些cool things
 	leave          # 等价于  movq <span class="token operator">%</span><span class="token register variable">rbp</span>, <span class="token operator">%</span><span class="token register variable">rsp</span><span class="token comment">; popq %rbp</span>
 	retq<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>编译器会用 %rbp 作为基指针（base pointer）来记录进入函数前的栈指针位置，并在返回时复位 %rsp 和 %rbp 的状态。</p>
 <h1 id="攻击与防御"><a href="#攻击与防御" class="headerlink" title="攻击与防御"></a>攻击与防御</h1><h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>最常见的攻击是缓冲区溢出攻击，CSAPP 里讲了栈溢出攻击，具体可以看看 attacklab. 这可以分为植入恶意代码和 ROP 攻击。</p>
 <h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>对栈溢出的防御手段主要有栈破坏检测、栈随机化、限制可执行代码区域。</p>
@@ -659,6 +666,46 @@ n in <span class="token operator">%</span><span class="token register variable">
                                     
                     <ul class="unstyled" id="tree" >
                             
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        主题周
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        光照
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Godot光照基础
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            主题周是什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
                                 <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
@@ -787,6 +834,39 @@ n in <span class="token operator">%</span><span class="token register variable">
                                         <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
                                             <i class="fa fa-file-text-o"></i>
                                             第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
                                         </a>
                                     </li>
                                     
