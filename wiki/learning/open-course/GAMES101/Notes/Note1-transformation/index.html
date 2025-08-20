@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note1/rectangle.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note1/fov-ltrb.png">
 <meta property="article:published_time" content="2025-08-19T07:10:28.000Z">
-<meta property="article:modified_time" content="2025-08-20T11:13:48.857Z">
+<meta property="article:modified_time" content="2025-08-20T14:15:22.693Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note1/rodrigues.png">
@@ -361,14 +361,14 @@ n & 0 & 0 & 0 \\
 \frac{2n}{r-l} & 0 & -\frac{r+l}{r-l} & 0 \\
 0 & \frac{2n}{t-b} & -\frac{t+b}{t-b} & 0 \\
 0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & -1 & 0
+0 & 0 & 1 & 0
 \end{bmatrix}
 \end{align*}</script><p>第一个等号右边的式子中，右边的矩阵把视锥压缩为一个长方体，左边的矩阵把这个长方体变换到 $[-1,1]^3$.</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note1/rectangle.png" alt=""></p>
 <p>我们可以根据 $\text{near},\text{fov},\text{aspectRatio<br>}$ 求出 $l,t,r,b$.</p>
 <script type="math/tex; mode=display">
 \begin{align*}
-&\text{t} = \text{near} \times \tan\left(\frac{\text{fov}}{2}\right)
+&\text{t} = -n \times \tan\left(\frac{\text{fov}}{2}\right)
 \\
 &\text{b} = -\text{t}
 \\
@@ -382,10 +382,10 @@ n & 0 & 0 & 0 \\
 \large
 \text{M}_\text{per} =
 \begin{bmatrix}
-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
-0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
+-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
+0 & -\frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
 0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & -1 & 0
+0 & 0 & 1 & 0
 \end{bmatrix}</script><h2 id="Viewport-transformation"><a href="#Viewport-transformation" class="headerlink" title="Viewport transformation"></a>Viewport transformation</h2><p>最后，我们会把 $[-1,1]^3$ 的内容的宽高映射为屏幕大小。在这个变换中 $z$ 坐标不变，因此变换矩阵为：</p>
 <script type="math/tex; mode=display">
 \large
@@ -420,10 +420,10 @@ w_x & w_y & w_z & 0 \\
 \large
 &\text{M}_\text{per} =
 \begin{bmatrix}
-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
-0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
+-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
+0 & -\frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
 0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & -1 & 0
+0 & 0 & 1 & 0
 \end{bmatrix}
 \\
 &\large
@@ -435,16 +435,17 @@ w_x & w_y & w_z & 0 \\
 0 & 0 & 0 & 1
 \end{bmatrix}
 
-\end{align*}</script><p>要注意的是，我们讨论的 $n$ 和 $f$ 被定义为坐标值，它们是小于 0 的。一些地方把 $n$ 和 $f$ 定义为到近/远平面的距离，这是大于 0 的。我们的 $\text{M}<em>\text{per}$ 和他们的在某些项上有正负号的差异，他们的 $\text{M}</em>\text{their-per}$ 为：</p>
+\end{align*}</script><p>要注意的是，我们讨论的 $n$ 和 $f$ 被定义为坐标值，它们是小于 0 的。一些地方把 $n$ 和 $f$ 定义为到近/远平面的距离，这是大于 0 的，这会引起投影矩阵的变化。另外，不同的坐标系约定也会引起矩阵的变化。</p>
+<p>比如在OpenGL中， $n$ 和 $f$ 被定义为到近/远平面的距离，这是大于 0 的，而且他们的 projection transformation 把拍摄内容从右手坐标系的视图空间映射到左手坐标系的标准设备坐标（NDC）空间，他们的 $\text{M}_\text{their-per}$ 为：</p>
 <script type="math/tex; mode=display">
 \large
 \text{M}_\text{their-per} =
 \begin{bmatrix}
 \frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
 0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
-0 & 0 & \frac{n+f}{n-f} & \frac{2nf}{n-f} \\
+0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
 0 & 0 & -1 & 0
-\end{bmatrix}</script><p>Godot 把 $n$ 和 $f$ 定义为到近/远平面的距离，下面是他们设置 $\text{M}_\text{per}$ 的代码。还要注意的是，他们使用 column-major 的方法存储数据，即</p>
+\end{bmatrix}</script><p>Godot 使用和 OpenGL 一样的矩阵，下面是他们设置 $\text{M}_\text{per}$ 的代码。还要注意的是，他们使用 column-major 的方法存储数据，即</p>
 <script type="math/tex; mode=display">
 M =
 \begin{pmatrix}
@@ -488,9 +489,9 @@ M =
 <nav id="article-nav">
     
     
-        <a href="/wiki/learning/theme-week/lighting/godot-lighting-basic/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/learning/theme-week/%E4%B8%BB%E9%A2%98%E5%91%A8%E6%98%AF%E4%BB%80%E4%B9%88/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">Godot光照基础</div>
+            <div class="article-nav-title">主题周是什么？</div>
         </a>
     
 </nav>
