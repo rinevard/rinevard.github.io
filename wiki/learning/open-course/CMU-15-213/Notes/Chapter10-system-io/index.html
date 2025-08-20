@@ -21,19 +21,19 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="img{     width: 75%; }   文件所有的 I&#x2F;O 设备都被视为文件，因此我们能用一致的方式处理各种输入输出。 文件类型分为以下几类  普通文件：包含用户数据，可以是文本文件（如.txt）或二进制文件（如.jpg、.exe） 目录：包含一系列链接，每个连接将一个文件名映射到一个文件 套接字（socket）：跨网络通信用的文件  读写文件文件描述符（file descriptor">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png">
 <meta property="article:published_time" content="2025-04-11T02:00:00.000Z">
-<meta property="article:modified_time" content="2025-07-18T12:36:34.477Z">
+<meta property="article:modified_time" content="2025-08-20T11:13:48.877Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png">
                             
 
                                 
 
                                         
-                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            <link rel="icon" href="/images/jurorara.png" />
                                             
 
                                                 
@@ -333,8 +333,8 @@ img{
 </ul>
 </li>
 </ol>
-<h3 id="open-两次："><a href="#open-两次：" class="headerlink" title="open 两次："></a><strong>open 两次：</strong></h3><p><img src="images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png" alt=""></p>
-<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png" alt=""></p>
+<h3 id="open-两次："><a href="#open-两次：" class="headerlink" title="open 两次："></a><strong>open 两次：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/opentwice.png" alt=""></p>
+<h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter10/fork.png" alt=""></p>
 <h1 id="基于缓冲区的读写"><a href="#基于缓冲区的读写" class="headerlink" title="基于缓冲区的读写"></a>基于缓冲区的读写</h1><p>基于缓冲区的读写将数据先写入内存缓冲区，等缓冲区满或显式刷新（如 fflush）时再一次性与底层设备做数据交换，降低了 I/O 开销。</p>
 <p>在使用读写时，我们应尽可能使用 stdio 标准库。stdio（标准输入输出库）提供了基于缓冲区的 I/O 操作（如 fopen、fread、fwrite、printf 等），相比直接使用低级系统调用（如 read、write），它的<strong>效率更高</strong>而且更不易出错。</p>
 
@@ -850,15 +850,6 @@ img{
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        体验
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
                                             <i class="fa fa-file-text-o"></i>
@@ -866,19 +857,6 @@ img{
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        技巧
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -886,19 +864,6 @@ img{
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        经典作品
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -906,10 +871,6 @@ img{
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
                     </ul>
                     
                                 </li>

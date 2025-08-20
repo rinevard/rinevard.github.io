@@ -21,19 +21,19 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="15213 里没讲第四章，我看了下感觉太硬件了于是就跳过了。我们从第五章继续—— 一些常见的优化手段我们就不详细说了，简单提一下有这些：  用代码剖析程序找到性能瓶颈 选好的算法 外提循环不变式 减少不必要的内存读写  循环展开技巧性太强，牺牲了可读性，而且说实话性能也没好太多，所以也不详谈。而且大多数编译器在把优化等级设得比较高时会自动做循环展开。 我们主要聊聊——编译器的局限；用 CPE 表示">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/images/learning/open-course/CMU-15213/Notes/Chapter5/dataflow.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter5/dataflow.png">
 <meta property="article:published_time" content="2025-03-18T07:30:28.000Z">
-<meta property="article:modified_time" content="2025-07-20T10:10:20.232Z">
+<meta property="article:modified_time" content="2025-08-20T11:13:48.861Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png">
                             
 
                                 
 
                                         
-                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            <link rel="icon" href="/images/jurorara.png" />
                                             
 
                                                 
@@ -310,7 +310,7 @@
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这时我们可能就会并行执行指令 1 和指令 2.</p>
 <h2 id="流水线-Pipeline"><a href="#流水线-Pipeline" class="headerlink" title="流水线(Pipeline)"></a>流水线(Pipeline)</h2><p>流水线将单条指令的执行阶段（取指、解码、执行、访存、写回）拆分成多个步骤，每个步骤由不同的硬件单元处理，从而可以同时处理多条处于不同步骤的指令。例如，一个典型的浮点加法器包含三个阶段：一个阶段处理指数值，一个阶段将小数相加，另一个阶段对结果进行舍人。这种技术<strong>增加了吞吐量（Throughput）</strong>，但单个指令的执行延迟并不会减少。</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter5/pipeline.png" alt=""></p>
 <h2 id="数据流图"><a href="#数据流图" class="headerlink" title="数据流图"></a>数据流图</h2><p>我们可以通过程序的数据流图来粗糙地分析程序的指令级并行程度。这里举一个例子应该就足够了。假设我们想算 $\sum_{k=0}^{n}a_kx^k$，下面有两种算法：</p>
 <p>在 poly 中，我们共做了 n 次加法，2n 次乘法</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">double</span> <span class="token function">poly</span><span class="token punctuation">(</span><span class="token keyword">double</span> a<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">double</span> x<span class="token punctuation">,</span> <span class="token keyword">long</span> degree<span class="token punctuation">)</span>
@@ -335,7 +335,7 @@
     <span class="token keyword">return</span> result<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>然而实际上 poly 速度更快，为什么呢？因为 poly 有更好的指令级并行度。</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter5/dataflow.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter5/dataflow.png" alt=""></p>
 <p>poly 的关键路径是 mul，polyh 的关键路径则是 mul → add.</p>
 <h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><p>之前做 leetcode 还遇到了一则趣事（3356. Zero Array TransformationⅡ）</p>
 <p>那题的解法里需要构造这样的函数：</p>
@@ -882,15 +882,6 @@
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        体验
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
                                             <i class="fa fa-file-text-o"></i>
@@ -898,19 +889,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        技巧
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -918,19 +896,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        经典作品
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -938,10 +903,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
                     </ul>
                     
                                 </li>

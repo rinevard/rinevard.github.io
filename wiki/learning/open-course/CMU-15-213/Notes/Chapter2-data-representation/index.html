@@ -21,20 +21,20 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="我们知道，在 32 位机器上和 64 位机器上，相同的 C 语言数据类型可能占用不同的字节数：     C declaration  Bytes      Signed Unsigned 32-bit 64-bit   [signed] char unsigned char 1 1   short unsigned short 2 2   int unsigned 4 4   long unsig">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/images/learning/open-course/CMU-15213/Notes/Chapter2/float-line.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/images/learning/open-course/CMU-15213/Notes/Chapter2/endian.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter2/float-line.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter2/endian.png">
 <meta property="article:published_time" content="2025-03-03T10:36:28.000Z">
-<meta property="article:modified_time" content="2025-07-20T10:10:12.738Z">
+<meta property="article:modified_time" content="2025-08-20T11:13:48.877Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png">
                             
 
                                 
 
                                         
-                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            <link rel="icon" href="/images/jurorara.png" />
                                             
 
                                                 
@@ -469,7 +469,7 @@
 <p>答案是前者，因为对后者来说，<code>i = 0</code> 以后 <code>i--</code> 会让 <code>i</code> 溢出变为正数，导致无限循环。</p>
 <p>反正不要写这样的代码，你这是在破坏数学的世界观！</p>
 <h1 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h1><h2 id="表示-1"><a href="#表示-1" class="headerlink" title="表示"></a>表示</h2><p>按照 IEEE 标准，浮点数的表示如下：</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter2/float-representation.png" alt=""></p>
 <p>其中 s 是符号位，0 表示正数，1 表示负数</p>
 <p>计算方式大致为</p>
 <script type="math/tex; mode=display">
@@ -479,7 +479,7 @@
 (-1)^s \times 2^{1-\text{bias}}\times(1\text{.frac})</script><p>如果 exp 全是 1，frac 全是 0，我们认为表示的是 infin. 至于是 $+\inf$ 还是 $-\inf$ 由符号位决定。</p>
 <p>如果 exp 全是 1，frac 不为 0，表示 NaN（not a number）.</p>
 <p>看起来确实是很奇怪的标准！这涌现出的结果是，能表示的值在靠近 0 的位置比较密集，在远离 0 的位置比较稀疏。（下图以 exp 占 3 bits，frac 占 2 bits 为例）</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter2/float-line.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter2/float-line.png" alt=""></p>
 <h2 id="舍入（四舍五入）"><a href="#舍入（四舍五入）" class="headerlink" title="舍入（四舍五入）"></a>舍入（四舍五入）</h2><p>既然浮点数的表示这么奇怪，那如果我把两个浮点数相加，是不是可能得到不精确的结果？真聪明，确实如此！我们一般采取“round-to-even”的策略，即先考虑舍入到更近的那个数，如果两个数一样近，把得到的结果向着更“偶数”的方向去舍入，对二进制表示来说，就是希望它被舍入到结尾为 0 的那个数上.</p>
 <p>来个例子：</p>
 <p>10.000112 10.002 (<1/2—down)
@@ -549,7 +549,7 @@
 <p>int → float：根据 rounding mode 进行四舍五入，毕竟存在一些 float 不能表示的 int 值。</p>
 <p>int → double：精确转换，毕竟 double 的 frac 有 52 个 bits，能够表示所有可能的 int 值。</p>
 <h1 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h1><h2 id="大端法和小端法"><a href="#大端法和小端法" class="headerlink" title="大端法和小端法"></a>大端法和小端法</h2><p>多字节对象在内部存储的字节顺序表示上也有大端法和小端法之分，即最高有效字节在前面还是后面。比如把十六进制的 0x01234567 存储为 01 23 45 67 还是 67 45 23 01。</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter2/endian.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter2/endian.png" alt=""></p>
 <p>我们可以用下面的代码检查自己的机器使用的是大端法还是小端法。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 
@@ -1082,15 +1082,6 @@
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        体验
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1098,19 +1089,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        技巧
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1118,19 +1096,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        经典作品
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1138,10 +1103,6 @@
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
                     </ul>
                     
                                 </li>

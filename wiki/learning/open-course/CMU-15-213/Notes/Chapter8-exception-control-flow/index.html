@@ -21,20 +21,20 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="img{     width: 70%; }   当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入异常控制流（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。 异常异常是异常控制流的一种形式，分为四类：     类别 异步&#x2F;同步 产生原因 例子">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/images/learning/open-course/CMU-15213/Notes/Chapter8/concurrency.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/images/learning/open-course/CMU-15213/Notes/Chapter8/content-change.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/concurrency.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/content-change.png">
 <meta property="article:published_time" content="2025-03-31T03:26:01.000Z">
-<meta property="article:modified_time" content="2025-07-18T12:37:24.460Z">
+<meta property="article:modified_time" content="2025-08-20T11:13:48.869Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png">
                             
 
                                 
 
                                         
-                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            <link rel="icon" href="/images/jurorara.png" />
                                             
 
                                                 
@@ -310,12 +310,12 @@ img{
 </div>
 <p><strong>注意：一定要检查系统调用的返回值，不然会出现一些很难调试的错误！</strong></p>
 <p>异常发生后，控制会转移给异常处理程序。在处理完成后，根据异常的具体内容可能会返回到原程序的下一条指令，也可能返回到原程序的当前指令，也可能不返回。：</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png" alt=""></p>
 <h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a><strong>进程</strong></h1><h2 id="并发和上下文切换"><a href="#并发和上下文切换" class="headerlink" title="并发和上下文切换"></a>并发和上下文切换</h2><p>我们可以并发地执行多个进程，如下图所示：</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter8/concurrency.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter8/concurrency.png" alt=""></p>
 <p>但我们是怎么实现这种并发的呢？答案是上下文切换。下图展现了单核 CPU 的上下文切换，每个进程都有自己的上下文。</p>
 <p>上下文切换的原因多种多样，举两个常见例子：用户可能执行系统调用而等待某个事件（比如用 waitpid 等待子进程终止），这时内核就可以让当前进程休眠并切换到另一个进程；系统每隔若干毫秒也会产生一次定时器中断的异常，并切换到新的进程。</p>
-<p><img src="images/learning/open-course/CMU-15213/Notes/Chapter8/content-change.png" alt=""></p>
+<p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter8/content-change.png" alt=""></p>
 <h2 id="进程的创建、终止和回收"><a href="#进程的创建、终止和回收" class="headerlink" title="进程的创建、终止和回收"></a>进程的创建、终止和回收</h2><p>我们可以用 fork 来创建一个当前进程的复制——它执行一次，返回两次，分别返回到父进程和父进程的子进程中。对父进程，它返回子进程的 pid；对子进程，它返回 0.</p>
 <p>子进程在终止后不会自动被清楚，而是进入“僵死进程”状态，直到被父进程回收。如果父进程终止了，init 进程会成为它的孤儿进程的养父。很明显，这里有潜在的内存泄漏。那么，怎么回收子进程呢？</p>
 <p>我们可以用 waitpid 来等待子进程终止，在 waitpid 返回后，这个终止的子进程会被回收。</p>
@@ -941,15 +941,6 @@ pid <span class="token operator">=</span> <span class="token number">0</span><sp
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        体验
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
                                             <i class="fa fa-file-text-o"></i>
@@ -957,19 +948,6 @@ pid <span class="token operator">=</span> <span class="token number">0</span><sp
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        技巧
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -977,19 +955,6 @@ pid <span class="token operator">=</span> <span class="token number">0</span><sp
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        经典作品
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -997,10 +962,6 @@ pid <span class="token operator">=</span> <span class="token number">0</span><sp
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
                     </ul>
                     
                                 </li>

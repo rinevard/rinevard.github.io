@@ -21,19 +21,19 @@
 <meta property="og:site_name" content="Rinevard">
 <meta property="og:description" content="img{     width: 80%; }   在开始 lab 之前，我们先来解释一下为什么我们写的代码能直接在 xv6 的 shell 里执行。我们来看看 sh.c 的部分代码： &#x2F;&#x2F; Read and run input commands. while (getcmd(buf, sizeof(buf)) &gt;&#x3D; 0) &#123;     if (buf[0] &#x3D;&#x3D; &#39;c&#39; &amp;&amp;am">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png">
-<meta property="og:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-code.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-code.png">
 <meta property="article:published_time" content="2025-05-31T03:18:38.000Z">
-<meta property="article:modified_time" content="2025-07-18T12:36:20.009Z">
+<meta property="article:modified_time" content="2025-08-20T11:13:48.861Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png">
                             
 
                                 
 
                                         
-                                            <link rel="icon" href="/css/images/logo-apple.png" />
+                                            <link rel="icon" href="/images/jurorara.png" />
                                             
 
                                                 
@@ -335,10 +335,10 @@ img{
     <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h1 id="primes"><a href="#primes" class="headerlink" title="primes"></a>primes</h1><p>这题很有趣，是一个并发素数筛法。这个算法理论上是可以提高效率的，毕竟在运行了一段时间后，各个进程里都有一些数等待筛选，这时各个进程在同时用自己的素数筛选输入的数。</p>
-<p><img src="images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png" alt=""></p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-concurrent.png" alt=""></p>
 <p>网上很多代码都是2020版的，当时的要求是找出 2-35 间的素数。这些代码能过老版本的要求，但过不了2024版要求的 2-280。我认真看了一两份代码，发现它们在用 fork 创建子进程的子进程后，忘了关闭子子进程的连接到父进程的描述符。可以看下面示意图的第三个框，这些代码忘了关闭 child child process 的 fd_read.</p>
 <p>我画了示意图来解释我的代码~</p>
-<p><img src="images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-code.png" alt=""></p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab1-util/prime-code.png" alt=""></p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"kernel/types.h"</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"kernel/stat.h"</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"user/user.h"</span></span>
@@ -1085,15 +1085,6 @@ $<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        体验
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1101,19 +1092,6 @@ $<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        技巧
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1121,19 +1099,6 @@ $<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
-                                <li class="directory">
-                                    <a href="#" data-role="directory">
-                                        <i
-                                            class="fa fa-folder"></i>
-                                        经典作品
-                                    </a>
-                                    
-                    <ul class="unstyled" id="tree" >
-                            
                                     <li class="file">
                                         <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
                                             <i class="fa fa-file-text-o"></i>
@@ -1141,10 +1106,6 @@ $<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
                                         </a>
                                     </li>
                                     
-                    </ul>
-                    
-                                </li>
-                                
                     </ul>
                     
                                 </li>
