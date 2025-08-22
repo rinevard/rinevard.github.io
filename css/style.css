@@ -2191,7 +2191,7 @@ ol.toc {
 .widget {
   line-height: 1.8em;
   word-wrap: break-word;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 .widget ul,
 .widget ol {
@@ -2500,7 +2500,7 @@ ol.toc {
 }
 #categories li.directory > a,
 #categories li.file > a {
-  font-size: 16px;
+  font-size: 15px;
   border-radius: 6px;
   -webkit-transition: background-color 0.2s ease;
   -moz-transition: background-color 0.2s ease;
@@ -2850,17 +2850,17 @@ ol.toc {
   width: 30px; /* 使用固定像素宽度代替百分比，更容易看到 */
 }
 .toc-sidebar-h2 {
-  width: 25px;
-}
-.toc-sidebar-h3 {
   width: 20px;
 }
-.toc-sidebar-h4 {
+.toc-sidebar-h3 {
   width: 15px;
+}
+.toc-sidebar-h4 {
+  width: 10px;
 }
 .toc-sidebar-h5,
 .toc-sidebar-h6 {
-  width: 10px;
+  width: 8px;
 }
 .toc-sidebar-content {
   position: absolute;
