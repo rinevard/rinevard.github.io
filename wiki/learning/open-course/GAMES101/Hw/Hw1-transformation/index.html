@@ -6,23 +6,23 @@
         
             <title>
                 
-                    看我看我 | 
+                    Hw 1 Transformation | 
                             Rinevard
             </title>
             
                 
-                    <meta name="keywords" content="看我看我" />
+                    <meta name="keywords" content="Hw 1 Transformation" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="这里存放着我对 book-riscv-rev4 和 MIT-6.S081 的笔记，每个笔记对应 book-riscv-rev4 的一个章节。">
+                        <meta name="description" content="本次作业要求我们实现旋转矩阵、投影矩阵。我们先简单看下作业是怎么做的，再看看代码框架里的几个有趣的地方。 作业实现两个旋转矩阵绕 $z$ 轴的旋转矩阵实现起来很简单，把课上的内容翻译成代码就好。在使用 std 的 sin 和 cos 时要注意把角度转换成弧度。 Eigen::Matrix4f get_model_matrix(float rotation_angle) &#123;     Eig">
 <meta property="og:type" content="article">
-<meta property="og:title" content="看我看我">
-<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/index.html">
+<meta property="og:title" content="Hw 1 Transformation">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="这里存放着我对 book-riscv-rev4 和 MIT-6.S081 的笔记，每个笔记对应 book-riscv-rev4 的一个章节。">
+<meta property="og:description" content="本次作业要求我们实现旋转矩阵、投影矩阵。我们先简单看下作业是怎么做的，再看看代码框架里的几个有趣的地方。 作业实现两个旋转矩阵绕 $z$ 轴的旋转矩阵实现起来很简单，把课上的内容翻译成代码就好。在使用 std 的 sin 和 cos 时要注意把角度转换成弧度。 Eigen::Matrix4f get_model_matrix(float rotation_angle) &#123;     Eig">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-06-01T06:32:38.000Z">
-<meta property="article:modified_time" content="2025-07-18T10:42:54.523Z">
+<meta property="article:published_time" content="2025-08-22T03:00:58.000Z">
+<meta property="article:modified_time" content="2025-08-22T02:59:28.690Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
                             
@@ -205,7 +205,7 @@
 
                 <div class="outer">
                     
-                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Notes/little-fish" class="article article-type-post" itemscope
+                                <section id="main"><article id="post-learning/open-course/GAMES101/Hw/Hw1-transformation" class="article article-type-post" itemscope
     itemprop="blogPost">
     <div class="article-inner">
         
@@ -216,15 +216,15 @@
                                     
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/">MIT-6.S081</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Notes/">Notes</a>
+        <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Hw/">Hw</a>
     </div>
 
                                         
                                             
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
-            <time datetime="2025-06-01T06:32:38.000Z" itemprop="datePublished">2025-06-01</time>
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+            <time datetime="2025-08-22T03:00:58.000Z" itemprop="datePublished">2025-08-22</time>
         </a>
     </div>
 
@@ -236,7 +236,7 @@
                                     
     
         <h1 class="article-title" itemprop="name">
-            看我看我
+            Hw 1 Transformation
         </h1>
     
 
@@ -255,10 +255,129 @@
                                                                                                                             class="toc-title">
                                                                                                                             文章目录
                                                                                                                         </strong>
-                                                                                                                        
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%9C%E4%B8%9A%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">作业实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5"><span class="toc-number">1.1.</span> <span class="toc-text">两个旋转矩阵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5"><span class="toc-number">1.2.</span> <span class="toc-text">投影矩阵</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%A1%86%E6%9E%B6%E9%87%8C%E6%9C%89%E8%B6%A3%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">2.</span> <span class="toc-text">代码框架里有趣的地方</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ind-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">2.1.</span> <span class="toc-text">ind 的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#id-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">id 的作用</span></a></li></ol></li></ol>
                                                                                                                     </div>
                                                                                                                     
-                                                                                                                        <p>这里存放着我对 book-riscv-rev4 和 MIT-6.S081 的笔记，每个笔记对应 book-riscv-rev4 的一个章节。</p>
+                                                                                                                        <p>本次作业要求我们实现旋转矩阵、投影矩阵。我们先简单看下作业是怎么做的，再看看代码框架里的几个有趣的地方。</p>
+<h1 id="作业实现"><a href="#作业实现" class="headerlink" title="作业实现"></a>作业实现</h1><h2 id="两个旋转矩阵"><a href="#两个旋转矩阵" class="headerlink" title="两个旋转矩阵"></a>两个旋转矩阵</h2><p>绕 $z$ 轴的旋转矩阵实现起来很简单，把课上的内容翻译成代码就好。在使用 std 的 sin 和 cos 时要注意把角度转换成弧度。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Eigen<span class="token double-colon punctuation">::</span>Matrix4f <span class="token function">get_model_matrix</span><span class="token punctuation">(</span><span class="token keyword">float</span> rotation_angle<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    Eigen<span class="token double-colon punctuation">::</span>Matrix4f model <span class="token operator">=</span> Eigen<span class="token double-colon punctuation">::</span><span class="token class-name">Matrix4f</span><span class="token double-colon punctuation">::</span><span class="token function">Identity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">float</span> angle_rad <span class="token operator">=</span> rotation_angle <span class="token operator">*</span> MY_PI <span class="token operator">/</span> <span class="token number">180.0</span><span class="token punctuation">;</span>
+    Eigen<span class="token double-colon punctuation">::</span>Matrix4f rotate<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> sine <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">sin</span><span class="token punctuation">(</span>angle_rad<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> cosine <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">cos</span><span class="token punctuation">(</span>angle_rad<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rotate <span class="token operator">&lt;&lt;</span> cosine<span class="token punctuation">,</span> <span class="token operator">-</span>sine<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span>
+            sine<span class="token punctuation">,</span> cosine<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+            <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+            <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    model <span class="token operator">=</span> rotate <span class="token operator">*</span> model<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> model<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>提高项里的旋转矩阵用课上讲的 Rodrigues’ rotation formula 就行：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">/*
+    Computes the 4x4 rotation matrix representing a rotation of rotation_angle (in degree) 
+    around a given normalized axis vector that passes through the origin, 
+    using Rodrigues' rotation formula.
+*/</span>
+Eigen<span class="token double-colon punctuation">::</span>Matrix4f <span class="token function">get_rotation</span><span class="token punctuation">(</span>Vector3f axis<span class="token punctuation">,</span> <span class="token keyword">float</span> rotation_angle<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">float</span> angle_rad <span class="token operator">=</span> rotation_angle <span class="token operator">*</span> MY_PI <span class="token operator">/</span> <span class="token number">180.0</span><span class="token punctuation">;</span>
+    
+    Eigen<span class="token double-colon punctuation">::</span>Matrix3f rot_mat <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">cos</span><span class="token punctuation">(</span>angle_rad<span class="token punctuation">)</span> <span class="token operator">*</span> Eigen<span class="token double-colon punctuation">::</span><span class="token class-name">Matrix3f</span><span class="token double-colon punctuation">::</span><span class="token function">Identity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rot_mat <span class="token operator">+=</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> std<span class="token double-colon punctuation">::</span><span class="token function">cos</span><span class="token punctuation">(</span>angle_rad<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> axis <span class="token operator">*</span> axis<span class="token punctuation">.</span><span class="token function">transpose</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    Eigen<span class="token double-colon punctuation">::</span>Matrix3f cross_product_mat<span class="token punctuation">;</span>
+    cross_product_mat <span class="token operator">&lt;&lt;</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span>axis<span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> axis<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                        axis<span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span>axis<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> 
+                        <span class="token operator">-</span>axis<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> axis<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    rot_mat <span class="token operator">+=</span> std<span class="token double-colon punctuation">::</span><span class="token function">sin</span><span class="token punctuation">(</span>angle_rad<span class="token punctuation">)</span> <span class="token operator">*</span> cross_product_mat<span class="token punctuation">;</span>
+
+    Eigen<span class="token double-colon punctuation">::</span>Matrix4f trans_mat <span class="token operator">=</span> Eigen<span class="token double-colon punctuation">::</span><span class="token class-name">Matrix4f</span><span class="token double-colon punctuation">::</span><span class="token function">Identity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    trans_mat<span class="token punctuation">.</span><span class="token generic-function"><span class="token function">topLeftCorner</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token operator">></span></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> rot_mat<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> trans_mat<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="投影矩阵"><a href="#投影矩阵" class="headerlink" title="投影矩阵"></a>投影矩阵</h2><p>投影矩阵就相对复杂一些了，先上代码</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Eigen<span class="token double-colon punctuation">::</span>Matrix4f <span class="token function">get_projection_matrix</span><span class="token punctuation">(</span><span class="token keyword">float</span> eye_fov<span class="token punctuation">,</span> <span class="token keyword">float</span> aspect_ratio<span class="token punctuation">,</span>
+                                      <span class="token keyword">float</span> zNear<span class="token punctuation">,</span> <span class="token keyword">float</span> zFar<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// Students will implement this function</span>
+
+    Eigen<span class="token double-colon punctuation">::</span>Matrix4f projection <span class="token operator">=</span> Eigen<span class="token double-colon punctuation">::</span><span class="token class-name">Matrix4f</span><span class="token double-colon punctuation">::</span><span class="token function">Identity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    Eigen<span class="token double-colon punctuation">::</span>Matrix4f perspective<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> cotangent <span class="token operator">=</span> <span class="token number">1.0</span> <span class="token operator">/</span> std<span class="token double-colon punctuation">::</span><span class="token function">tan</span><span class="token punctuation">(</span>eye_fov <span class="token operator">/</span> <span class="token number">2.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> z_delta <span class="token operator">=</span> zFar <span class="token operator">-</span> zNear<span class="token punctuation">;</span>
+    perspective <span class="token operator">&lt;&lt;</span> cotangent <span class="token operator">/</span> aspect_ratio<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+                    <span class="token number">0</span><span class="token punctuation">,</span> cotangent<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+                    <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token punctuation">(</span>zFar <span class="token operator">+</span> zNear<span class="token punctuation">)</span> <span class="token operator">/</span> z_delta<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span> <span class="token operator">*</span> zFar <span class="token operator">*</span> zNear <span class="token operator">/</span> z_delta<span class="token punctuation">,</span>
+                    <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    projection <span class="token operator">=</span> perspective <span class="token operator">*</span> projection<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> projection<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>首先我们会发现输入的 zNear 和 zFar 都是正数，他们表示近平面和远平面到原点的距离，这与课上讲的不同。课上讲的 $n$ 和 $f$ 表示近平面和远平面在 $z$ 轴的坐标，他们是负数。</p>
+<p>然后我们分析 rasterizer.cpp 里的 draw 函数，下面这段代码里，v 是三角形的三个顶点构成的数组，三个顶点都已经被变换到了 $[-1,1]^3$ 的正方体中。</p>
+<p>注意 <code>vert.z() = vert.z() * f1 + f2</code> 这行代码，把 $-1$ 代入右边得到 $-n$，$1$ 代入右边得到 $-f$，因此我们有理由猜测 $[-n,-f]$ 被映射到了 $[-1,1]$. </p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> f1 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">100</span> <span class="token operator">-</span> <span class="token number">0.1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2.0</span><span class="token punctuation">;</span>
+<span class="token keyword">float</span> f2 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">100</span> <span class="token operator">+</span> <span class="token number">0.1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2.0</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span> <span class="token operator">&amp;</span> vert <span class="token operator">:</span> v<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    vert<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0.5</span><span class="token operator">*</span>width<span class="token operator">*</span><span class="token punctuation">(</span>vert<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    vert<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0.5</span><span class="token operator">*</span>height<span class="token operator">*</span><span class="token punctuation">(</span>vert<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    vert<span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> vert<span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> f1 <span class="token operator">+</span> f2<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>总结一下我们的发现：</p>
+<ol>
+<li>输入的 zNear 和 zFar 都是正数，表示近平面和远平面到原点的距离</li>
+<li>$[-n,-f]$ 被映射到了 $[-1,1]$</li>
+</ol>
+<p>最终我们能写出这样的投影矩阵：</p>
+<script type="math/tex; mode=display">
+\large
+\text{M}_\text{per} =
+\begin{bmatrix}
+\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
+0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
+0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
+0 & 0 & -1 & 0
+\end{bmatrix}</script><p>翻译成代码就好。</p>
+<h1 id="代码框架里有趣的地方"><a href="#代码框架里有趣的地方" class="headerlink" title="代码框架里有趣的地方"></a>代码框架里有趣的地方</h1><h2 id="ind-的作用"><a href="#ind-的作用" class="headerlink" title="ind 的作用"></a>ind 的作用</h2><p>首先我们看向 main.cpp 的 main 函数里的这段代码</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3f<span class="token operator">></span> pos<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3i<span class="token operator">></span> ind<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>pos 显然是三角形的三个顶点，但 ind 是做什么的？uh actually🤓☝️它定义了如何将顶点连接起来。对三角形来说它当然没什么用，但对多边形来说，它就很有用了。</p>
+<p>比如说，想象一下我们在画一个六边形，我们需要六个顶点。但由于在渲染时我们主要绘制三角形，所以我们要把六边形拆分成多个三角形，而拆分出的每个三角形就对应着 ind 里的一个元素了。</p>
+<p>对六边形来说，我们可能会定义下面这样的 pos 和 ind</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3f<span class="token operator">></span> pos
+<span class="token punctuation">&#123;</span>
+    <span class="token punctuation">&#123;</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>      <span class="token comment">// 0: 右</span>
+    <span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1.732</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>  <span class="token comment">// 1: 右上</span>
+    <span class="token punctuation">&#123;</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1.732</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token comment">// 2: 左上</span>
+    <span class="token punctuation">&#123;</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>     <span class="token comment">// 3: 左</span>
+    <span class="token punctuation">&#123;</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1.732</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span><span class="token comment">// 4: 左下</span>
+    <span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1.732</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span>  <span class="token comment">// 5: 右下</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3i<span class="token operator">></span> ind
+<span class="token punctuation">&#123;</span>
+    <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="id-的作用"><a href="#id-的作用" class="headerlink" title="id 的作用"></a>id 的作用</h2><p>继续看向 main.cpp 的 main 函数，把目光投向这段代码</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> pos_id <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">load_positions</span><span class="token punctuation">(</span>pos<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">auto</span> ind_id <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">load_indices</span><span class="token punctuation">(</span>ind<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+
+r<span class="token punctuation">.</span><span class="token function">draw</span><span class="token punctuation">(</span>pos_id<span class="token punctuation">,</span> ind_id<span class="token punctuation">,</span> rst<span class="token double-colon punctuation">::</span>Primitive<span class="token double-colon punctuation">::</span>Triangle<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在这里，我们把 id 传入了 draw 函数来画图。但为什么要用 id 呢？直接 &amp; 传参不行吗？</p>
+<p>【TODO：我不知道。AI说在正式的渲染代码里，我们会在load时做一些操作诸如把数据上传到显存，或者重新组织上传的各个数据来提高效率，但咱也不知道是不是真的。】</p>
 
                                                                                                                             
                                                                                                                                 
@@ -272,19 +391,10 @@
     
 <nav id="article-nav">
     
-        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note2-organization-overview/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    第二章——操作系统概述
-                
-            </div>
-        </a>
     
-    
-        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">第一章——系统接口</div>
+            <div class="article-nav-title">Note 1 Transformation</div>
         </a>
     
 </nav>
@@ -560,25 +670,25 @@
                     
                                 </li>
                                 
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         GAMES101
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         Hw
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                    <li class="file">
+                                    <li class="file active">
                                         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
                                             <i class="fa fa-file-text-o"></i>
                                             Hw 1 Transformation
@@ -613,10 +723,10 @@
                     
                                 </li>
                                 
-                                <li class="directory open">
+                                <li class="directory">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder-open"></i>
+                                            class="fa fa-folder"></i>
                                         MIT-6.S081
                                     </a>
                                     
@@ -649,10 +759,10 @@
                     
                                 </li>
                                 
-                                <li class="directory open">
+                                <li class="directory">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder-open"></i>
+                                            class="fa fa-folder"></i>
                                         Notes
                                     </a>
                                     
@@ -665,7 +775,7 @@
                                         </a>
                                     </li>
                                     
-                                    <li class="file active">
+                                    <li class="file">
                                         <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
                                             <i class="fa fa-file-text-o"></i>
                                             看我看我
