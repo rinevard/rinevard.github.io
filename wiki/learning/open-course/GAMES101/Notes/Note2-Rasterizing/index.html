@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/filters2.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/resample.png">
 <meta property="article:published_time" content="2025-08-25T08:10:28.000Z">
-<meta property="article:modified_time" content="2025-08-25T08:49:13.704Z">
+<meta property="article:modified_time" content="2025-08-25T12:47:00.167Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/jaggies.png">
@@ -367,13 +367,13 @@ s_T(x) = \sum_{n=-\infty}^{\infty}\delta(x-nT)</script><p>与原函数 $f$ 的�
 \\
 &\mathcal{F}(fg)=\hat f * \hat g
 \end{align*}</script><p>这就是说，时域的卷积对应频域的乘积，频域的乘积对应时域的卷积。</p>
-<h1 id="走样的原因"><a href="#走样的原因" class="headerlink" title="走样的原因"></a>走样的原因</h1><p>一开始我们就说过，走样的实质是原图的高频信号被错误采样。现在我们的工具已经足以分析究竟为什么发生了错误采样，以及如何缓解他们了。</p>
+<h1 id="走样的原因"><a href="#走样的原因" class="headerlink" title="走样的原因"></a>走样的原因</h1><p>一开始我们就说过，走样的实质是原图的高频信号被错误采样。现在我们的数学工具已经足以分析究竟为什么发生了错误采样，以及如何缓解他们了。</p>
 <p>先来看看为什么我们没有正确采样高频信号。</p>
 <p>假设我们希望对这样的函数进行采样，通过傅里叶变换我们可以得到其频域（右一）</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-origin.png" alt=""></p>
 <p>我们之前说过，可以把连续函数的均匀间隔采样表示为冲激串 $s_{T}(x)=\sum_{n}^{\infty}\delta(x-nT)$ 和原函数 $f$ 的乘积，而我们也已经知道冲激串的傅里叶变换还是冲激串</p>
 <script type="math/tex; mode=display">
-\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})</script><p>我们还知道卷积定理 $\mathcal{F}(s_Tf)=\hat s_T * \hat f$，我们甚至还知道卷积就是函数平移后的加权和，因此我们就知道，采样结果的频域就是原函数频域的无穷个复制各按 $\frac{n}{T}$ 平移的加权和。</p>
+\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})</script><p>再结合卷积定理 $\mathcal{F}(s_Tf)=\hat s_T * \hat f$，以及“卷积就是函数平移后的加权和”，我们就能推出，采样结果的傅里叶变换就是原函数的傅里叶变换的无穷个复制各按 $\frac{n}{T}$ 平移的和。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-sampled.png" alt=""></p>
 <p>由于我们的采样间隔 $T$ 不够小，即采样率 $\frac{1}{T}$ 不够大，所以相邻的两个复制间发生了重叠，导致高频信号和低频信号产生混合，这就引起了走样。而这正是“高频信号被错误采样”的实质。</p>
 <p>当我们在光栅化时，我们还把像素填上了颜色，这是在“reconstruction”即重建图像。不过由于在采样时我们已经发生了走样，无论怎么重建都不会有一个非常完美的结果了。</p>
