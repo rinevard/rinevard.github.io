@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/filters2.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/resample.png">
 <meta property="article:published_time" content="2025-08-25T08:10:28.000Z">
-<meta property="article:modified_time" content="2025-08-25T12:47:00.167Z">
+<meta property="article:modified_time" content="2025-08-26T08:49:50.299Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note2/jaggies.png">
@@ -371,7 +371,7 @@ s_T(x) = \sum_{n=-\infty}^{\infty}\delta(x-nT)</script><p>与原函数 $f$ 的�
 <p>先来看看为什么我们没有正确采样高频信号。</p>
 <p>假设我们希望对这样的函数进行采样，通过傅里叶变换我们可以得到其频域（右一）</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-origin.png" alt=""></p>
-<p>我们之前说过，可以把连续函数的均匀间隔采样表示为冲激串 $s_{T}(x)=\sum_{n}^{\infty}\delta(x-nT)$ 和原函数 $f$ 的乘积，而我们也已经知道冲激串的傅里叶变换还是冲激串</p>
+<p>我们之前说过，可以把连续函数的均匀间隔采样表示为冲激串 $s_{T}(x)=\sum_{n=-\infty}^{\infty}\delta(x-nT)$ 和原函数 $f$ 的乘积，而我们也已经知道冲激串的傅里叶变换还是冲激串</p>
 <script type="math/tex; mode=display">
 \hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})</script><p>再结合卷积定理 $\mathcal{F}(s_Tf)=\hat s_T * \hat f$，以及“卷积就是函数平移后的加权和”，我们就能推出，采样结果的傅里叶变换就是原函数的傅里叶变换的无穷个复制各按 $\frac{n}{T}$ 平移的和。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-sampled.png" alt=""></p>
@@ -512,6 +512,15 @@ I_{sharp}
 
     
 <nav id="article-nav">
+    
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Assignment 2 Rasterizing
+                
+            </div>
+        </a>
     
     
         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/" id="article-nav-older" class="article-nav-link-wrap">
@@ -745,6 +754,13 @@ I_{sharp}
                                         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
                                             <i class="fa fa-file-text-o"></i>
                                             Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
                                         </a>
                                     </li>
                                     

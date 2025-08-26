@@ -6,25 +6,28 @@
         
             <title>
                 
-                    Bomblab感想 | 
+                    Assignment 2 Rasterizing | 
                             Rinevard
             </title>
             
                 
-                    <meta name="keywords" content="Bomblab感想" />
+                    <meta name="keywords" content="Assignment 2 Rasterizing" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 objdum">
+                        <meta name="description" content="本次作业要求我们实现 Z-buffer 、栅格化和 SSAA（也就是超采样）。我们先看看前两个东西，再看看 SSAA。 Z-buffer和栅格化代码框架我们要补全的 rasterize_triangle 函数在 draw 函数内被调用，可以看到 draw 函数已经做好了三角形的投影变换，我们只要把 $[0, \text{width}] \times [0,\text{height}] \times">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Bomblab感想">
-<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/index.html">
+<meta property="og:title" content="Assignment 2 Rasterizing">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="写在前面bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 &#x3D; 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。 拆弹记录首先肯定要对 bomb 进行反汇编，我是用 objdum">
+<meta property="og:description" content="本次作业要求我们实现 Z-buffer 、栅格化和 SSAA（也就是超采样）。我们先看看前两个东西，再看看 SSAA。 Z-buffer和栅格化代码框架我们要补全的 rasterize_triangle 函数在 draw 函数内被调用，可以看到 draw 函数已经做好了三角形的投影变换，我们只要把 $[0, \text{width}] \times [0,\text{height}] \times">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-03-02T06:28:38.000Z">
-<meta property="article:modified_time" content="2025-08-22T03:14:43.978Z">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw2/new-vs-orig.gif">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw2/black-ssaa.png">
+<meta property="article:published_time" content="2025-08-26T12:15:16.000Z">
+<meta property="article:modified_time" content="2025-08-26T12:21:11.482Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw2/new-vs-orig.gif">
                             
 
                                 
@@ -205,7 +208,7 @@
 
                 <div class="outer">
                     
-                                <section id="main"><article id="post-learning/open-course/CMU-15-213/Labs/Bomblab" class="article article-type-post" itemscope
+                                <section id="main"><article id="post-learning/open-course/GAMES101/Hw/Hw2-rasterizing" class="article article-type-post" itemscope
     itemprop="blogPost">
     <div class="article-inner">
         
@@ -216,15 +219,15 @@
                                     
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/">CMU-15-213</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/">Labs</a>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
     </div>
 
                                         
                                             
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">
-            <time datetime="2025-03-02T06:28:38.000Z" itemprop="datePublished">2025-03-02</time>
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+            <time datetime="2025-08-26T12:15:16.000Z" itemprop="datePublished">2025-08-26</time>
         </a>
     </div>
 
@@ -236,7 +239,7 @@
                                     
     
         <h1 class="article-title" itemprop="name">
-            Bomblab感想
+            Assignment 2 Rasterizing
         </h1>
     
 
@@ -255,34 +258,121 @@
                                                                                                                             class="toc-title">
                                                                                                                             文章目录
                                                                                                                         </strong>
-                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%86%E5%BC%B9%E8%AE%B0%E5%BD%95"><span class="toc-number">2.</span> <span class="toc-text">拆弹记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.1.</span> <span class="toc-text">第一个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.2.</span> <span class="toc-text">第二个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.3.</span> <span class="toc-text">第三个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.4.</span> <span class="toc-text">第四个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.5.</span> <span class="toc-text">第五个炸弹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E4%B8%AA%E7%82%B8%E5%BC%B9"><span class="toc-number">2.6.</span> <span class="toc-text">第六个炸弹</span></a></li></ol></li></ol>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Z-buffer%E5%92%8C%E6%A0%85%E6%A0%BC%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">Z-buffer和栅格化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%A1%86%E6%9E%B6"><span class="toc-number">1.1.</span> <span class="toc-text">代码框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#insideTriangle-%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.</span> <span class="toc-text">insideTriangle 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rasterize-triangle-%E5%87%BD%E6%95%B0"><span class="toc-number">1.3.</span> <span class="toc-text">rasterize_triangle 函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SSAA%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">SSAA的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%87%B4%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.</span> <span class="toc-text">大致思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E5%9D%911"><span class="toc-number">2.2.</span> <span class="toc-text">踩坑1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E5%9D%912"><span class="toc-number">2.3.</span> <span class="toc-text">踩坑2</span></a></li></ol></li></ol>
                                                                                                                     </div>
                                                                                                                     
-                                                                                                                        <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>bomblab 比起 datalab 更友好一些，除了考察对汇编代码的理解以外，也在锻炼我们的 gdb 调试技能。用时共计 2+2+0.8+0.5+1.5+4 = 10.8h，比 datalab 用时略少一点。刚开始拆弹的时候是很兴奋的，做到后面倒是感觉有点无聊了，我感觉 attacklab 可能更有趣一些（虽然我还没做）。</p>
-<h1 id="拆弹记录"><a href="#拆弹记录" class="headerlink" title="拆弹记录"></a>拆弹记录</h1><p>首先肯定要对 bomb 进行反汇编，我是用 objdump 来反汇编，并把结果保存到了 txt 文件中。拿到汇编以后随便翻翻找到 phase 们，之后就进入拆弹阶段了。</p>
-<h2 id="第一个炸弹"><a href="#第一个炸弹" class="headerlink" title="第一个炸弹"></a>第一个炸弹</h2><p>phase_1 简单易懂，只是判断输入是否与某个字符串相等。我一开始以为字符串就是“0x402400”，后面才想到这是那个字符串的地址。用 gdb 设置断点即可得知字符串。<br>（别看我说得那么轻松，也是折腾了两小时多，毕竟完全没有 gdb 经验 🫠）</p>
-<h2 id="第二个炸弹"><a href="#第二个炸弹" class="headerlink" title="第二个炸弹"></a>第二个炸弹</h2><p>这也是一个不难的炸弹，把汇编代码往下读就能解决，喜欢的话可以加点注释帮助自己理解。<br>不过我仍然做了两个小时，主要在疑惑 read_six_numbers 后数字被读到了哪里。还有个有趣的犯蠢的地方，我一开始把 400f35 处的 0x18 当成了十进制 18，疑惑了很久 4n 怎么可能等于 18，后面猛然惊醒发现那是十六进制。🤣</p>
-<p>在这里我用到了这些新指令：</p>
-<pre class="line-numbers language-none"><code class="language-none">si  # 单步执行
-x&#x2F;10xw $sp          # 查看栈指针(sp)处的10个字(word)，以十六进制(x)显示
-x&#x2F;10i $pc      # 查看当前位置之后的10条指令
-i registers eax     # 查看寄存器值
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="第三个炸弹"><a href="#第三个炸弹" class="headerlink" title="第三个炸弹"></a>第三个炸弹</h2><p>用时 50 分钟（有进步！），这次有了更系统的拆弹方法——先把代码分段，然后分析代码提出若干个猜测和问题，随着解答问题就逐渐做掉了。🫠<br>我们可以轻松注意到输入的数字不能少于一个，再往下读就会 400f75 这一行，算一算就会很自然地猜测：输入要求我们选一个选项，跳过去然后 cmp。</p>
-<p>这里是我拆弹时提出的问题以及解答：</p>
-<ol>
-<li>输入按怎样的格式存储起来？存储在哪里？<br>分析栈后发现，看起来是读取了两个数字，存储在栈中</li>
-<li>400f6a 那行是怎么比较的？0x8(%rsp)是什么，输入值吗？猜测这是要求输入的选项值只能在 0-7 之间？<br>设一个断点就能回答这个问题了。</li>
-<li>400f75 跳到了哪里？是根据选项跳跃吗？<br>根据选项跳跃</li>
-<li>从选项跳到了 400fbe 后，0xc(%rsp)是定值还是会根据输入变化？<br>0xc(%rsp)是输入的第二个值。由于 8 对齐，我们需要用 0xc(%rsp)而非 0x10(%rsp)来得到第二个值。</li>
-</ol>
-<h2 id="第四个炸弹"><a href="#第四个炸弹" class="headerlink" title="第四个炸弹"></a>第四个炸弹</h2><p>用时半小时，我连 func4 都不想读，直接用 gdb 来执行 func4，找到返回 0 的输入就行了。这种解法感觉有逃课的嫌疑，不过你就说快不快吧！<br>在这里我用到了这个新指令：</p>
-<pre class="line-numbers language-none"><code class="language-none">(gdb) call (int)func4(11, 0, 14)
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h2 id="第五个炸弹"><a href="#第五个炸弹" class="headerlink" title="第五个炸弹"></a>第五个炸弹</h2><p>用时 1.5h，做到这里，我比起刚开始时已经对汇编代码熟悉不少了。首先把代码分成若干个小部分，然后猜测并验证每个部分的功能就能解决这个炸弹。比较有趣的地方是这里加入了一个金丝雀，我还疑惑了一阵子这是什么，后来才想到这是书上讲的金丝雀。</p>
-<h2 id="第六个炸弹"><a href="#第六个炸弹" class="headerlink" title="第六个炸弹"></a>第六个炸弹</h2><p>用时 4h，对这个炸弹，我感觉“根据运行时的状况猜代码的作用”比“分析代码”更加重要。一开始同样是把代码分成多个小局部，然后分段猜作用。这里引入了链表，还挺有趣。</p>
-<p>彩蛋？什么彩弹？</p>
+                                                                                                                        <p>本次作业要求我们实现 Z-buffer 、栅格化和 SSAA（也就是超采样）。我们先看看前两个东西，再看看 SSAA。</p>
+<h1 id="Z-buffer和栅格化"><a href="#Z-buffer和栅格化" class="headerlink" title="Z-buffer和栅格化"></a>Z-buffer和栅格化</h1><h2 id="代码框架"><a href="#代码框架" class="headerlink" title="代码框架"></a>代码框架</h2><p>我们要补全的 <code>rasterize_triangle</code> 函数在 <code>draw</code> 函数内被调用，可以看到 <code>draw</code> 函数已经做好了三角形的投影变换，我们只要把 $[0, \text{width}] \times [0,\text{height}] \times [n,f]$ 里的三角形渲染到屏幕上就好。输入的三角形大概形如这样：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>input triangle<span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>
+<span class="token number">529.259</span>
+    <span class="token number">350</span>
+<span class="token number">49.3857</span>
+      <span class="token number">1</span>
+<span class="token operator">--</span>
+    <span class="token number">350</span>
+<span class="token number">529.259</span>
+<span class="token number">49.3857</span>
+      <span class="token number">1</span>
+<span class="token operator">--</span>
+<span class="token number">170.741</span>
+    <span class="token number">350</span>
+<span class="token number">49.3857</span>
+      <span class="token number">1</span>
+<span class="token operator">--</span>
+<span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="insideTriangle-函数"><a href="#insideTriangle-函数" class="headerlink" title="insideTriangle 函数"></a>insideTriangle 函数</h2><p>用课上讲的叉乘法判断点是否在三角形内。“在三角形内”这个说法也不是特别严谨，更准确地说应该是判断三角形在屏幕上的二维投影是否包含这个点。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">/*
+    Return whether (x, y) is in the triangle, ignoring its z value.
+*/</span>
+<span class="token keyword">static</span> <span class="token keyword">bool</span> <span class="token function">insideTriangle</span><span class="token punctuation">(</span><span class="token keyword">float</span> x<span class="token punctuation">,</span> <span class="token keyword">float</span> y<span class="token punctuation">,</span> <span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>array<span class="token operator">&lt;</span>Vector4f<span class="token punctuation">,</span> <span class="token number">3</span><span class="token operator">></span><span class="token operator">&amp;</span> triangle<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    Vector2f point1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>triangle<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> triangle<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    Vector2f point2 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>triangle<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> triangle<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    Vector2f point3 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>triangle<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> triangle<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    Vector2f checked_point <span class="token operator">=</span> <span class="token punctuation">&#123;</span>x<span class="token punctuation">,</span> y<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    
+    <span class="token keyword">auto</span> cross_product <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">const</span> Vector2f<span class="token operator">&amp;</span> v1<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector2f<span class="token operator">&amp;</span> v2<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> v1<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> v2<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> v1<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> v2<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
 
+    <span class="token keyword">float</span> side1 <span class="token operator">=</span> <span class="token function">cross_product</span><span class="token punctuation">(</span>point1 <span class="token operator">-</span> checked_point<span class="token punctuation">,</span> point1 <span class="token operator">-</span> point2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> side2 <span class="token operator">=</span> <span class="token function">cross_product</span><span class="token punctuation">(</span>point2 <span class="token operator">-</span> checked_point<span class="token punctuation">,</span> point2 <span class="token operator">-</span> point3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> side3 <span class="token operator">=</span> <span class="token function">cross_product</span><span class="token punctuation">(</span>point3 <span class="token operator">-</span> checked_point<span class="token punctuation">,</span> point3 <span class="token operator">-</span> point1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>side1 <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> side2 <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> side3 <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">(</span>side1 <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> side2 <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> side3 <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="rasterize-triangle-函数"><a href="#rasterize-triangle-函数" class="headerlink" title="rasterize_triangle 函数"></a>rasterize_triangle 函数</h2><p>这个实现好像没什么特别值得说的地方，简简单单采采样，然后用 <code>depth_buf</code> 实现 z-buffer 就好。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//Screen space rasterization</span>
+<span class="token keyword">void</span> rst<span class="token double-colon punctuation">::</span>rasterizer<span class="token double-colon punctuation">::</span><span class="token function">rasterize_triangle</span><span class="token punctuation">(</span><span class="token keyword">const</span> Triangle<span class="token operator">&amp;</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">auto</span> v <span class="token operator">=</span> t<span class="token punctuation">.</span><span class="token function">toVector4</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Find bounding box</span>
+    <span class="token keyword">float</span> left <span class="token operator">=</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> right <span class="token operator">=</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> bottom <span class="token operator">=</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> top <span class="token operator">=</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span><span class="token operator">&amp;</span> vec<span class="token operator">:</span> v<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        left <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span>left<span class="token punctuation">,</span> vec<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        right <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span>right<span class="token punctuation">,</span> vec<span class="token punctuation">.</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        bottom <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span>bottom<span class="token punctuation">,</span> vec<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        top <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span>top<span class="token punctuation">,</span> vec<span class="token punctuation">.</span><span class="token function">y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Update pixels in bounding box</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> x <span class="token operator">=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>left<span class="token punctuation">)</span><span class="token punctuation">;</span> x <span class="token operator">&lt;=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>right<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span> x<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> y <span class="token operator">=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>bottom<span class="token punctuation">)</span><span class="token punctuation">;</span> y <span class="token operator">&lt;=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>top<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span> y<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">insideTriangle</span><span class="token punctuation">(</span>x<span class="token operator">+</span><span class="token number">0.5</span><span class="token punctuation">,</span> y<span class="token operator">+</span><span class="token number">0.5</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">continue</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token comment">// Interpolate z value </span>
+            <span class="token keyword">auto</span><span class="token punctuation">[</span>alpha<span class="token punctuation">,</span> beta<span class="token punctuation">,</span> gamma<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">computeBarycentric2D</span><span class="token punctuation">(</span>x<span class="token operator">+</span><span class="token number">0.5</span><span class="token punctuation">,</span> y<span class="token operator">+</span><span class="token number">0.5</span><span class="token punctuation">,</span> t<span class="token punctuation">.</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">float</span> w_reciprocal <span class="token operator">=</span> <span class="token number">1.0</span><span class="token operator">/</span><span class="token punctuation">(</span>alpha <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> beta <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> gamma <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">float</span> z_interpolated <span class="token operator">=</span> alpha <span class="token operator">*</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> beta <span class="token operator">*</span> v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> gamma <span class="token operator">*</span> v<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">z</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> v<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            z_interpolated <span class="token operator">*=</span> w_reciprocal<span class="token punctuation">;</span>
+
+            <span class="token comment">// A lower z-value means it is displayed in front</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>z_interpolated <span class="token operator">&lt;</span> depth_buf<span class="token punctuation">[</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                depth_buf<span class="token punctuation">[</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">]</span> <span class="token operator">=</span> z_interpolated<span class="token punctuation">;</span>
+                <span class="token function">set_pixel</span><span class="token punctuation">(</span><span class="token function">Vector3f</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> y<span class="token punctuation">,</span> z_interpolated<span class="token punctuation">)</span><span class="token punctuation">,</span> t<span class="token punctuation">.</span><span class="token function">getColor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="SSAA的实现"><a href="#SSAA的实现" class="headerlink" title="SSAA的实现"></a>SSAA的实现</h1><p>SSAA 的实现相较而言更困难一些，由于杂七杂八要改的地方比较多，我就先说下大致思路，再聊聊咱踩的两个坑。</p>
+<p>不过在此之前，先来看看我们的成果吧！（这是动图</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw2/new-vs-orig.gif" alt=""></p>
+<h2 id="大致思路"><a href="#大致思路" class="headerlink" title="大致思路"></a>大致思路</h2><p>我们要先把所有内容渲染到大小为 $(\text{width} * 2, \text{height} * 2<br>)$ 的自定义 buffer 里，再根据自定义 buffer 的内容填充屏幕上的像素。</p>
+<p>要注意的是，我们不能直接在 <code>rasterize_triangle</code> 里把三角形画到屏幕上（具体原因见“踩坑1”那一节），而是要在 <code>rasterize_triangle</code> 中把三角形画到自定义的 buffer 里，再新增一个 <code>resolve</code> 函数并把它放到 draw 的最后，从而把自定义 buffer 里的内容画到屏幕上：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> rst<span class="token double-colon punctuation">::</span>rasterizer<span class="token double-colon punctuation">::</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> y <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> y <span class="token operator">&lt;</span> height<span class="token punctuation">;</span> y<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> x <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> x <span class="token operator">&lt;</span> width<span class="token punctuation">;</span> x<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            frame_buf<span class="token punctuation">[</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token class-name">Vector3f</span><span class="token double-colon punctuation">::</span><span class="token function">Zero</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">4</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                frame_buf<span class="token punctuation">[</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">]</span> <span class="token operator">+=</span> ssaa_frame_buf<span class="token punctuation">[</span><span class="token punctuation">(</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">4</span> <span class="token operator">+</span> i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            frame_buf<span class="token punctuation">[</span>y <span class="token operator">*</span> width <span class="token operator">+</span> x<span class="token punctuation">]</span> <span class="token operator">/=</span> <span class="token number">4.0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>更细节一些的话，我们需要做这些工作：</p>
+<ol>
+<li>在 rasterizer.hpp 里加入 ssaa_frame_buf 和 resolve 的定义。</li>
+<li>修改 rasterizer 的初始化函数和 clear 函数，正确初始化和重置 ssaa_frame_buf。</li>
+<li>修改 set_pixel 函数，让它把内容画到 ssaa_frame_buf 里，而非 frame_buf 里。</li>
+<li>修改 rasterize_triangle，让它用使用更高的采样率。</li>
+<li>实现 resolve 函数。</li>
+</ol>
+<p>杂七杂八要改的地方比较多，这里就不放更多代码了。</p>
+<h2 id="踩坑1"><a href="#踩坑1" class="headerlink" title="踩坑1"></a>踩坑1</h2><p>SSAA、filtering 都建立在“我们对理想图像进行滤波”的基础上。也就是说，要先把世界里的对象按正确的前后顺序变为一个二维图像，然后再滤波。所以直接在 <code>rasterize_triangle</code> 里把像素划分成子像素然后取平均并不能实现 SSAA，而是会在三角形重叠的地方显示出黑边。</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw2/black-ssaa.png" alt=""></p>
+<p>让我们来看一个具体例子。考虑一个 1/4 被绿色三角形占据、3/4 被蓝色三角形占据的像素，SSAA 会把 1/4 绿 + 3/4 蓝 作为这个像素的颜色。</p>
+<p>而如果直接在 <code>rasterize_triangle</code> 里把像素划分成子像素然后取平均，那么栅格化蓝色三角形时，这个像素被当成 3/4 蓝；栅格化绿色三角形时，这个像素被当成 1/4 绿。无论谁在前面，最终结果要么是 3/4 蓝，要么是 1/4 绿，总与 SSAA 的结果 1/4 绿 + 3/4 蓝 不同。</p>
+<h2 id="踩坑2"><a href="#踩坑2" class="headerlink" title="踩坑2"></a>踩坑2</h2><p><code>insideTriangle</code> 的参数 x 和 y 的类型原本是 int，而在 SSAA 里我们把像素划分成了四个子像素，这些子像素的坐标大多不是整数。因此我们要把 <code>insideTriangle</code> 的 x 和 y 的类型改成 float. </p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">static</span> <span class="token keyword">bool</span> <span class="token function">insideTriangle</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">,</span> <span class="token keyword">int</span> y<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">*</span> _v<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>   
+    <span class="token comment">// TODO : Implement this function to check if the point (x, y) is inside the triangle represented by _v[0], _v[1], _v[2]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
                                                                                                                             
                                                                                                                                 
                                 </div>
@@ -295,19 +385,10 @@ i registers eax     # 查看寄存器值
     
 <nav id="article-nav">
     
-        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    这里有什么？
-                
-            </div>
-        </a>
     
-    
-        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">Datalab解析</div>
+            <div class="article-nav-title">Note 2 Rasterizing</div>
         </a>
     
 </nav>
@@ -384,19 +465,19 @@ i registers eax     # 查看寄存器值
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory open">
+                                <li class="directory">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder-open"></i>
+                                            class="fa fa-folder"></i>
                                         CMU-15-213
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory open">
+                                <li class="directory">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder-open"></i>
+                                            class="fa fa-folder"></i>
                                         Labs
                                     </a>
                                     
@@ -409,7 +490,7 @@ i registers eax     # 查看寄存器值
                                         </a>
                                     </li>
                                     
-                                    <li class="file active">
+                                    <li class="file">
                                         <a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">
                                             <i class="fa fa-file-text-o"></i>
                                             Bomblab感想
@@ -514,19 +595,19 @@ i registers eax     # 查看寄存器值
                     
                                 </li>
                                 
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         GAMES101
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         Assignments
                                     </a>
                                     
@@ -539,7 +620,7 @@ i registers eax     # 查看寄存器值
                                         </a>
                                     </li>
                                     
-                                    <li class="file">
+                                    <li class="file active">
                                         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
                                             <i class="fa fa-file-text-o"></i>
                                             Assignment 2 Rasterizing
