@@ -1,3 +1,4 @@
+http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/
 http://rinevard.github.io/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/
 http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/
 http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/
