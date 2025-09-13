@@ -23,7 +23,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw3/tangent-world-space.png">
 <meta property="article:published_time" content="2025-09-13T11:45:16.000Z">
-<meta property="article:modified_time" content="2025-09-13T11:45:02.972Z">
+<meta property="article:modified_time" content="2025-09-13T11:57:45.139Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw3/tangent-world-space.png">
@@ -271,11 +271,11 @@
 <p>考虑世界空间的某一点 $Q$，假设它在法线贴图中对应的一点为 $Q’$，我们知道点 $Q’$ 对应的法线被用于计算世界空间点 $Q$ 的修正法线。但等等，直接把 RGB 值复制过去看起来是错误的，因为随着物体转动，点 $Q$ 对应的法线也应当转动。因此，我们需要一个矩阵来实现这种从法线贴图上的法线到世界空间的修正法线的变换。</p>
 <p>贴图是二维的，因此我们再额外定义一个垂直纸面向外的轴 $n$，它表示法线的“默认方向”，这就得到了三维的<strong>切线空间</strong>。如果点 $Q’$ 对应的法线是 $(0,0,1)$，那么世界空间的点 $Q$ 的修正法线就是原本的几何法线。</p>
 <p>接下来就要考虑如何找到这个从切线空间到世界空间的旋转矩阵了。为了简单起见，我们先考虑单个三角形的旋转。之后我们会对每个点求出它自己的旋转矩阵。没错，每个点的旋转矩阵不同，这是因为每个点对应的矩阵会把 $(0,0,1)$ 映射到该点的几何法线，而每个点的几何法线一般不同。</p>
-<p>如下图所示，我们希望把法线贴图上的 $P_0’P_1’P_2’$ 旋转为世界空间的 $P_0P_1P_2$，设这里的旋转矩阵为 $M$，世界空间的 $P_0P_1P_2$ 的几何法线为 $\bold n$，则有</p>
+<p>如下图所示，我们希望把法线贴图上的 $P_0’P_1’P_2’$ 旋转为世界空间的 $P_0P_1P_2$，设这里的旋转矩阵为 $M$，世界空间的 $P_0P_1P_2$ 的几何法线为 $\mathbf{n}$，则有</p>
 <script type="math/tex; mode=display">
 \begin{align*}
 
-&M[0,0,1]^T=\bold n
+&M[0,0,1]^T=\mathbf n
 
 \end{align*}</script><p><img src="/images/learning/open-course/GAMES101/Assignments/hw3/tangent-world-space.png" alt=""></p>
 <p>但光靠这一个方程当然解不出 $M$，所以我们再考虑两个额外的方程：</p>
@@ -298,7 +298,7 @@
 \\
 &P_2'-P_0'= [\Delta u_2,\Delta v_2,0]^T
 \end{align*}</script><p>下面两个式子利用了 $P_k’$ 的第三个分量为 $0$ 的性质。</p>
-<p>结合第一个方程就能得到 $N=\bold n$，这里的 $\bold n$ 表示世界空间的 $P_0P_1P_2$ 的几何法线。再结合另外两个方程就能得到</p>
+<p>结合第一个方程就能得到 $N=\mathbf n$，这里的 $\mathbf n$ 表示世界空间的 $P_0P_1P_2$ 的几何法线。再结合另外两个方程就能得到</p>
 <script type="math/tex; mode=display">
 \begin{align*}
 &\Delta u_1 T+\Delta v_1 B=k(P_1-P_0)
@@ -311,7 +311,7 @@
 \\
 &B=k\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}
 \\
-&N=\bold n
+&N=\mathbf n
 \end{align*}</script><p>这个公式是不能用的，因为里面有未知数 $k$. 接下来我们解决这个问题。</p>
 <p>我们期望 TBN 矩阵是一个旋转矩阵，而旋转矩阵是正交矩阵，所以我们会对 TBN 做施密特正交化和归一化。只要 $P_0P_1P_2$ 和 $P_0’P_1’P_2’$ 大体是相似三角形，那么它们本来就差不多正交，所以这种正交化不会把 TBN 变化太多。而由于我们会对 TBN 做单位化，所以我们可以放心地令 $k=1$ 来用下面的公式求出 TBN：</p>
 <script type="math/tex; mode=display">
@@ -320,7 +320,7 @@
 \\
 &B=\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}
 \\
-&N=\bold n
+&N=\mathbf{n}
 \end{align*}</script><p>最后，我们希望 N 在正交化前后不变，所以在正交化后我们有</p>
 <script type="math/tex; mode=display">
 \begin{align*}
@@ -328,9 +328,9 @@
 \\
 &B'=B-(N\cdot B)N-(T'\cdot B)T'/T'^2
 \\
-&N'=\bold n
+&N'=\mathbf n
 
-\end{align*}</script><p>再做个单位化就能得到顶点的 TBN 矩阵了。还记得 TBN 矩阵是做什么的吗，我们用它来实现从切线空间到世界空间的变换。所以对点 $Q$，假设其法线贴图对应的法线为 $\bold n’$，那么修正后的法线就是 $M_{\text{TBN}}\bold n’$.</p>
+\end{align*}</script><p>再做个单位化就能得到顶点的 TBN 矩阵了。还记得 TBN 矩阵是做什么的吗，我们用它来实现从切线空间到世界空间的变换。所以对点 $Q$，假设其法线贴图对应的法线为 $\mathbf n’$，那么修正后的法线就是 $M_{\text{TBN}}\mathbf n’$.</p>
 <p>很好，我们现在能把单个三角形做变换了，但在真正的模型中，每个点的几何法线方向一般都不同，这就意味着它们一般都有不同的 TBN 矩阵。与计算顶点法线类似，我们会找到每个顶点相邻的所有三角形，并对它们的 $T$ 和 $B$ 做加权平均来得到这个顶点的 $T$ 和 $B$.</p>
 <p>在实践中，我们一般只计算出每个顶点的 $T$，然后在需要 $B$ 时通过叉乘 $N\times T$ 来计算。对那些非顶点的点，我们用重心坐标插值来算出其 $N$ 和 $T$，然后也做正交化和单位化来保证 TBN 矩阵的正交性。</p>
 <p>最后我们再简单分析一下怎么根据凹凸贴图做法线修正。在修正法线时，凹凸贴图与法线贴图的唯一区别就是没有直接给出法线。回顾一下切线空间的定义，我们就可以给凹凸贴图同样设置沿纸面向外的 $n$ 轴，然后把凹凸贴图想象成一个按灰度值起伏的曲面，这个曲面的法线就和法线贴图提供的法线相对应。</p>
@@ -359,7 +359,7 @@
 <script type="math/tex; mode=display">
 \begin{align*}
 &MQ=\alpha w_0\frac{MP_0}{w_0}+\beta w_1\frac{MP_1}{w_1}+\gamma w_2\frac{MP_2}{w_2}
-\end{align*}</script><p>现在右边的各个向量 $\frac{P_k}{w_k}$ 都已经是 $[x,y,z,1]^T$ 的形式了，我们给它们的系数做个归一化就能让左边的向量也变成 $[x,y,z,1]^T$ 的形式：</p>
+\end{align*}</script><p>现在右边的各个向量 $\frac{MP_k}{w_k}$ 都已经是 $[x,y,z,1]^T$ 的形式了，我们给它们的系数做个归一化就能让左边的向量也变成 $[x,y,z,1]^T$ 的形式：</p>
 <script type="math/tex; mode=display">
 \frac{MQ}{\alpha w_0 + \beta w_1 + \gamma w_2}
 =
