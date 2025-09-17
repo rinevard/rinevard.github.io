@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/</loc>
+    
+    <lastmod>2025-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/</loc>
     
     <lastmod>2025-09-13</lastmod>
@@ -65,7 +74,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -74,7 +83,16 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/</loc>
+    
+    <lastmod>2025-08-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -92,7 +110,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -119,7 +137,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -128,16 +146,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/</loc>
-    
-    <lastmod>2025-08-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -155,7 +164,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Datalab/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -164,7 +173,7 @@
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Datalab/</loc>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/</loc>
     
     <lastmod>2025-08-22</lastmod>
     
@@ -382,7 +391,7 @@
 
   <url>
     <loc>http://rinevard.github.io/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -391,106 +400,106 @@
 
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <loc>http://rinevard.github.io/categories/gamejam/</loc>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/gamejam/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/</loc>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E7%A2%8E%E7%A2%8E%E5%BF%B5/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E4%BA%8C%E6%AC%A1%E5%85%83/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/</loc>
-    <lastmod>2025-09-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/</loc>
-    <lastmod>2025-09-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Notes/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Notes/</loc>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Labs/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/</loc>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/</loc>
-    <lastmod>2025-09-13</lastmod>
+    <lastmod>2025-09-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/</loc>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
