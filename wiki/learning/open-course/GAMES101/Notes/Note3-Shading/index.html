@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note3/upsample.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note3/downsample.png">
 <meta property="article:published_time" content="2025-09-17T04:10:28.000Z">
-<meta property="article:modified_time" content="2025-09-17T04:00:34.591Z">
+<meta property="article:modified_time" content="2025-09-17T04:03:13.842Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Notes/note3/specular.png">
@@ -280,24 +280,24 @@
 <ol>
 <li>光强 $c_l$.</li>
 <li>物体材质 $c_r$. 不同物体对光的反射率是不同的，即使是同一个物体也对不同颜色的光有不同反射率。</li>
-<li>物体表面法线 $\bold{n}$.</li>
-<li>光源方向 $\bold{l}$.</li>
+<li>物体表面法线 $\mathbf{n}$.</li>
+<li>光源方向 $\mathbf{l}$.</li>
 </ol>
 <p>最终结果可以写成 </p>
 <script type="math/tex; mode=display">
-L_d = c_r c_l \max (0, \bold{n} \cdot \bold{l})</script><p>由于光强一般随距离衰减，所以 $c_l$ 一般反比于距离的平方 $r^2$. </p>
+L_d = c_r c_l \max (0, \mathbf{n} \cdot \mathbf{l})</script><p>由于光强一般随距离衰减，所以 $c_l$ 一般反比于距离的平方 $r^2$. </p>
 <h2 id="镜面反射（Specular-Reflection）"><a href="#镜面反射（Specular-Reflection）" class="headerlink" title="镜面反射（Specular Reflection）"></a>镜面反射（Specular Reflection）</h2><p>镜面反射中，光主要向一个方向反射，所以镜面反射的光与摄像机位置有关。</p>
 <script type="math/tex; mode=display">
-L_s = c_pc_l\max(0, \bold n \cdot \bold h)^p</script><p>其中 $c_p$ 是自定义的 RGB 值，允许我们控制高光颜色，指数 $p$ 是为了保证我们只在小范围内看到高光，$p$ 越大这个高光可见范围越小，而 $\bold h$ 的定义如下：</p>
+L_s = c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p</script><p>其中 $c_p$ 是自定义的 RGB 值，允许我们控制高光颜色，指数 $p$ 是为了保证我们只在小范围内看到高光，$p$ 越大这个高光可见范围越小，而 $\mathbf h$ 的定义如下：</p>
 <script type="math/tex; mode=display">
-\bold h = (\bold e + \bold l).\text{normalized()}</script><p>还有一种写法把 $\bold n \cdot \bold h$ 换成了 $\bold r \cdot \bold e$，简单计算可以发现 $\bold<br>n$ 和 $\bold h$ 的夹角是 $\bold r$ 和 $\bold e$ 的夹角的一半，所以这两个写法在思路上是一样的，都在考虑反射光方向和摄像机方向的夹角，不过在数值上会略有差别。本文采用 $\bold n \cdot \bold h$ 的写法。</p>
+\mathbf h = (\mathbf e + \mathbf l).\text{normalized()}</script><p>还有一种写法把 $\mathbf n \cdot \mathbf h$ 换成了 $\mathbf r \cdot \mathbf e$，简单计算可以发现 $\mathbf<br>n$ 和 $\mathbf h$ 的夹角是 $\mathbf r$ 和 $\mathbf e$ 的夹角的一半，所以这两个写法在思路上是一样的，都在考虑反射光方向和摄像机方向的夹角，不过在数值上会略有差别。本文采用 $\mathbf n \cdot \mathbf h$ 的写法。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/specular.png" alt=""></p>
 <h2 id="环境光（Ambient-Lighting）"><a href="#环境光（Ambient-Lighting）" class="headerlink" title="环境光（Ambient Lighting）"></a>环境光（Ambient Lighting）</h2><p>如果只考虑漫反射和镜面反射，我们会发现没有面朝光源的物体完全是黑色的，但现实里显然不是如此。这是因为在现实里，光经过多次反射而照亮了那些没有面朝光源的物体。我们可以近似地认为有一种充斥着整个空间的光，并把它叫做环境光，公式如下：</p>
 <script type="math/tex; mode=display">
 L_a=c_r c_a</script><p>其中 $c_a$ 是环境光的强度。</p>
 <h2 id="冯氏光照模型"><a href="#冯氏光照模型" class="headerlink" title="冯氏光照模型"></a>冯氏光照模型</h2><p>综合来看，我们就得到了<strong>冯氏光照模型</strong>，公式如下：</p>
 <script type="math/tex; mode=display">
-L=c_r(c_a+c_l\max{(0,\bold n \cdot \bold l)})+c_pc_l\max(0, \bold n \cdot \bold h)^p</script><p>其中 </p>
+L=c_r(c_a+c_l\max{(0,\mathbf n \cdot \mathbf l)})+c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p</script><p>其中 </p>
 <ol>
 <li>$c_r$ 是物体材质，表示物体对光的反射率，一般是一个 Vector3f 类型的值，因为物体对不同颜色的光有不同反射率；</li>
 <li>$c_a$ 是环境光强，一般是一个 Vector3f 类型的值；</li>
@@ -343,11 +343,11 @@ P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}</script><p>这里的 $S$ 是面积�
 <li>Framebuffer Operations：深度测试等</li>
 </ol>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/pipeline.png" alt=""></p>
-<h1 id="纹理放大和纹理缩小"><a href="#纹理放大和纹理缩小" class="headerlink" title="纹理放大和纹理缩小"></a>纹理放大和纹理缩小</h1><p>在做纹理映射时，帖图太小和贴图太大都会有问题。</p>
+<h1 id="纹理放大和纹理缩小"><a href="#纹理放大和纹理缩小" class="headerlink" title="纹理放大和纹理缩小"></a>纹理放大和纹理缩小</h1><p>在做纹理映射时，贴图太小和贴图太大都会有问题。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/mag-minification.png" alt=""></p>
 <h2 id="纹理放大"><a href="#纹理放大" class="headerlink" title="纹理放大"></a>纹理放大</h2><p>贴图太小时要做纹理放大，对采样点做双线性插值即可。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/upsample.png" alt=""></p>
-<h2 id="纹理缩小"><a href="#纹理缩小" class="headerlink" title="纹理缩小"></a>纹理缩小</h2><p>贴图太大时直觉上比帖图太小更好处理，但恰恰相反。还记得频谱吗，帖图太大代表高频有更多信息，我们会因采样频率不足而无法正确反映高频信息，导致结果出现锯齿、摩尔纹等走样问题。</p>
+<h2 id="纹理缩小"><a href="#纹理缩小" class="headerlink" title="纹理缩小"></a>纹理缩小</h2><p>贴图太大时直觉上比贴图太小更好处理，但恰恰相反。还记得频谱吗，贴图太大代表高频有更多信息，我们会因采样频率不足而无法正确反映高频信息，导致结果出现锯齿、摩尔纹等走样问题。</p>
 <p>最常用的缓解方法是 Mipmapping。基本思路是，我们分析屏幕上每个像素在贴图上覆盖的像素数量，对那些覆盖较多的，就让他们去被缩小的贴图上采样，这样就能缓解欠采样问题。</p>
 <p>首先我们要创建“缩小的贴图”，Mipmap链包含一系列纹理 $D_0, D_1, D_2, \ldots, D_N$，其中 $D_i$ 的分辨率为 $\frac{W}{2^i} \times \frac{H}{2^i}$，直到最内层为 $1 \times 1$ 像素。</p>
 <p>然后我们要分析单个屏幕像素覆盖了多少纹理像素，大致思路是计算屏幕空间的相邻点映射到贴图空间后的距离。贴图空间里相邻像素距离为 $1$，所以如果屏幕空间的相邻点映射到贴图空间后的距离为 $x$，我们就认为它覆盖了 $x$ 个像素。</p>
