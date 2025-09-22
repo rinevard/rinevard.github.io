@@ -291,90 +291,61 @@
 <h1 id="数学知识"><a href="#数学知识" class="headerlink" title="数学知识"></a>数学知识</h1><p>为了不让文章太长，这里我们省略所有的证明。不过所有的证明都并不困难，有空的话可以自己证一下试试。</p>
 <h2 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h2><p>我们先来看看三种卷积——离散-离散卷积、连续-连续卷积、离散-连续卷积。下面的 $f_{\rightarrow t}$ 表示将函数 $f$ 向右平移 $t$ 长度得到的新函数：</p>
 <p>离散-离散卷积</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&(a*b)[i]=
-\sum_{j}a[j]b[i-j]
-\\
-&(a*b)=\sum_{j}a[j]b_{\rightarrow j}
-\end{align*}</script><p>连续-连续卷积</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&(f*g)(x)=\int_{-\infty}^{\infty}
-f(t)g(x-t)dt
-\\
-&(f*g)=\int_{-\infty}^{\infty}
-f(t)g_{\rightarrow t}dt
-\end{align*}</script><p>离散-连续卷积</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&(a*f)(x)=\sum_{i}a[i]
-f(x-i)
-\\
-&(a*f)=\sum_{i}a[i]f_{\rightarrow i}
-\end{align*}</script><p>我们会注意到，卷积可以表示为函数平移后的加权和。</p>
+<p>$$<br>\begin{align<em>}<br>&amp;(a</em>b)[i]=<br>\sum_{j}a[j]b[i-j]<br>\<br>&amp;(a<em>b)=\sum_{j}a[j]b_{\rightarrow j}<br>\end{align</em>}<br>$$</p>
+<p>连续-连续卷积</p>
+<p>$$<br>\begin{align<em>}<br>&amp;(f</em>g)(x)=\int_{-\infty}^{\infty}<br>f(t)g(x-t)dt<br>\<br>&amp;(f<em>g)=\int_{-\infty}^{\infty}<br>f(t)g_{\rightarrow t}dt<br>\end{align</em>}<br>$$</p>
+<p>离散-连续卷积</p>
+<p>$$<br>\begin{align<em>}<br>&amp;(a</em>f)(x)=\sum_{i}a[i]<br>f(x-i)<br>\<br>&amp;(a<em>f)=\sum_{i}a[i]f_{\rightarrow i}<br>\end{align</em>}<br>$$</p>
+<p>我们会注意到，卷积可以表示为函数平移后的加权和。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/convlution.png" alt=""></p>
 <p>卷积是过会儿会用到的妙妙小工具。</p>
 <h2 id="傅里叶级数和傅里叶变换"><a href="#傅里叶级数和傅里叶变换" class="headerlink" title="傅里叶级数和傅里叶变换"></a>傅里叶级数和傅里叶变换</h2><p>我们之前提到，走样的实质是原图的高频信号被错误采样。图像作为一个 $R^2\rightarrow \text{RGBA<br>}$的函数，怎么会有高频和低频之分呢？uh actually☝️🤓 我们处理的绝大多数函数都有频域，这个频域可以通过傅里叶变换得到。</p>
 <p>先回顾一下<strong>傅里叶级数</strong>。熟知在 $[-\frac{T}{2},\frac{T}{2}]$ 内，函数 $f(x)$ 可以表示为</p>
-<script type="math/tex; mode=display">
-f(x)=\sum_{n=-\infty}^{\infty}c_n e^{inw_0 x}</script><p>其中</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&c_n=\frac{1}{T}\int_{-\frac{T}{2}}^{\frac{T}{2}} f(t)e^{-inw_0t}dt
-\\
-&w_0=\frac{2\pi}{T}
-
-\end{align*}</script><p>这本质上是函数在闭区间内的正交基展开，这个展开的周期为 $T$.</p>
+<p>$$<br>f(x)=\sum_{n=-\infty}^{\infty}c_n e^{inw_0 x}<br>$$</p>
+<p>其中</p>
+<p>$$<br>\begin{align*}<br>&amp;c_n=\frac{1}{T}\int_{-\frac{T}{2}}^{\frac{T}{2}} f(t)e^{-inw_0t}dt<br>\<br>&amp;w_0=\frac{2\pi}{T}</p>
+<p>\end{align*}<br>$$</p>
+<p>这本质上是函数在闭区间内的正交基展开，这个展开的周期为 $T$.</p>
 <p>当 $T \rightarrow \infty$ 时，令 $w_n=nw_0$，$\Delta w=w_n-w_{n-1}=w_0$ 再结合积分的定义，我们就能（不太严谨地）求出</p>
-<script type="math/tex; mode=display">
-f(x)=\frac{1}{2\pi}\int_{-\infty}^{\infty}\bigg(\int_{-\infty}^{\infty}f(t)e^{-iwt}dt \bigg)e^{iwx}dw</script><p>我们可以令 $u=\frac{w}{2\pi}$ 从而去掉积分外面的那个系数</p>
-<script type="math/tex; mode=display">
-f(x)=\int_{-\infty}^{\infty}\bigg(\int_{-\infty}^{\infty}f(t)e^{-2\pi iut}dt \bigg)e^{2\pi iux}du</script><p>而 $e^{2\pi iux}$ 的系数</p>
-<script type="math/tex; mode=display">
-\hat f(u)=\int_{-\infty}^{\infty}f(t)e^{-2\pi iut}dt</script><p>就是 $f$ 的<strong>傅里叶变换</strong>了，它也记作 $\mathcal{F}(f)$.</p>
+<p>$$<br>f(x)=\frac{1}{2\pi}\int_{-\infty}^{\infty}\bigg(\int_{-\infty}^{\infty}f(t)e^{-iwt}dt \bigg)e^{iwx}dw<br>$$</p>
+<p>我们可以令 $u=\frac{w}{2\pi}$ 从而去掉积分外面的那个系数</p>
+<p>$$<br>f(x)=\int_{-\infty}^{\infty}\bigg(\int_{-\infty}^{\infty}f(t)e^{-2\pi iut}dt \bigg)e^{2\pi iux}du<br>$$</p>
+<p>而 $e^{2\pi iux}$ 的系数</p>
+<p>$$<br>\hat f(u)=\int_{-\infty}^{\infty}f(t)e^{-2\pi iut}dt<br>$$</p>
+<p>就是 $f$ 的<strong>傅里叶变换</strong>了，它也记作 $\mathcal{F}(f)$.</p>
 <p>把 $\hat f$ 代入就得到了<strong>逆傅里叶变换</strong></p>
-<script type="math/tex; mode=display">
-f(x)=\int_{-\infty}^{\infty}\hat f(u)e^{2\pi iux}du</script><p>逆傅里叶变换把函数变成了不同频率的三角函数的积分/求和，这就是我们之前所说的“高频信号”和“低频信号”的含义。之后我们会介绍采样导致高频信号丢失的原因，不过在此之前我们先看看傅里叶变换的一些性质。</p>
+<p>$$<br>f(x)=\int_{-\infty}^{\infty}\hat f(u)e^{2\pi iux}du<br>$$</p>
+<p>逆傅里叶变换把函数变成了不同频率的三角函数的积分/求和，这就是我们之前所说的“高频信号”和“低频信号”的含义。之后我们会介绍采样导致高频信号丢失的原因，不过在此之前我们先看看傅里叶变换的一些性质。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/fourier.png" alt=""></p>
 <h2 id="傅里叶变换的性质"><a href="#傅里叶变换的性质" class="headerlink" title="傅里叶变换的性质"></a>傅里叶变换的性质</h2><p>我们列举傅里叶变换的几个常用的性质。</p>
 <ol>
 <li>如果 $f$ 是实函数，$\hat f$ 是偶函数。</li>
 <li><p>函数和傅里叶变换的平方积分相等</p>
-<script type="math/tex; mode=display">
- \int (f(x))^2dx=\int (\hat f(u))^2du</script></li>
+<p> $$<br> \int (f(x))^2dx=\int (\hat f(u))^2du<br> $$</p>
+</li>
 <li><p>原函数拉长，傅里叶变换收紧</p>
-<script type="math/tex; mode=display">
- \mathcal{F}(f(x/b))=b\hat f(bu)</script></li>
+<p> $$<br> \mathcal{F}(f(x/b))=b\hat f(bu)<br> $$</p>
+</li>
 </ol>
 <h2 id="狄拉克脉冲函数和冲激串"><a href="#狄拉克脉冲函数和冲激串" class="headerlink" title="狄拉克脉冲函数和冲激串"></a>狄拉克脉冲函数和冲激串</h2><p>狄拉克脉冲函数的定义如下：</p>
-<script type="math/tex; mode=display">
-\delta(t) =
-\begin{cases}
-\infty, & t = 0 \\
-0, & t \neq 0
-\end{cases}</script><p>我们可以把连续信号的均匀间隔采样表示为冲激串</p>
-<script type="math/tex; mode=display">
-s_T(x) = \sum_{n=-\infty}^{\infty}\delta(x-nT)</script><p>与原函数 $f$ 的乘积，这里的 $T$ 表示两个采样点之间的间隔。</p>
+<p>$$<br>\delta(t) =<br>\begin{cases}<br>\infty, &amp; t = 0 \<br>0, &amp; t \neq 0<br>\end{cases}<br>$$</p>
+<p>我们可以把连续信号的均匀间隔采样表示为冲激串</p>
+<p>$$<br>s_T(x) = \sum_{n=-\infty}^{\infty}\delta(x-nT)<br>$$</p>
+<p>与原函数 $f$ 的乘积，这里的 $T$ 表示两个采样点之间的间隔。</p>
 <p>$s_T$ 的傅里叶变换为</p>
-<script type="math/tex; mode=display">
-\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})</script><p>它仍然是一系列狄拉克函数的和。</p>
+<p>$$<br>\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})<br>$$</p>
+<p>它仍然是一系列狄拉克函数的和。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/dirac.png" alt=""></p>
 <h2 id="卷积定理"><a href="#卷积定理" class="headerlink" title="卷积定理"></a>卷积定理</h2><p>之前说过，将 $s_T$ 和原函数 $f$ 相乘能获得许多重要的采样性质，我们很快就会讨论他们了，在此之前我们还要补充最后一个知识——卷积定理。</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&\mathcal{F}(f * g)
-=\hat f\hat g
-\\
-&\mathcal{F}(fg)=\hat f * \hat g
-\end{align*}</script><p>这就是说，时域的卷积对应频域的乘积，频域的乘积对应时域的卷积。</p>
+<p>$$<br>\begin{align<em>}<br>&amp;\mathcal{F}(f </em> g)<br>=\hat f\hat g<br>\<br>&amp;\mathcal{F}(fg)=\hat f <em> \hat g<br>\end{align</em>}<br>$$</p>
+<p>这就是说，时域的卷积对应频域的乘积，频域的乘积对应时域的卷积。</p>
 <h1 id="走样的原因"><a href="#走样的原因" class="headerlink" title="走样的原因"></a>走样的原因</h1><p>一开始我们就说过，走样的实质是原图的高频信号被错误采样。现在我们的数学工具已经足以分析究竟为什么发生了错误采样，以及如何缓解他们了。</p>
 <p>先来看看为什么我们没有正确采样高频信号。</p>
 <p>假设我们希望对这样的函数进行采样，通过傅里叶变换我们可以得到其频域（右一）</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-origin.png" alt=""></p>
 <p>我们之前说过，可以把连续函数的均匀间隔采样表示为冲激串 $s_{T}(x)=\sum_{n=-\infty}^{\infty}\delta(x-nT)$ 和原函数 $f$ 的乘积，而我们也已经知道冲激串的傅里叶变换还是冲激串</p>
-<script type="math/tex; mode=display">
-\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})</script><p>再结合卷积定理 $\mathcal{F}(s_Tf)=\hat s_T * \hat f$，以及“卷积就是函数平移后的加权和”，我们就能推出，采样结果的傅里叶变换就是原函数的傅里叶变换的无穷个复制各按 $\frac{n}{T}$ 平移的和。</p>
+<p>$$<br>\hat s_T(u)=\frac{1}{T}\sum_{n=-\infty}^{\infty}\delta(u-\frac{n}{T})<br>$$</p>
+<p>再结合卷积定理 $\mathcal{F}(s_Tf)=\hat s_T * \hat f$，以及“卷积就是函数平移后的加权和”，我们就能推出，采样结果的傅里叶变换就是原函数的傅里叶变换的无穷个复制各按 $\frac{n}{T}$ 平移的和。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/sample-sampled.png" alt=""></p>
 <p>由于我们的采样间隔 $T$ 不够小，即采样率 $\frac{1}{T}$ 不够大，所以相邻的两个复制间发生了重叠，导致高频信号和低频信号产生混合，这就引起了走样。而这正是“高频信号被错误采样”的实质。</p>
 <p>当我们在光栅化时，我们还把像素填上了颜色，这是在“reconstruction”即重建图像。不过由于在采样时我们已经发生了走样，无论怎么重建都不会有一个非常完美的结果了。</p>
@@ -387,120 +358,33 @@ s_T(x) = \sum_{n=-\infty}^{\infty}\delta(x-nT)</script><p>与原函数 $f$ 的�
 <p>对图像的光栅化来说，增加分辨率就对应前者；在采样前对原图应用各种滤波器就对应后者。</p>
 <p>我们当然会问，增加采样率能缓解走样，那增加到多大合适呢？我们希望相邻的两个复制间的距离足够大以至于不发生重叠，这就需要输入信号的最高频率小于采样频率的一半。采样频率的一半也被称为<strong>奈奎斯特频率</strong>。理论上说，只要奈奎斯特频率高于被采样信号的最高频率，我们就能完美复原原信号。</p>
 <p>接下来我们看看几个常见的滤波器，它们常被用于和别的函数做卷积。由于我们知道卷积可以被理解为一种“加权平均”，所以我们希望滤波器都是归一化的。</p>
-<table>
-  <thead>
-    <tr>
-      <th>名称</th>
-      <th>公式</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Box filter（离散）</td>
-      <td>$a_{\text{box},r}[i] =
-\begin{cases}
-1/(2r + 1) & |i| \le r, \\
-0 & \text{otherwise}.
-\end{cases}$</td>
-    </tr>
-    <tr>
-      <td>Box filter（连续）</td>
-      <td>$f_{\text{box},r}(x) =
-\begin{cases}
-1/(2r) & -r \le x < r, \\
-0 & \text{otherwise}.
-\end{cases}$</td>
-    </tr>
-    <tr>
-      <td>Tent filter</td>
-      <td>$f_{\text{tent}}(x) =
-\begin{cases}
-1 - |x| & |x| < 1, \\
-0 & \text{otherwise};
-\end{cases}$</td>
-    </tr>
-    <tr>
-      <td>Gaussian filter</td>
-      <td>$f_{g, \sigma}(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-x^2/2\sigma^2}$</td>
-    </tr>
-  </tbody>
-</table>
+<table><br>  <thead><br>    <tr><br>      <th>名称</th><br>      <th>公式</th><br>    </tr><br>  </thead><br>  <tbody><br>    <tr><br>      <td>Box filter（离散）</td><br>      <td>$a_{\text{box},r}[i] =<br>\begin{cases}<br>1/(2r + 1) &amp; |i| \le r, \<br>0 &amp; \text{otherwise}.<br>\end{cases}$</td><br>    </tr><br>    <tr><br>      <td>Box filter（连续）</td><br>      <td>$f_{\text{box},r}(x) =<br>\begin{cases}<br>1/(2r) &amp; -r \le x &lt; r, \<br>0 &amp; \text{otherwise}.<br>\end{cases}$</td><br>    </tr><br>    <tr><br>      <td>Tent filter</td><br>      <td>$f_{\text{tent}}(x) =<br>\begin{cases}<br>1 - |x| &amp; |x| &lt; 1, \<br>0 &amp; \text{otherwise};<br>\end{cases}$</td><br>    </tr><br>    <tr><br>      <td>Gaussian filter</td><br>      <td>$f_{g, \sigma}(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-x^2/2\sigma^2}$</td><br>    </tr><br>  </tbody><br></table>
 
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/filters1.png" alt=""></p>
-<table>
-  <thead>
-    <tr>
-      <th>名称</th>
-      <th>公式</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>B-Spline Cubic Filter</td>
-      <td>$f_B(x) = \frac{1}{6}
-\begin{cases}
--3(1 - |x|)^3 + 3(1 - |x|)^2 + 3(1 - |x|) + 1 & -1 \le x \le 1, \\
-(2 - |x|)^3 & 1 \le |x| \le 2, \\
-0 & \text{otherwise}.
-\end{cases}$</td>
-    </tr>
-    <tr>
-      <td>Catmull-Rom Cubic Filter</td>
-      <td>$f_C(x) = \frac{1}{2}
-\begin{cases}
--3(1 - |x|)^3 + 4(1 - |x|)^2 + (1 - |x|) & -1 \le x \le 1, \\
-(2 - |x|)^3 - (2 - |x|)^2 & 1 \le |x| \le 2, \\
-0 & \text{otherwise}.
-\end{cases}$</td>
-    </tr>
-    <tr>
-      <td>Mitchell-Netravali Cubic Filter</td>
-      <td>$f_M(x) = \frac{1}{3}f_B(x) + \frac{2}{3}f_C(x)
-\\
-= \frac{1}{18}
-\begin{cases} 
--21(1 - |x|)^3 + 27(1 - |x|)^2 + 9(1 - |x|) + 1 & -1 \le x \le 1, \\
-7(2 - |x|)^3 - 6(2 - |x|)^2 & 1 \le |x| \le 2, \\
-0 & \text{otherwise}.
-\end{cases}$</td>
-    </tr>
-  </tbody>
-</table>
+<table><br>  <thead><br>    <tr><br>      <th>名称</th><br>      <th>公式</th><br>    </tr><br>  </thead><br>  <tbody><br>    <tr><br>      <td>B-Spline Cubic Filter</td><br>      <td>$f_B(x) = \frac{1}{6}<br>\begin{cases}<br>-3(1 - |x|)^3 + 3(1 - |x|)^2 + 3(1 - |x|) + 1 &amp; -1 \le x \le 1, \<br>(2 - |x|)^3 &amp; 1 \le |x| \le 2, \<br>0 &amp; \text{otherwise}.<br>\end{cases}$</td><br>    </tr><br>    <tr><br>      <td>Catmull-Rom Cubic Filter</td><br>      <td>$f_C(x) = \frac{1}{2}<br>\begin{cases}<br>-3(1 - |x|)^3 + 4(1 - |x|)^2 + (1 - |x|) &amp; -1 \le x \le 1, \<br>(2 - |x|)^3 - (2 - |x|)^2 &amp; 1 \le |x| \le 2, \<br>0 &amp; \text{otherwise}.<br>\end{cases}$</td><br>    </tr><br>    <tr><br>      <td>Mitchell-Netravali Cubic Filter</td><br>      <td>$f_M(x) = \frac{1}{3}f_B(x) + \frac{2}{3}f_C(x)<br>\<br>= \frac{1}{18}<br>\begin{cases}<br>-21(1 - |x|)^3 + 27(1 - |x|)^2 + 9(1 - |x|) + 1 &amp; -1 \le x \le 1, \<br>7(2 - |x|)^3 - 6(2 - |x|)^2 &amp; 1 \le |x| \le 2, \<br>0 &amp; \text{otherwise}.<br>\end{cases}$</td><br>    </tr><br>  </tbody><br></table>
 
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/filters2.png" alt=""></p>
 <p>除了过滤高频信号之外，滤波器还在重建图像时发挥着重要作用。还记得吗，离散-连续卷积能把一系列离散点变成一个连续函数。在根据采样点重建图像时，我们基本就是在做采样点和滤波器的卷积。在光栅化的“把每个像素点的中心采样颜色填到像素点上”这一步中，我们就是在将采样点和 Box filter 做卷积。</p>
 <p>总而言之，为了缓解走样，我们可以以图像细节丰富度为代价，先用低通滤波器滤波，再采样+重建。当然，如果我们有更高分辨率的屏幕就更好了~</p>
 <h1 id="其他小知识"><a href="#其他小知识" class="headerlink" title="其他小知识"></a>其他小知识</h1><h2 id="常见滤波器的傅里叶变换"><a href="#常见滤波器的傅里叶变换" class="headerlink" title="常见滤波器的傅里叶变换"></a>常见滤波器的傅里叶变换</h2><p><img src="/images/learning/open-course/GAMES101/Notes/note2/fourier-all.png" alt=""></p>
 <h2 id="卷积的单位元"><a href="#卷积的单位元" class="headerlink" title="卷积的单位元"></a>卷积的单位元</h2><p>任何离散信号和单位脉冲序列做卷积，结果还是原本的离散信号</p>
-<script type="math/tex; mode=display">
-\delta[n] =
-\begin{cases}
-1, & n = 0 \\
-0, & n \neq 0
-\end{cases}</script><p>任何连续信号和狄拉克函数做卷积，结果还是原本的连续信号</p>
-<script type="math/tex; mode=display">
-\delta(t) =
-\begin{cases}
-\infty, & t = 0 \\
-0, & t \neq 0
-\end{cases}</script><h2 id="二维卷积和二维滤波器"><a href="#二维卷积和二维滤波器" class="headerlink" title="二维卷积和二维滤波器"></a>二维卷积和二维滤波器</h2><p>我们这里只给出连续-连续的二维卷积，别的情况都差不多。</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&(f*g)(x,y)=\int\int
-f(x-x',y-y')g(x',y')dx'dy'
-\end{align*}</script><p>对滤波器 $f(x)$，我们简单地定义 $g(x,y)=f(x)f(y)$ 就得到了这个滤波器对应的二维滤波器。一个比较好的性质是，如果 $f$ 是归一化的，那么 $g$ 也是归一化的。</p>
+<p>$$<br>\delta[n] =<br>\begin{cases}<br>1, &amp; n = 0 \<br>0, &amp; n \neq 0<br>\end{cases}<br>$$</p>
+<p>任何连续信号和狄拉克函数做卷积，结果还是原本的连续信号</p>
+<p>$$<br>\delta(t) =<br>\begin{cases}<br>\infty, &amp; t = 0 \<br>0, &amp; t \neq 0<br>\end{cases}<br>$$</p>
+<h2 id="二维卷积和二维滤波器"><a href="#二维卷积和二维滤波器" class="headerlink" title="二维卷积和二维滤波器"></a>二维卷积和二维滤波器</h2><p>我们这里只给出连续-连续的二维卷积，别的情况都差不多。</p>
+<p>$$<br>\begin{align<em>}<br>&amp;(f</em>g)(x,y)=\int\int<br>f(x-x’,y-y’)g(x’,y’)dx’dy’<br>\end{align*}<br>$$</p>
+<p>对滤波器 $f(x)$，我们简单地定义 $g(x,y)=f(x)f(y)$ 就得到了这个滤波器对应的二维滤波器。一个比较好的性质是，如果 $f$ 是归一化的，那么 $g$ 也是归一化的。</p>
 <h2 id="伽马值"><a href="#伽马值" class="headerlink" title="伽马值"></a>伽马值</h2><p>显示器的显示亮度关于输入信号不是线性关系。假设输入信号为 $a\in[0,1]$，则有</p>
-<script type="math/tex; mode=display">
-\text{Displayed intensity}=(\text{Maximum intensity})a^\gamma</script><p>这里的 $\gamma$ 一般在 $2.2$ 左右。虽然在最开始这是 CRT 显示器的物理特性所致，但有趣的是，人眼也恰好对暗部变化比亮部变化更敏感，所以它现在作为一个刻意的设计保留了下来。</p>
+<p>$$<br>\text{Displayed intensity}=(\text{Maximum intensity})a^\gamma<br>$$</p>
+<p>这里的 $\gamma$ 一般在 $2.2$ 左右。虽然在最开始这是 CRT 显示器的物理特性所致，但有趣的是，人眼也恰好对暗部变化比亮部变化更敏感，所以它现在作为一个刻意的设计保留了下来。</p>
 <p>伽马矫正在影像系统中也有极大作用。假设我们在拍摄一个苹果的照片，苹果的物理亮度是 $0.5$，相机忠实地把它记录了下来。而当显示器显示时，就显示出了 $0.5^{2.2}\approx<br> 0.22$ 的物理亮度，这显然不是我们想要的。因此在我们拍摄照片之后，相机的图像处理器就会自动对照片进行伽马矫正。</p>
 <h2 id="图像锐化"><a href="#图像锐化" class="headerlink" title="图像锐化"></a>图像锐化</h2><p>Unsharp Mask 是一个经典的图像锐化算法。令高斯模糊核为 $G$，冲激函数为 $\delta$，它先提取原始图像的高频信号</p>
-<script type="math/tex; mode=display">
-I_{detail} = I_{orig} - I_{orig} * G</script><p>再把这些高频信号加入回原图中</p>
-<script type="math/tex; mode=display">
-I_{sharp} = I_{orig} + \alpha I_{detail}</script><p>综合起来就是</p>
-<script type="math/tex; mode=display">
-I_{sharp}
-=I_{orig}*((1+\alpha)\delta-G)</script><h2 id="图像缩放"><a href="#图像缩放" class="headerlink" title="图像缩放"></a>图像缩放</h2><p>直接对一个像素化的图像采样虽然效率很高，但效果不佳。先用连续的滤波器重建信号，再用低通滤波器过滤高频信号，再采样会得到更好的结果，这被称为 resampling，重采样。</p>
+<p>$$<br>I_{detail} = I_{orig} - I_{orig} * G<br>$$</p>
+<p>再把这些高频信号加入回原图中</p>
+<p>$$<br>I_{sharp} = I_{orig} + \alpha I_{detail}<br>$$</p>
+<p>综合起来就是</p>
+<p>$$<br>I_{sharp}<br>=I_{orig}*((1+\alpha)\delta-G)<br>$$</p>
+<h2 id="图像缩放"><a href="#图像缩放" class="headerlink" title="图像缩放"></a>图像缩放</h2><p>直接对一个像素化的图像采样虽然效率很高，但效果不佳。先用连续的滤波器重建信号，再用低通滤波器过滤高频信号，再采样会得到更好的结果，这被称为 resampling，重采样。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note2/resample.png" alt=""></p>
 
                                                                                                                             
@@ -773,6 +657,20 @@ I_{sharp}
                                         </a>
                                     </li>
                                     
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
                     </ul>
                     
                                 </li>
@@ -804,6 +702,13 @@ I_{sharp}
                                         <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
                                             <i class="fa fa-file-text-o"></i>
                                             Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
                                         </a>
                                     </li>
                                     

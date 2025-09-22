@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Assignment 5 Raytracing | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Assignment 5 Raytracing" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="很无聊的一次作业，代码框架也挺糟糕。rayTriangleIntersect 直接抄 PPT 的公式，Render 的难度全在代码注释不清晰上。咱就直接放代码了。 首先是 rayTriangleIntersect： bool rayTriangleIntersect(const Vector3f&amp; v0, const Vector3f&amp; v1, const Vector3f&amp;amp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Assignment 5 Raytracing">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="很无聊的一次作业，代码框架也挺糟糕。rayTriangleIntersect 直接抄 PPT 的公式，Render 的难度全在代码注释不清晰上。咱就直接放代码了。 首先是 rayTriangleIntersect： bool rayTriangleIntersect(const Vector3f&amp; v0, const Vector3f&amp; v1, const Vector3f&amp;amp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/binary.png">
+<meta property="article:published_time" content="2025-09-22T11:46:16.000Z">
+<meta property="article:modified_time" content="2025-09-22T11:46:54.381Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/binary.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/GAMES101/Hw/Hw5-raytracing" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+            <time datetime="2025-09-22T11:46:16.000Z" itemprop="datePublished">2025-09-22</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Assignment 5 Raytracing
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>很无聊的一次作业，代码框架也挺糟糕。<code>rayTriangleIntersect</code> 直接抄 PPT 的公式，<code>Render</code> 的难度全在代码注释不清晰上。咱就直接放代码了。</p>
+<p>首先是 <code>rayTriangleIntersect</code>：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">bool</span> <span class="token function">rayTriangleIntersect</span><span class="token punctuation">(</span><span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v0<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v1<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v2<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> orig<span class="token punctuation">,</span>
+                          <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> dir<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> tNear<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> u<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> v<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">auto</span> e1 <span class="token operator">=</span> v1 <span class="token operator">-</span> v0<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> e2 <span class="token operator">=</span> v2 <span class="token operator">-</span> v0<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> s <span class="token operator">=</span> orig <span class="token operator">-</span> v0<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> s1 <span class="token operator">=</span> <span class="token function">crossProduct</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> e2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> s2 <span class="token operator">=</span> <span class="token function">crossProduct</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> e1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> coefficient <span class="token operator">=</span> <span class="token number">1.0</span> <span class="token operator">/</span> <span class="token function">dotProduct</span><span class="token punctuation">(</span>s1<span class="token punctuation">,</span> e1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    tNear <span class="token operator">=</span> coefficient <span class="token operator">*</span> <span class="token function">dotProduct</span><span class="token punctuation">(</span>s2<span class="token punctuation">,</span> e2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    u <span class="token operator">=</span> coefficient <span class="token operator">*</span> <span class="token function">dotProduct</span><span class="token punctuation">(</span>s1<span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    v <span class="token operator">=</span> coefficient <span class="token operator">*</span> <span class="token function">dotProduct</span><span class="token punctuation">(</span>s2<span class="token punctuation">,</span> dir<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>tNear <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>u <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> u <span class="token operator">-</span> v<span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后是 <code>Render</code> 的关键部分：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> scene<span class="token punctuation">.</span>width<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// generate primary ray direction</span>
+    <span class="token keyword">float</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> y<span class="token punctuation">;</span>
+    <span class="token comment">// I don't understand what are the guiding comments talking about.</span>
+    <span class="token comment">// Anyway, the code is assuming the distance between eye and screen is one, since abs(dir.z) == 1</span>
+    <span class="token comment">// With this assumption we can compute screen's width and height</span>
+    <span class="token comment">// Then we map x from [0, scene.width - 1] to [-screen_width / 2, screenwidth / 2]</span>
+    <span class="token comment">// and map y from [0, scene.height - 1] to [screen_height / 2, -screen_height / 2]</span>
+    <span class="token keyword">float</span> screen_height <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> scale<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> screen_width <span class="token operator">=</span> imageAspectRatio <span class="token operator">*</span> screen_height<span class="token punctuation">;</span>    
+    x <span class="token operator">=</span> <span class="token punctuation">(</span>screen_width <span class="token operator">/</span> <span class="token punctuation">(</span>scene<span class="token punctuation">.</span>width <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> i <span class="token operator">-</span> <span class="token punctuation">(</span>screen_width <span class="token operator">/</span> <span class="token number">2.0</span><span class="token punctuation">)</span> <span class="token operator">-</span> eye_pos<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+    y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">-</span>screen_height <span class="token operator">/</span> <span class="token punctuation">(</span>scene<span class="token punctuation">.</span>height <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> j <span class="token operator">+</span> <span class="token punctuation">(</span>screen_height <span class="token operator">/</span> <span class="token number">2.0</span><span class="token punctuation">)</span> <span class="token operator">-</span> eye_pos<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+    Vector3f dir <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">Vector3f</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> y<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// Don't forget to normalize this direction!</span>
+    framebuffer<span class="token punctuation">[</span>m<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>eye_pos<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>看看结果，我感觉这个反射也不太对啊……靠近观察者的球对地板的反射怎么在顶部而非底部？它对靠后的球的反射怎么在前方而非后方？总之就这样吧，咱也不太想看这个代码框架……</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw5/binary.png" alt=""></p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Assignment 4 Geometry</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        CMU-15-213
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Datalab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Datalab解析
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Bomblab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Bomblab感想
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Attacklab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Attackblab记录
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Cachelab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Cachelab理论分析
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Shlab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Shlab调试记录和一键测试脚本
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Labs/Malloclab/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Malloclab和我不得不说的那些事
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter2-data-representation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第二章——计算机内的信息表示
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter3-machine-level-program/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第三章——程序的机器级别表示
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter5-optimization/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第五章——性能优化
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter6-memory-and-cache/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第六章——存储器层次结构
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第八章——异常控制流
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter10-system-io/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第十章——系统级I/O
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第九章——虚拟内存
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab2 System calls
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            看我看我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note2-organization-overview/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第二章——操作系统概述
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>

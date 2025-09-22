@@ -287,7 +287,6 @@ img{
 <p>操作很多，我们不再列举更多，随便找个书查一查就好。</p>
 <p>我们可以注意到这些操作都以 ‘q’ 结尾，那如果我不喜欢 ‘q’，我可以用 ‘r’ 结尾吗？不行，因为这里的 ‘q’ 实际上是在指定操作的大小。还记得寄存器长什么样吗：</p>
 <p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/register-rax.png" alt=""></p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -334,7 +333,6 @@ img{
 </tr>
 </tbody>
 </table>
-</div>
 <p>我们也有 pushq 和 popq 之类的和栈相关的操作。栈是什么？请看下集——函数和栈。（在“控制”这一节后面）</p>
 <h1 id="控制"><a href="#控制" class="headerlink" title="控制"></a>控制</h1><p>我已经会加减乘除了，那你能教教我怎么写条件（if）和循环（for, while）吗？</p>
 <p>乐意效劳。😎</p>
@@ -355,7 +353,6 @@ n in <span class="token operator">%</span><span class="token register variable">
 <p>在上面的代码中，cmpq $1, %rdi 就是在假装做 %rdi - 1，并根据计算结果修改标志寄存器。而 jg 则根据标志寄存器的值来进行跳转。jg 的效果是，如果 ~(SF ^ OF) &amp; ~ZF 为真，就进行跳转。</p>
 <p>jg 的跳转条件看起来很复杂，但它和 cmpq x, y 联动的效果是——如果 y &gt; x，跳转，因此它叫做 jg.</p>
 <p>下表是 CMP 和 TEST 的概述：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -377,9 +374,7 @@ n in <span class="token operator">%</span><span class="token register variable">
 </tr>
 </tbody>
 </table>
-</div>
 <p>这里是一些跳转语句示例：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -428,7 +423,6 @@ n in <span class="token operator">%</span><span class="token register variable">
 </tr>
 </tbody>
 </table>
-</div>
 <h2 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h2><p>要注意的是，switch 和 if 的汇编有本质区别。switch 基于跳转表（类似哈希表），它先把 case 同时增减一个值来让最小的 case 变为 0，然后建立跳转表，并根据 case 的值来计算合适的跳转地址。</p>
 <p>以这个 C 代码为例，它可能被编译成下面的汇编代码：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">switch</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -485,7 +479,6 @@ n in <span class="token operator">%</span><span class="token register variable">
 &#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/struct.png" alt=""></p>
 <p>上图中，12 到 16 的“填充”是出于数据对齐的需要，对齐原则是——任何 K 字节的基本对象的地址必须是 K 的倍数。</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -512,7 +505,6 @@ n in <span class="token operator">%</span><span class="token register variable">
 </tr>
 </tbody>
 </table>
-</div>
 <h2 id="union"><a href="#union" class="headerlink" title="union"></a>union</h2><p>union 允许我们用不同方式解释同一段位表示，常用于节省内存。</p>
 <p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter3/union.png" alt=""></p>
 <p>最常见的应用是，union 中的东西互斥，比如实现比较基础的动态类型：</p>
@@ -815,6 +807,20 @@ n in <span class="token operator">%</span><span class="token register variable">
                                         </a>
                                     </li>
                                     
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
                     </ul>
                     
                                 </li>
@@ -846,6 +852,13 @@ n in <span class="token operator">%</span><span class="token register variable">
                                         <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
                                             <i class="fa fa-file-text-o"></i>
                                             Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
                                         </a>
                                     </li>
                                     
