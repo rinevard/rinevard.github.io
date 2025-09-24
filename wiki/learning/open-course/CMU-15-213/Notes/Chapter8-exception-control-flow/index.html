@@ -14,12 +14,12 @@
                     <meta name="keywords" content="第八章——异常控制流" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="img{     width: 70%; }   当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入异常控制流（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。 异常异常是异常控制流的一种形式，分为四类：     类别 异步&#x2F;同步 产生原因 例子">
+                        <meta name="description" content="img{     width: 70%; }   当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入异常控制流（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。 异常异常是异常控制流的一种形式，分为四类：    类别 异步&#x2F;同步 产生原因 例子">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第八章——异常控制流">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter8-exception-control-flow/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="img{     width: 70%; }   当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入异常控制流（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。 异常异常是异常控制流的一种形式，分为四类：     类别 异步&#x2F;同步 产生原因 例子">
+<meta property="og:description" content="img{     width: 70%; }   当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入异常控制流（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。 异常异常是异常控制流的一种形式，分为四类：    类别 异步&#x2F;同步 产生原因 例子">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CMU-15213/Notes/Chapter8/concurrency.png">
@@ -270,7 +270,6 @@ img{
 
 <p>当我们在程序执行时按下 ctrl+c ，究竟发生了什么？为解答这个问题，我们引入<strong>异常控制流</strong>（exceptional control flow，ECF）的概念。异常控制流允许我们将控制转移到其他程序，从而实现一些神奇的效果，比如中断程序、上下文切换、调用系统函数。</p>
 <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a><strong>异常</strong></h1><p>异常是异常控制流的一种形式，分为四类：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -307,7 +306,6 @@ img{
 </tr>
 </tbody>
 </table>
-</div>
 <p><strong>注意：一定要检查系统调用的返回值，不然会出现一些很难调试的错误！</strong></p>
 <p>异常发生后，控制会转移给异常处理程序。在处理完成后，根据异常的具体内容可能会返回到原程序的下一条指令，也可能返回到原程序的当前指令，也可能不返回。：</p>
 <p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter8/exception-control-shift.png" alt=""></p>
@@ -710,6 +708,13 @@ pid <span class="token operator">=</span> <span class="token number">0</span><sp
                                         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
                                             <i class="fa fa-file-text-o"></i>
                                             Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
                                         </a>
                                     </li>
                                     

@@ -6,21 +6,27 @@
         
             <title>
                 
-                    归档 | 
+                    Assignment 6 Bounding Box | 
                             Rinevard
             </title>
             
                 
-                    <meta name="keywords" content="Rinevard" />
+                    <meta name="keywords" content="Assignment 6 Bounding Box" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta property="og:type" content="website">
-<meta property="og:title" content="Rinevard">
-<meta property="og:url" content="http://rinevard.github.io/archives/page/2/index.html">
+                        <meta name="description" content="这次的作业要求实现用包围盒来加快光线追踪，再用 BVH 优化。 首先我们要把 hw5 里的代码复制过来，让我不解的是代码里明明已经提供了 rayTriangleIntersect 函数，PDF 里却还说“将你的光线-三角形相交函数粘贴到此处”，明明直接调用它就好了，如下所示： inline Intersection Triangle::getIntersection(Ray ray) &#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Assignment 6 Bounding Box">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/index.html">
 <meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="这次的作业要求实现用包围盒来加快光线追踪，再用 BVH 优化。 首先我们要把 hw5 里的代码复制过来，让我不解的是代码里明明已经提供了 rayTriangleIntersect 函数，PDF 里却还说“将你的光线-三角形相交函数粘贴到此处”，明明直接调用它就好了，如下所示： inline Intersection Triangle::getIntersection(Ray ray) &#123;">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw6/bvh.png">
+<meta property="article:published_time" content="2025-09-24T09:46:44.000Z">
+<meta property="article:modified_time" content="2025-09-24T12:56:28.461Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw6/bvh.png">
                             
 
                                 
@@ -45,6 +51,10 @@
 
                                                                 <!-- TOC Sidebar CSS -->
                                                                 
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
 
                                                                             <!-- Medium Zoom CSS -->
                                                                             
@@ -197,194 +207,178 @@
 
                 <div class="outer">
                     
-                                <section id="main"><article class="article article-type-page">
+                                <section id="main"><article id="post-learning/open-course/GAMES101/Hw/Hw6-bounding-box" class="article article-type-post" itemscope
+    itemprop="blogPost">
     <div class="article-inner">
-        <div class="article-entry">
-            <div class="timeline timeline-wrap">
-                
-                    <div class="timeline-row timeline-row-major">
-                        <span class="node"><i class="fa fa-calendar-o"></i></span>
-                        <h1 class="title"><a href="/archives/2025/">
-                                2025
-                            </a></h1>
-                    </div>
+        
                     
-                        <div class="timeline-row timeline-row-major">
-                            <span class="node"><i class="fa fa-calendar"></i></span>
-                            <h1 class="title"><a href="/archives/2025/07/">
-                                    2025-07
-                                </a><span class="archive-list-count">
-                                    1
-                                </span></h1>
-                        </div>
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+            <time datetime="2025-09-24T09:46:44.000Z" itemprop="datePublished">2025-09-24</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Assignment 6 Bounding Box
+        </h1>
+    
+
+                        </header>
                         
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">杀戮尖塔的框架如此自洽，我们能离开它吗？</a>
-        </h1>
-    
-
-                                        
-                                </div>
-                            </div>
                             
-                        <div class="timeline-row timeline-row-major">
-                            <span class="node"><i class="fa fa-calendar"></i></span>
-                            <h1 class="title"><a href="/archives/2025/06/">
-                                    2025-06
-                                </a><span class="archive-list-count">
-                                    5
-                                </span></h1>
-                        </div>
-                        
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
+                                <div class="article-entry" itemprop="articleBody">
                                     
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">_我也想做出优秀的作品</a>
-        </h1>
-    
-
                                         
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">Lab2 System calls</a>
-        </h1>
-    
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>这次的作业要求实现用包围盒来加快光线追踪，再用 BVH 优化。</p>
+<p>首先我们要把 hw5 里的代码复制过来，让我不解的是代码里明明已经提供了 <code>rayTriangleIntersect</code> 函数，PDF 里却还说“将你的光线-三角形相交函数粘贴到此处”，明明直接调用它就好了，如下所示：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">inline</span> Intersection <span class="token class-name">Triangle</span><span class="token double-colon punctuation">::</span><span class="token function">getIntersection</span><span class="token punctuation">(</span>Ray ray<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    Intersection inter<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> u<span class="token punctuation">,</span> v<span class="token punctuation">,</span> t<span class="token punctuation">;</span>
+    inter<span class="token punctuation">.</span>happened <span class="token operator">=</span> <span class="token function">rayTriangleIntersect</span><span class="token punctuation">(</span>v0<span class="token punctuation">,</span> v1<span class="token punctuation">,</span> v2<span class="token punctuation">,</span> ray<span class="token punctuation">.</span>origin<span class="token punctuation">,</span> ray<span class="token punctuation">.</span>direction<span class="token punctuation">,</span> t<span class="token punctuation">,</span> u<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>inter<span class="token punctuation">.</span>happened<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        inter<span class="token punctuation">.</span>coords <span class="token operator">=</span> ray<span class="token punctuation">.</span>origin <span class="token operator">+</span> t <span class="token operator">*</span> ray<span class="token punctuation">.</span>direction<span class="token punctuation">;</span>
+        inter<span class="token punctuation">.</span>normal <span class="token operator">=</span> normal<span class="token punctuation">;</span>
+        inter<span class="token punctuation">.</span>distance <span class="token operator">=</span> t<span class="token punctuation">;</span>
+        inter<span class="token punctuation">.</span>obj <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+        inter<span class="token punctuation">.</span>m <span class="token operator">=</span> m<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
+    <span class="token keyword">return</span> inter<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后我也不太喜欢代码框架对 <code>IntersectP</code> 的定义，在我看来既然另外两个参数能通过 <code>ray</code> 算出来，就完全没有理由作为参数传入。</p>
+<p>于是我就改成了这个只保留 <code>ray</code> 参数的样子：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">inline</span> <span class="token keyword">bool</span> <span class="token class-name">Bounds3</span><span class="token double-colon punctuation">::</span><span class="token function">IntersectP</span><span class="token punctuation">(</span><span class="token keyword">const</span> Ray<span class="token operator">&amp;</span> ray<span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// invDir: ray direction(x,y,z), invDir=(1.0/x,1.0/y,1.0/z), use this because Multiply is faster that Division</span>
+    <span class="token keyword">auto</span> tMinVec <span class="token operator">=</span> <span class="token punctuation">(</span>pMin <span class="token operator">-</span> ray<span class="token punctuation">.</span>origin<span class="token punctuation">)</span> <span class="token operator">*</span> ray<span class="token punctuation">.</span>direction_inv<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> tMaxVec <span class="token operator">=</span> <span class="token punctuation">(</span>pMax <span class="token operator">-</span> ray<span class="token punctuation">.</span>origin<span class="token punctuation">)</span> <span class="token operator">*</span> ray<span class="token punctuation">.</span>direction_inv<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMinx <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>x<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>x<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_min<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMiny <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>y<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_min<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMinz <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>z<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>z<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_min<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/Notes/note2-organization-overview/">第二章——操作系统概述</a>
-        </h1>
+    <span class="token keyword">float</span> tMaxx <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>x<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>x<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_max<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMaxy <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>y<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_max<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMaxz <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span>tMinVec<span class="token punctuation">.</span>z<span class="token punctuation">,</span> tMaxVec<span class="token punctuation">.</span>z<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span></span></span><span class="token punctuation">(</span>ray<span class="token punctuation">.</span>t_max<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     
+    <span class="token keyword">float</span> tMin <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>tMinx<span class="token punctuation">,</span> tMiny<span class="token punctuation">,</span> tMinz<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">float</span> tMax <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>tMaxx<span class="token punctuation">,</span> tMaxy<span class="token punctuation">,</span> tMaxz<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">看我看我</a>
-        </h1>
-    
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>tMin <span class="token operator">&lt;=</span> tMax<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>思路就是计算这个交集：</p>
+<p>$$<br>[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]<br>$$</p>
+<p>对于最后的 <code>getIntersection</code>，小 AI 说可以在发生相交时更新 <code>ray</code> 的 <code>t_max</code>，然后在射线和盒子的交点大于 <code>t_max</code> 时不再检测盒子内部的相交，这可以优化性能。我认为他说得非常有道理，但改起来有点麻烦，就不改了。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Intersection <span class="token class-name">BVHAccel</span><span class="token double-colon punctuation">::</span><span class="token function">getIntersection</span><span class="token punctuation">(</span>BVHBuildNode<span class="token operator">*</span> node<span class="token punctuation">,</span> <span class="token keyword">const</span> Ray<span class="token operator">&amp;</span> ray<span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>node<span class="token operator">-></span>bounds<span class="token punctuation">.</span><span class="token function">IntersectP</span><span class="token punctuation">(</span>ray<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">Intersection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">第一章——系统接口</a>
-        </h1>
-    
+    <span class="token comment">// leaf node checks ray's intersection with obj  </span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token operator">-></span>left <span class="token operator">==</span> <span class="token keyword">nullptr</span> <span class="token operator">&amp;&amp;</span> node<span class="token operator">-></span>right <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token operator">-></span>object <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">Intersection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> node<span class="token operator">-></span>object<span class="token operator">-></span><span class="token function">getIntersection</span><span class="token punctuation">(</span>ray<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> 
+    <span class="token comment">// parent with only one child returns child's intersection</span>
+    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token operator">-></span>left <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">getIntersection</span><span class="token punctuation">(</span>node<span class="token operator">-></span>right<span class="token punctuation">,</span> ray<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token operator">-></span>right <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">getIntersection</span><span class="token punctuation">(</span>node<span class="token operator">-></span>left<span class="token punctuation">,</span> ray<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> 
+    <span class="token comment">// parent with two children returns the closer intersection</span>
+    <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        Intersection inter1 <span class="token operator">=</span> <span class="token function">getIntersection</span><span class="token punctuation">(</span>node<span class="token operator">-></span>left<span class="token punctuation">,</span> ray<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Intersection inter2 <span class="token operator">=</span> <span class="token function">getIntersection</span><span class="token punctuation">(</span>node<span class="token operator">-></span>right<span class="token punctuation">,</span> ray<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>inter1<span class="token punctuation">.</span>happened <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>inter2<span class="token punctuation">.</span>happened<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">Intersection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>inter1<span class="token punctuation">.</span>happened<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> inter2<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>inter2<span class="token punctuation">.</span>happened<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> inter1<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>inter1<span class="token punctuation">.</span>distance <span class="token operator">&lt;</span> inter2<span class="token punctuation">.</span>distance<span class="token punctuation">)</span> <span class="token operator">?</span> inter1 <span class="token operator">:</span> inter2<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>咱还是在最后放放图图</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw6/bvh.png" alt=""></p>
 
-                                        
+                                                                                                                            
+                                                                                                                                
                                 </div>
-                            </div>
-                            
-                        <div class="timeline-row timeline-row-major">
-                            <span class="node"><i class="fa fa-calendar"></i></span>
-                            <h1 class="title"><a href="/archives/2025/05/">
-                                    2025-05
-                                </a><span class="archive-list-count">
-                                    4
-                                </span></h1>
-                        </div>
-                        
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">Lab1 Xv6 and Unix utilities</a>
-        </h1>
-    
-
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">慢慢地冲浪</a>
-        </h1>
-    
-
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">在开始之前</a>
-        </h1>
-    
-
-                                        
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/">第九章——虚拟内存</a>
-        </h1>
-    
-
-                                        
-                                </div>
-                            </div>
-                            
-            </div>
-        </div>
+                                <footer class="article-footer">
+                                </footer>
     </div>
 </article>
 
-    <nav id="page-nav">
-        <a class="extend prev" rel="prev" href="/archives/">&laquo; 上一页</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/3/">下一页 &raquo;</a>
-    </nav>
-    </section>
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Assignment 5 Raytracing</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
                                 
                                     <aside id="sidebar">
     <div class="sidebar-content">
@@ -425,10 +419,10 @@
                     
                                 </li>
                                 
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         公开课
                                     </a>
                                     
@@ -564,19 +558,19 @@
                     
                                 </li>
                                 
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         GAMES101
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         Assignments
                                     </a>
                                     
@@ -617,7 +611,7 @@
                                         </a>
                                     </li>
                                     
-                                    <li class="file">
+                                    <li class="file active">
                                         <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
                                             <i class="fa fa-file-text-o"></i>
                                             Assignment 6 Bounding Box
@@ -985,6 +979,11 @@
 <script src="/js/main.js"></script>
 
             
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
                         
 <script src="/js/sidebar.js"></script>
 
