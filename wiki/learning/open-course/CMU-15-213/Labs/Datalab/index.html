@@ -271,6 +271,7 @@ img{
 <p>做完以后，感觉自己已经是位运算领域大神了！</p>
 <h1 id="整数部分"><a href="#整数部分" class="headerlink" title="整数部分"></a>整数部分</h1><p>整数部分的技巧性很强，不建议在某道题上死磕，做不出来就换一道，以后再来。</p>
 <h2 id="bitXor"><a href="#bitXor" class="headerlink" title="bitXor"></a>bitXor</h2><p>本题要求用 ‘~’ 和 ‘&amp;’ 实现 ‘^’，简单列个关于 ‘^’ 的真值表：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -302,6 +303,7 @@ img{
 </tr>
 </tbody>
 </table>
+</div>
 <p>关注 x^y 为 1 时 x 和 y 的取值，可以发现 <code>x^y == ((~x) &amp; y) | (x &amp; (~y))</code>，再用德摩根律把 <code>|</code> 换成 <code>~</code> 和 <code>&amp;</code> 即可。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/*
  * bitXor - x^y using only ~ and &amp;

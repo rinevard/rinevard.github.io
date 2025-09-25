@@ -14,19 +14,21 @@
                     <meta name="keywords" content="Assignment 5 Raytracing" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="很无聊的一次作业，代码框架也挺糟糕。rayTriangleIntersect 直接抄 PPT 的公式，Render 的难度全在代码注释不清晰上。咱就直接放代码了。 首先是 rayTriangleIntersect： bool rayTriangleIntersect(const Vector3f&amp; v0, const Vector3f&amp; v1, const Vector3f&amp;amp">
+                        <meta name="description" content="如果只是实现要求的话，感觉这会是很无聊的一次作业。为了让事情有趣一点，我们来看看 castRay 函数的实现吧。我们会把作业代码放在文末。 castRay 函数的分析castRay 函数实现了课上讲的光线追踪，它从 orig 打出朝着 dir 方向的射线，并返回颜色。其工作流程如下：  首先，检查当前的递归深度depth。当depth超过场景设定的最大深度scene.maxDepth时，函数返回黑">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Assignment 5 Raytracing">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="很无聊的一次作业，代码框架也挺糟糕。rayTriangleIntersect 直接抄 PPT 的公式，Render 的难度全在代码注释不清晰上。咱就直接放代码了。 首先是 rayTriangleIntersect： bool rayTriangleIntersect(const Vector3f&amp; v0, const Vector3f&amp; v1, const Vector3f&amp;amp">
+<meta property="og:description" content="如果只是实现要求的话，感觉这会是很无聊的一次作业。为了让事情有趣一点，我们来看看 castRay 函数的实现吧。我们会把作业代码放在文末。 castRay 函数的分析castRay 函数实现了课上讲的光线追踪，它从 orig 打出朝着 dir 方向的射线，并返回颜色。其工作流程如下：  首先，检查当前的递归深度depth。当depth超过场景设定的最大深度scene.maxDepth时，函数返回黑">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/reflection_only.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/refraction_only.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/binary.png">
 <meta property="article:published_time" content="2025-09-22T11:46:16.000Z">
-<meta property="article:modified_time" content="2025-09-24T09:00:32.272Z">
+<meta property="article:modified_time" content="2025-09-25T12:05:17.850Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/binary.png">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/reflection_only.png">
                             
 
                                 
@@ -257,10 +259,58 @@
                                                                                                                             class="toc-title">
                                                                                                                             文章目录
                                                                                                                         </strong>
-                                                                                                                        
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#castRay-%E5%87%BD%E6%95%B0%E7%9A%84%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">castRay 函数的分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#REFLECTION-AND-REFRACTION"><span class="toc-number">1.1.</span> <span class="toc-text">REFLECTION_AND_REFRACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DIFFUSE-AND-GLOSSY"><span class="toc-number">1.2.</span> <span class="toc-text">DIFFUSE_AND_GLOSSY</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%9C%E4%B8%9A%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">作业代码</span></a></li></ol>
                                                                                                                     </div>
                                                                                                                     
-                                                                                                                        <p>很无聊的一次作业，代码框架也挺糟糕。<code>rayTriangleIntersect</code> 直接抄 PPT 的公式，<code>Render</code> 的难度全在代码注释不清晰上。咱就直接放代码了。</p>
+                                                                                                                        <p>如果只是实现要求的话，感觉这会是很无聊的一次作业。为了让事情有趣一点，我们来看看 <code>castRay</code> 函数的实现吧。我们会把作业代码放在文末。</p>
+<h1 id="castRay-函数的分析"><a href="#castRay-函数的分析" class="headerlink" title="castRay 函数的分析"></a>castRay 函数的分析</h1><p>castRay 函数实现了课上讲的光线追踪，它从 <code>orig</code> 打出朝着 <code>dir</code> 方向的射线，并返回颜色。其工作流程如下：</p>
+<ol>
+<li><p>首先，检查当前的递归深度<code>depth</code>。当<code>depth</code>超过场景设定的最大深度<code>scene.maxDepth</code>时，函数返回黑色。这就是开头的代码：</p>
+ <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">if</span> <span class="token punctuation">(</span>depth <span class="token operator">></span> scene<span class="token punctuation">.</span>maxDepth<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">Vector3f</span><span class="token punctuation">(</span><span class="token number">0.0</span><span class="token punctuation">,</span><span class="token number">0.0</span><span class="token punctuation">,</span><span class="token number">0.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>然后，计算射线是否与场景中的任何物体相交。如果没有发生相交，说明射线射向了场景的背景，函数将返回背景颜色。</p>
+</li>
+<li><p>如果射线击中了某个物体，函数将根据该物体的材质类型，进入不同的处理分支计算颜色。接下来我们会分析这些分支。</p>
+</li>
+</ol>
+<p>我们可以看到物体被分为了三种材质，分别是既有镜面反射又有折射的 <code>REFLECTION_AND_REFRACTION</code>、只有反射的 <code>REFLECTION</code>、只有漫反射的 <code>DIFFUSE_AND_GLOSSY</code>。<code>REFLECTION_AND_REFRACTION</code> 和 <code>REFLECTION</code> 部分的代码比较相似，我们就先讨论 <code>REFLECTION_AND_REFRACTION</code> 的代码，再讨论 <code>DIFFUSE_AND_GLOSSY</code> 的代码。</p>
+<h2 id="REFLECTION-AND-REFRACTION"><a href="#REFLECTION-AND-REFRACTION" class="headerlink" title="REFLECTION_AND_REFRACTION"></a>REFLECTION_AND_REFRACTION</h2><p>这里的反射/折射材质自身是没有颜色的，也就是说它们只显示反射/折射后射线打到的点的颜色。所以代码思路比较简单，如果射线打到了这种材质的物体上，它会反射/折射，我们需要计算出反射/折射后的射线打到的颜色，这就对应着下面的代码：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Vector3f reflectionColor <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>reflectionRayOrig<span class="token punctuation">,</span> reflectionDirection<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> depth <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Vector3f refractionColor <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>refractionRayOrig<span class="token punctuation">,</span> refractionDirection<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> depth <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>代码里还考虑了菲涅尔效应来计算反射和折射的比例。菲涅尔效应的公式有点复杂，我们就不讲解了。这里的 <code>kr</code> 就是菲涅尔方程算出的反射系数，<code>hitColor</code> 就是这个点的最终颜色：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> kr <span class="token operator">=</span> <span class="token function">fresnel</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> N<span class="token punctuation">,</span> payload<span class="token operator">-></span>hit_obj<span class="token operator">-></span>ior<span class="token punctuation">)</span><span class="token punctuation">;</span>
+hitColor <span class="token operator">=</span> reflectionColor <span class="token operator">*</span> kr <span class="token operator">+</span> refractionColor <span class="token operator">*</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> kr<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>我们也会注意到，代码在开头对反射/折射点做了一个小小的偏移，这似乎是为了避免反射/折射时立即打到自己（咱也不确定，这是猜测）</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Vector3f reflectionRayOrig <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token function">dotProduct</span><span class="token punctuation">(</span>reflectionDirection<span class="token punctuation">,</span> N<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">?</span>
+                              hitPoint <span class="token operator">-</span> N <span class="token operator">*</span> scene<span class="token punctuation">.</span>epsilon <span class="token operator">:</span>
+                              hitPoint <span class="token operator">+</span> N <span class="token operator">*</span> scene<span class="token punctuation">.</span>epsilon<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>我们都看到菲涅尔效应的代码了，不如再看看纯反射/纯折射的球是怎样的。注意靠近我们观察者的球，我们可以先把 <code>kr</code> 设为 1 来看看纯反射的结果：</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw5/reflection_only.png" alt=""></p>
+<p>再来看看纯折射的结果：</p>
+<p><img src="/images/learning/open-course/GAMES101/Assignments/hw5/refraction_only.png" alt=""></p>
+<p>与文末的图比较一下，就会发现菲涅尔效应确实就是反射和折射的叠加。</p>
+<h2 id="DIFFUSE-AND-GLOSSY"><a href="#DIFFUSE-AND-GLOSSY" class="headerlink" title="DIFFUSE_AND_GLOSSY"></a>DIFFUSE_AND_GLOSSY</h2><p>再来看看 <code>DIFFUSE_AND_GLOSSY</code> 部分，这里是正常的 Phong 模型着色。唯一要注意的是，要判断射线打到的点和光源之间有没有物体遮挡，如果有遮挡这里就是阴影。</p>
+<p>我认为这一部分的代码有问题，它只考虑了漫反射分量在不在阴影里，而没考虑镜面反射分量。这里是原本的代码：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 漫反射</span>
+lightAmt <span class="token operator">+=</span> inShadow <span class="token operator">?</span> <span class="token number">0</span> <span class="token operator">:</span> light<span class="token operator">-></span>intensity <span class="token operator">*</span> LdotN<span class="token punctuation">;</span>
+
+<span class="token comment">// 镜面反射</span>
+Vector3f reflectionDirection <span class="token operator">=</span> <span class="token function">reflect</span><span class="token punctuation">(</span><span class="token operator">-</span>lightDir<span class="token punctuation">,</span> N<span class="token punctuation">)</span><span class="token punctuation">;</span>
+specularColor <span class="token operator">+=</span> <span class="token function">powf</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0.f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token function">dotProduct</span><span class="token punctuation">(</span>reflectionDirection<span class="token punctuation">,</span> dir<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    payload<span class="token operator">-></span>hit_obj<span class="token operator">-></span>specularExponent<span class="token punctuation">)</span> <span class="token operator">*</span> light<span class="token operator">-></span>intensity<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我想我们应该做这样的修改：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>inShadow<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 漫反射</span>
+    lightAmt <span class="token operator">+=</span> light<span class="token operator">-></span>intensity <span class="token operator">*</span> LdotN<span class="token punctuation">;</span>
+    
+    <span class="token comment">// 镜面反射</span>
+    Vector3f reflectionDirection <span class="token operator">=</span> <span class="token function">reflect</span><span class="token punctuation">(</span><span class="token operator">-</span>lightDir<span class="token punctuation">,</span> N<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    specularColor <span class="token operator">+=</span> <span class="token function">powf</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0.f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token function">dotProduct</span><span class="token punctuation">(</span>reflectionDirection<span class="token punctuation">,</span> dir<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        payload<span class="token operator">-></span>hit_obj<span class="token operator">-></span>specularExponent<span class="token punctuation">)</span> <span class="token operator">*</span> light<span class="token operator">-></span>intensity<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="作业代码"><a href="#作业代码" class="headerlink" title="作业代码"></a>作业代码</h1><p>接下来咱就直接放作业代码了。</p>
 <p>首先是 <code>rayTriangleIntersect</code>：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">bool</span> <span class="token function">rayTriangleIntersect</span><span class="token punctuation">(</span><span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v0<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v1<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> v2<span class="token punctuation">,</span> <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> orig<span class="token punctuation">,</span>
                           <span class="token keyword">const</span> Vector3f<span class="token operator">&amp;</span> dir<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> tNear<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> u<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">&amp;</span> v<span class="token punctuation">)</span>
@@ -277,7 +327,7 @@
 
     <span class="token keyword">return</span> <span class="token punctuation">(</span>tNear <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>u <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> u <span class="token operator">-</span> v<span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>然后是 <code>Render</code> 的关键部分：</p>
+<p>然后是 <code>Render</code> 的部分：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> scene<span class="token punctuation">.</span>width<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
     <span class="token comment">// generate primary ray direction</span>
@@ -295,7 +345,7 @@
     Vector3f dir <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">Vector3f</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> y<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// Don't forget to normalize this direction!</span>
     framebuffer<span class="token punctuation">[</span>m<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>eye_pos<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>看看结果，我感觉这个反射也不太对啊……靠近观察者的球对地板的反射怎么在顶部而非底部？它对靠后的球的反射怎么在前方而非后方？总之就这样吧，咱也不太想看这个代码框架……</p>
+<p>看看结果吧！如果和前面的纯反射/纯折射对照，会发现前面的球确实就是反射和折射的叠加（反射很淡，不过仔细看也是能看出来的！）</p>
 <p><img src="/images/learning/open-course/GAMES101/Assignments/hw5/binary.png" alt=""></p>
 
                                                                                                                             
