@@ -6,7 +6,7 @@
   <link href="http://rinevard.github.io/atom.xml" rel="self"/>
   
   <link href="http://rinevard.github.io/"/>
-  <updated>2025-09-24T12:56:28.461Z</updated>
+  <updated>2025-09-25T13:51:26.850Z</updated>
   <id>http://rinevard.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Note 5 RayTracing</title>
+    <link href="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/"/>
+    <id>http://rinevard.github.io/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/</id>
+    <published>2025-09-25T13:48:28.000Z</published>
+    <updated>2025-09-25T13:51:26.850Z</updated>
+    
+    <content type="html"><![CDATA[<p>渲染可以分为两个大类：object-order rendering 和 Image-order rendering. 前者以场景中的物体（通常是如三角形）为基本单位进行迭代，遍历场景中的每一个物体，然后确定该物体会影响屏幕上的哪些像素；后者以屏幕上的像素为基本单位进行迭代，遍历输出图像中的每一个像素，然后对于每个像素，它会找出场景中的哪个物体或物体的哪个部分决定了该像素的颜色。</p><p>我们之前学的光栅化是前者，而我们接下来要介绍的光线追踪就是后者。</p><h1 id="光线追踪"><a href="#光线追踪" class="headerlink" title="光线追踪"></a>光线追踪</h1><h2 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h2><p>光线追踪的思想基于光路可逆——既然光路可逆，那么打到摄像机里的光就可以看作从摄像机发出的射线，我们只要打出射线然后计算射线打到的点的颜色就好了。</p><p>其实基本思路真的就是这么简单！如下图所示，我们从眼睛里发出经过每个像素的射线，然后射线打到物体上就得到了物体的基本颜色。而射线还会反射、折射，我们计算反射、折射后的射线打到的颜色，再加到基本颜色上，就得到了这个像素的颜色。</p><p><img src="/images/learning/open-course/GAMES101/Notes/note5/ray_tracing.png" alt=""></p><p>光线追踪也自然地生成了阴影——如果射线打中的点和光源的连线间有物体遮挡，这点就是阴影，否则就不是阴影。</p><h2 id="碰撞检测"><a href="#碰撞检测" class="headerlink" title="碰撞检测"></a>碰撞检测</h2><p>既然如此，我们只要检测射线和三角形的碰撞就好了。我们可以用下面的 Möller Trumbore Algorithm 来做检测，其思路是解 “直线上的点 = 三角形重心坐标表示” 这个方程：</p><p>考虑射线 $\vec{O} + t\vec{D}$ 和三角形 $P_0, P_1, P_2$，我们要解方程</p><script type="math/tex; mode=display">\vec{O} + t\vec{D} = (1-b_1-b_2)\vec{P_0} + b_1\vec{P_1} + b_2\vec{P_2}</script><p>这是一个线性方程组，解为</p><script type="math/tex; mode=display">\begin{bmatrix} t \\ b_1 \\ b_2 \end{bmatrix} = \frac{1}{\vec{S_1} \cdot \vec{E_1}} \begin{bmatrix} \vec{S_2} \cdot \vec{E_2} \\ \vec{S_1} \cdot \vec{S} \\ \vec{S_2} \cdot \vec{D} \end{bmatrix}</script><p>其中</p><script type="math/tex; mode=display">\begin{aligned}\vec{E_1} &= \vec{P_1} - \vec{P_0} \\\vec{E_2} &= \vec{P_2} - \vec{P_0} \\\vec{S} &= \vec{O} - \vec{P_0} \\\vec{S_1} &= \vec{D} \times \vec{E_2} \\\vec{S_2} &= \vec{S} \times \vec{E_1}\end{aligned}</script><h1 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h1><p>在做射线和三角形的碰撞检测时，简单地遍历场景里的每个三角形显然太慢了，所以我们用包围盒来优化。如果一个射线没有碰到包围盒，自然就不会碰到盒子里的物体；如果碰到了，再和盒子里的物体做碰撞检测。</p><h2 id="常见包围盒"><a href="#常见包围盒" class="headerlink" title="常见包围盒"></a>常见包围盒</h2><p>包围盒有两种思路，一种是基于空间的划分，另一种是基于物体的划分。前者的代表包括四叉树、八叉树；后者的代表是 BVH.</p><p>四叉树、八叉树把空间进行平分，当一个区域里还剩较多物体时就再在这个区域里平分一次。</p><p><img src="/images/learning/open-course/GAMES101/Notes/note5/octree.png" alt=""></p><p>BVH 为每组物体建立包围盒，然后再把父包围盒划分成子包围盒。</p><p><img src="/images/learning/open-course/GAMES101/Notes/note5/bvh.png" alt=""></p><h2 id="射线和包围盒的碰撞检测"><a href="#射线和包围盒的碰撞检测" class="headerlink" title="射线和包围盒的碰撞检测"></a>射线和包围盒的碰撞检测</h2><p>包围盒有六个面，我们可以把相对的面划分成一组从而得到三组面。计算射线 $\vec{O} + t\vec{D}$ 与这三组面的交点后，我们会得到 $[t<em>{x, \text{enter}}, t</em>{x, \text{exit}}],[t<em>{y, \text{enter}}, t</em>{y, \text{exit}}],[t<em>{z, \text{enter}}, t</em>{z, \text{exit}}]$，之后计算下面的交集：</p><script type="math/tex; mode=display">[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]</script><p>如果交集为空则无交点，否则有交点。</p><p>为了方便计算，包围盒一般是与坐标轴平行的。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;渲染可以分为两个大类：object-order rendering 和 Image-order rendering. 前者以场景中的物体（通常是如三角形）为基本单位进行迭代，遍历场景中的每一个物体，然后确定该物体会影响屏幕上的哪些像素；后者以屏幕上的像素为基本单位进行迭代，</summary>
+      
+    
+    
+    
+    <category term="公开课" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/"/>
+    
+    <category term="GAMES101" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/"/>
+    
+    <category term="Notes" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Assignment 6 Bounding Box</title>
@@ -514,38 +540,6 @@ img{
     <category term="公开课" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/"/>
     
     <category term="MIT-6.S081" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>第九章——虚拟内存</title>
-    <link href="http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/"/>
-    <id>http://rinevard.github.io/wiki/learning/open-course/CMU-15-213/Notes/Chapter9-virtual-memory/</id>
-    <published>2025-05-13T14:10:28.000Z</published>
-    <updated>2025-08-22T03:14:43.982Z</updated>
-    
-    <content type="html"><![CDATA[<style>img{    width: 80%;}</style><h1 id="重走虚拟路"><a href="#重走虚拟路" class="headerlink" title="重走虚拟路"></a>重走虚拟路</h1><p>让我们尝试重新发明一遍虚拟内存。</p><h2 id="使用虚拟地址的原因"><a href="#使用虚拟地址的原因" class="headerlink" title="使用虚拟地址的原因"></a>使用虚拟地址的原因</h2><p>想象一下我们只能用物理地址来写程序，我们写出了下面的东西：</p><pre class="line-numbers language-nasm" data-language="nasm"><code class="language-nasm"><span class="token comment">; 假设目标机器是Intel 8080，内存地址为物理地址</span>ORG <span class="token number">0x0100</span>      <span class="token comment">; 程序起始地址，直接指定物理地址0x0100</span>MVI A, <span class="token number">0x05</span>     <span class="token comment">; 将立即数0x05加载到寄存器A</span>STA <span class="token number">0x0200</span>      <span class="token comment">; 将寄存器A的值存储到物理内存地址0x0200</span>HLT             <span class="token comment">; 停止程序</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>这东西的可移植性显然很差！所以我们发明了“虚拟地址”。这样程序就能直接使用虚拟地址，而在程序执行时，虚拟地址被操作系统的<strong>MMU</strong>（Memory Management Unit）实时翻译成物理地址。</p><h2 id="虚拟地址到物理地址的映射"><a href="#虚拟地址到物理地址的映射" class="headerlink" title="虚拟地址到物理地址的映射"></a>虚拟地址到物理地址的映射</h2><p>这么看来，我们可以把 MMU 当作一个从虚拟地址空间到物理地址空间的映射，那我们自然要用一个数据结构来存储映射。</p><p>但怎么组织这个数据结构呢？用一个数组，然后每个虚拟地址对应一个物理地址？假设我们有 $M$ 个虚拟地址，我们就存一个长度为 $M$ 的数组？这样的话，这个数组就太大了。假设我们有 $k$ 个进程，按这个想法，我们就需要至少 $k\times M \times \text{sizeof(char *)}$ 大小的内存来存储这个数据结构。</p><p>我们选择把 $N$ 个连续的虚拟地址当作一个虚拟页，同时把 $N$ 个连续的物理地址当作一个物理页，这样对每个进程，我们就只要做物理页之间的映射，存储 $\frac{M}{N}$ 个项就好了。考虑到程序的局部性， 我们的这种选择是合理的。这样的一个数据结构就叫做一个<strong>页表</strong>。</p><p>在下图的<strong>单级页表</strong>中，每一项都带有一个有效位（用于标记这个虚拟页对应的物理页是否在 DRAM 中）和对应物理页的开头物理地址（如果没有对应物理页，为 null）。</p><p>把虚拟地址翻译成物理地址的大致思路是根据虚拟地址找到页表中对应的项，从而找到对应的物理页，然后根据虚拟地址的最后几位确定具体的物理地址。（还记得吗，一个页由很多地址组成）</p><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter9/singlelvelpagetable.png" alt=""></p><p>但这样的页表还是很大吧。我们总在进程被创建时就为他们分配了一个超大的页表，而实际上绝大多数程序都根本用不到那么多虚拟地址。所以，我们能不能动态地改变页表的大小，比如说，在程序请求某个虚拟地址，但它不在页表中时，再去增大页表？</p><p>所以我们进一步把页表分成多级，在需要的时候再去新增 level 较高的页表。</p><p>在这样的<strong>多级页表</strong>中，只有 level 最高的页表存储对应页的开头物理地址，而其他 level 的页表存储下一个级别的页表的开始地址。我们会在下一节详细讲解它的翻译过程。</p><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter9/twolevelpagetable.png" alt=""></p><p>让我们总结一下，每个进程有自己的页表，在切换到某个进程时，操作系统会更新存储着页表地址的寄存器（在 RISC-Ⅴ 中是 satp 寄存器）。当进程需要访问某个虚拟地址时，MMU 会把虚拟地址翻译成物理地址，然后访问物理地址。</p><p>要特别强调的是，每个 level 可以有多个页表，我们可以把多级页表看作树状结构！</p><h2 id="虚拟地址的翻译"><a href="#虚拟地址的翻译" class="headerlink" title="虚拟地址的翻译"></a>虚拟地址的翻译</h2><p>我们已经知道了虚拟内存大致是怎样的了。那么 MMU 具体是怎么把虚拟地址翻译成物理地址的呢？我们这里讨论多级页表。</p><p>在多级页表中，只有 level 最高的页表存储对应页的开头物理地址，而其他 level 的页表存储下一个级别的页表的开始地址。</p><p>虚拟地址的前几位在翻译过程中会起到“页表索引”的作用，当我们到达了某个 level 的页表，我们会用它来确定我们具体需要这个页表的哪个项。而虚拟地址的最后几位是一个 offset，还记得吗，一个虚拟页和一个物理页对应，所以在找到了对应的物理页的开头地址后，我们要根据 offset 得到真正对应的物理地址。</p><p>VPN 是 virtual page number，VPO 是 virtual page offset，PTE 是 page table entry</p><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter9/translation.png" alt=""></p><p>我魔改了一下上图，希望这能让“每个 level 有多个页表”这件事显得更清晰。</p><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter9/virtual2physic.png" alt=""></p><h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><p>看起来多级页表在存储方面优化得不错，但速度呢？既然每个页表都放在不同的地址，那它不是要求多次访问不同地址吗？正是如此，所以我们用 TLB（Translation Lookaside Buffer）来缓存最近使用的页表项，来加快地址翻译。</p><h1 id="动态内存分配"><a href="#动态内存分配" class="headerlink" title="动态内存分配"></a>动态内存分配</h1><p>当我们调用 malloc 和 free 时究竟发生了什么？在做完 malloclab 以后，我们对此已经有了比较清晰的理解。</p><h2 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h2><p>调用 malloc 时，我们在寻找足够大的空闲内存块来提供给用户，如果不够大就扩容。在“寻找”的过程中，我们有很多种策略可以选，这就是 placement policy，包括但不限于 first fit、next fit、best fit.</p><p>而在找到空闲块以后，有时空闲块可能比用户的需求大很多，这时就要想想要不要切割空闲块，这就是 splitting policy。</p><h2 id="free"><a href="#free" class="headerlink" title="free"></a>free</h2><p>调用 free 时，我们简单地把一个已分配内存块标记为空闲。但空闲之后又要决定是否把它和相邻的空闲块合并，这就是 coalescing policy。</p><h2 id="块的结构"><a href="#块的结构" class="headerlink" title="块的结构"></a>块的结构</h2><p>之前提到，malloc 是在找空闲块，但什么是“块”呢？块的数据结构也有很多种可以选，不过一般来说，每个块都至少会有 size 和 is_alloc 标记。</p><p>举个例子，使用显式链表策略时，我们的堆大概长这样：</p><p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter9/heap.svg" alt=""></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;style&gt;
-img{
-    width: 80%;
-}
-&lt;/style&gt;
-
-&lt;h1 id=&quot;重走虚拟路&quot;&gt;&lt;a href=&quot;#重走虚拟路&quot; class=&quot;headerlink&quot; title=&quot;重走虚拟路&quot;&gt;&lt;/a&gt;重走虚拟路&lt;/h1&gt;&lt;p&gt;让我们尝试重新发明一遍虚拟内存。&lt;</summary>
-      
-    
-    
-    
-    <category term="公开课" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/"/>
-    
-    <category term="CMU-15-213" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/"/>
-    
-    <category term="Notes" scheme="http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CMU-15-213/Notes/"/>
     
     
   </entry>
