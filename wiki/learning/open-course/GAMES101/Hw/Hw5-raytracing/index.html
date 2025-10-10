@@ -25,7 +25,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/refraction_only.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/binary.png">
 <meta property="article:published_time" content="2025-09-22T11:46:16.000Z">
-<meta property="article:modified_time" content="2025-09-25T12:05:17.850Z">
+<meta property="article:modified_time" content="2025-09-26T04:09:50.574Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw5/reflection_only.png">
@@ -279,7 +279,8 @@
 <h2 id="REFLECTION-AND-REFRACTION"><a href="#REFLECTION-AND-REFRACTION" class="headerlink" title="REFLECTION_AND_REFRACTION"></a>REFLECTION_AND_REFRACTION</h2><p>这里的反射/折射材质自身是没有颜色的，也就是说它们只显示反射/折射后射线打到的点的颜色。所以代码思路比较简单，如果射线打到了这种材质的物体上，它会反射/折射，我们需要计算出反射/折射后的射线打到的颜色，这就对应着下面的代码：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Vector3f reflectionColor <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>reflectionRayOrig<span class="token punctuation">,</span> reflectionDirection<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> depth <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 Vector3f refractionColor <span class="token operator">=</span> <span class="token function">castRay</span><span class="token punctuation">(</span>refractionRayOrig<span class="token punctuation">,</span> refractionDirection<span class="token punctuation">,</span> scene<span class="token punctuation">,</span> depth <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>代码里还考虑了菲涅尔效应来计算反射和折射的比例。菲涅尔效应的公式有点复杂，我们就不讲解了。这里的 <code>kr</code> 就是菲涅尔方程算出的反射系数，<code>hitColor</code> 就是这个点的最终颜色：</p>
+<p>代码里还考虑了菲涅尔效应来计算反射和折射的比例。菲涅尔效应的公式有点复杂，我们就不讲解了。这里的 <code>kr</code> 就是菲涅尔方程算出的反射系数，而由能量守恒，折射系数就是 $1-\text{kr}$。</p>
+<p><code>hitColor</code> 就是这个点的最终颜色：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> kr <span class="token operator">=</span> <span class="token function">fresnel</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> N<span class="token punctuation">,</span> payload<span class="token operator">-></span>hit_obj<span class="token operator">-></span>ior<span class="token punctuation">)</span><span class="token punctuation">;</span>
 hitColor <span class="token operator">=</span> reflectionColor <span class="token operator">*</span> kr <span class="token operator">+</span> refractionColor <span class="token operator">*</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> kr<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>我们也会注意到，代码在开头对反射/折射点做了一个小小的偏移，这似乎是为了避免反射/折射时立即打到自己（咱也不确定，这是猜测）</p>
@@ -639,6 +640,13 @@ specularColor <span class="token operator">+=</span> <span class="token function
                                         </a>
                                     </li>
                                     
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
                     </ul>
                     
                                 </li>
@@ -684,6 +692,13 @@ specularColor <span class="token operator">+=</span> <span class="token function
                                         <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
                                             <i class="fa fa-file-text-o"></i>
                                             Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
                                         </a>
                                     </li>
                                     
