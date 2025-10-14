@@ -272,31 +272,65 @@
 <p>贴图是二维的，因此我们再额外定义一个垂直纸面向外的轴 $n$，它表示法线的“默认方向”，这就得到了三维的<strong>切线空间</strong>。如果点 $Q’$ 对应的法线是 $(0,0,1)$，那么世界空间的点 $Q$ 的修正法线就是原本的几何法线。</p>
 <p>接下来就要考虑如何找到这个从切线空间到世界空间的旋转矩阵了。为了简单起见，我们先考虑单个三角形的旋转。之后我们会对每个点求出它自己的旋转矩阵。没错，每个点的旋转矩阵不同，这是因为每个点对应的矩阵会把 $(0,0,1)$ 映射到该点的几何法线，而每个点的几何法线一般不同。</p>
 <p>如下图所示，我们希望把法线贴图上的 $P_0’P_1’P_2’$ 旋转为世界空间的 $P_0P_1P_2$，设这里的旋转矩阵为 $M$，世界空间的 $P_0P_1P_2$ 的几何法线为 $\mathbf{n}$，则有</p>
-<p>$$<br>\begin{align*}</p>
-<p>&amp;M[0,0,1]^T=\mathbf n</p>
-<p>\end{align*}</p>
-<p>$$</p>
-<p><img src="/images/learning/open-course/GAMES101/Assignments/hw3/tangent-world-space.png" alt=""></p>
+<script type="math/tex; mode=display">
+\begin{align*}
+
+&M[0,0,1]^T=\mathbf n
+
+\end{align*}</script><p><img src="/images/learning/open-course/GAMES101/Assignments/hw3/tangent-world-space.png" alt=""></p>
 <p>但光靠这一个方程当然解不出 $M$，所以我们再考虑两个额外的方程：</p>
-<p>$$<br>\begin{align*}</p>
-<p>&amp;M (P_1’-P_0’)=k(P_1-P_0)<br>\<br>&amp;M (P_2’-P_0’)=k(P_2-P_0)</p>
-<p>\end{align*}</p>
-<p>$$</p>
-<p>也就是说，我们希望这个矩阵把切线空间三角形的边向量旋转到世界空间的边向量上，这看起来是一个合理的要求。这里的 $k$ 是边的长度的缩放比例，严格来说每条边的缩放比例不一定相等，但只要 UV 映射前后的三角形大体是相似三角形，我们就可以认为缩放比例都为 $k$.</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+
+&M (P_1'-P_0')=k(P_1-P_0)
+\\
+&M (P_2'-P_0')=k(P_2-P_0)
+
+\end{align*}</script><p>也就是说，我们希望这个矩阵把切线空间三角形的边向量旋转到世界空间的边向量上，这看起来是一个合理的要求。这里的 $k$ 是边的长度的缩放比例，严格来说每条边的缩放比例不一定相等，但只要 UV 映射前后的三角形大体是相似三角形，我们就可以认为缩放比例都为 $k$.</p>
 <p>下面我们来解方程。首先我们设</p>
-<p>$$<br>\begin{align<em>}<br>&amp;M=\begin{pmatrix}<br>  T &amp; B &amp; N<br>\end{pmatrix}<br>\<br>&amp;P_1’-P_0’= [\Delta u_1,\Delta v_1,0]^T<br>\<br>&amp;P_2’-P_0’= [\Delta u_2,\Delta v_2,0]^T<br>\end{align</em>}<br>$$</p>
-<p>下面两个式子利用了 $P_k’$ 的第三个分量为 $0$ 的性质。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&M=\begin{pmatrix}
+  T & B & N
+\end{pmatrix}
+\\
+&P_1'-P_0'= [\Delta u_1,\Delta v_1,0]^T
+\\
+&P_2'-P_0'= [\Delta u_2,\Delta v_2,0]^T
+\end{align*}</script><p>下面两个式子利用了 $P_k’$ 的第三个分量为 $0$ 的性质。</p>
 <p>结合第一个方程就能得到 $N=\mathbf n$，这里的 $\mathbf n$ 表示世界空间的 $P_0P_1P_2$ 的几何法线。再结合另外两个方程就能得到</p>
-<p>$$<br>\begin{align<em>}<br>&amp;\Delta u_1 T+\Delta v_1 B=k(P_1-P_0)<br>\<br>&amp;\Delta u_2 T+\Delta v_2 B=k(P_2-P_0)<br>\end{align</em>}<br>$$</p>
-<p>之后我们可以解出 $T,B,N$ 的值</p>
-<p>$$<br>\begin{align<em>}<br>&amp;T=k\frac{\Delta v_2(P_1-P_0)-\Delta v_1(P_2-P_0)}{\Delta u_1 \Delta v_2-\Delta u_2 \Delta v_1}<br>\<br>&amp;B=k\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}<br>\<br>&amp;N=\mathbf n<br>\end{align</em>}<br>$$</p>
-<p>这个公式是不能用的，因为里面有未知数 $k$. 接下来我们解决这个问题。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\Delta u_1 T+\Delta v_1 B=k(P_1-P_0)
+\\
+&\Delta u_2 T+\Delta v_2 B=k(P_2-P_0)
+\end{align*}</script><p>之后我们可以解出 $T,B,N$ 的值</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&T=k\frac{\Delta v_2(P_1-P_0)-\Delta v_1(P_2-P_0)}{\Delta u_1 \Delta v_2-\Delta u_2 \Delta v_1}
+\\
+&B=k\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}
+\\
+&N=\mathbf n
+\end{align*}</script><p>这个公式是不能用的，因为里面有未知数 $k$. 接下来我们解决这个问题。</p>
 <p>我们期望 TBN 矩阵是一个旋转矩阵，而旋转矩阵是正交矩阵，所以我们会对 TBN 做施密特正交化和归一化。只要 $P_0P_1P_2$ 和 $P_0’P_1’P_2’$ 大体是相似三角形，那么它们本来就差不多正交（回顾我们对 TBN 的定义，会发现相似说明 TBN 只对 $P_0’P_1’P_2’$ 做了旋转和缩放，这表明 TBN 正交），所以这种正交化不会把 TBN 变化太多。而由于我们会对 TBN 做单位化，所以我们可以放心地令 $k=1$ 来用下面的公式求出 TBN：</p>
-<p>$$<br>\begin{align<em>}<br>&amp;T=\frac{\Delta v_2(P_1-P_0)-\Delta v_1(P_2-P_0)}{\Delta u_1 \Delta v_2-\Delta u_2 \Delta v_1}<br>\<br>&amp;B=\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}<br>\<br>&amp;N=\mathbf{n}<br>\end{align</em>}<br>$$</p>
-<p>最后，我们希望 N 在正交化前后不变，所以在正交化后我们有</p>
-<p>$$<br>\begin{align*}<br>&amp;T’=T-(N\cdot T)N<br>\<br>&amp;B’=B-(N\cdot B)N-(T’\cdot B)T’/T’^2<br>\<br>&amp;N’=\mathbf n</p>
-<p>\end{align*}<br>$$</p>
-<p>再做个单位化就能得到顶点的 TBN 矩阵了。还记得 TBN 矩阵是做什么的吗，我们用它来实现从切线空间到世界空间的变换。所以对点 $Q$，假设其法线贴图对应的法线为 $\mathbf n’$，那么修正后的法线就是 $M_{\text{TBN}}\mathbf n’$.</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&T=\frac{\Delta v_2(P_1-P_0)-\Delta v_1(P_2-P_0)}{\Delta u_1 \Delta v_2-\Delta u_2 \Delta v_1}
+\\
+&B=\frac{\Delta u_2(P_1-P_0)-\Delta u_1(P_2-P_0)}{\Delta u_2 \Delta v_1-\Delta u_1 \Delta v_2}
+\\
+&N=\mathbf{n}
+\end{align*}</script><p>最后，我们希望 N 在正交化前后不变，所以在正交化后我们有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&T'=T-(N\cdot T)N
+\\
+&B'=B-(N\cdot B)N-(T'\cdot B)T'/T'^2
+\\
+&N'=\mathbf n
+
+\end{align*}</script><p>再做个单位化就能得到顶点的 TBN 矩阵了。还记得 TBN 矩阵是做什么的吗，我们用它来实现从切线空间到世界空间的变换。所以对点 $Q$，假设其法线贴图对应的法线为 $\mathbf n’$，那么修正后的法线就是 $M_{\text{TBN}}\mathbf n’$.</p>
 <p>很好，我们现在能把单个三角形做变换了，但在真正的模型中，每个点的几何法线方向一般都不同，这就意味着它们一般都有不同的 TBN 矩阵。与计算顶点法线类似，我们会找到每个顶点相邻的所有三角形，并对它们的 $T$ 和 $B$ 做加权平均来得到这个顶点的 $T$ 和 $B$.</p>
 <p>在实践中，我们一般只计算出每个顶点的 $T$，然后在需要 $B$ 时通过叉乘 $N\times T$ 来计算。对那些非顶点的点，我们用重心坐标插值来算出其 $N$ 和 $T$，然后也做正交化和单位化来保证 TBN 矩阵的正交性。</p>
 <p>最后我们再简单分析一下怎么根据凹凸贴图做法线修正。在修正法线时，凹凸贴图与法线贴图的唯一区别就是没有直接给出法线。回顾一下切线空间的定义，我们就可以给凹凸贴图同样设置沿纸面向外的 $n$ 轴，然后把凹凸贴图想象成一个按灰度值起伏的曲面，这个曲面的法线就和法线贴图提供的法线相对应。</p>
@@ -306,26 +340,57 @@
 <p>参考 <a target="_blank" rel="noopener" href="https://terathon.com/blog/tangent-space.html">Computing Tangent Space Basis Vectors for an Arbitrary Mesh - Eric Lengyel</a></p>
 <h1 id="作业代码"><a href="#作业代码" class="headerlink" title="作业代码"></a>作业代码</h1><h2 id="rasterize-triangle"><a href="#rasterize-triangle" class="headerlink" title="rasterize_triangle"></a>rasterize_triangle</h2><p>注意这里的插值算法要对所有的属性都做透视矫正，我们简单推导一下透视矫正的公式：</p>
 <p>假设我们在对点 $Q$ 的某个属性进行插值，在世界空间中，它所在的三角形为 $P_0P_1P_2$. 投影变换后，它们分别变成了 $Q’$ 和 $P_0’P_1’P_2’$. 用重心坐标分别表示 $Q$ 和 $Q’$，会得到</p>
-<p>$$<br>\begin{align*}<br>&amp;Q=\alpha P_0+\beta P_1+\gamma P_2</p>
-<p>\</p>
-<p>&amp;Q’=\alpha’ P_0’+\beta’ P_1’+\gamma’ P_2’<br>\end{align*}<br>$$</p>
-<p>这里的 $Q,Q’,P_k,P_k’$ 都是形如 $[x,y,z,1]^T$ 的向量。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&Q=\alpha P_0+\beta P_1+\gamma P_2
+
+\\
+
+&Q'=\alpha' P_0'+\beta' P_1'+\gamma' P_2'
+\end{align*}</script><p>这里的 $Q,Q’,P_k,P_k’$ 都是形如 $[x,y,z,1]^T$ 的向量。</p>
 <p>在插值属性时，我们希望用 $\alpha, \beta,\gamma$ 来插值，而不是使用 $\alpha’, \beta’,\gamma’$ 插值，因为我们当然不希望属性会因透视位置不同而不同。这就需要我们根据 $\alpha’, \beta’,\gamma’$ 算出 $\alpha, \beta,\gamma$.</p>
 <p>不妨设投影变换矩阵为 $M$，则有 </p>
-<p>$$<br>\begin{align<em>}<br>&amp;MQ=\alpha MP_0+\beta MP_1+\gamma MP_2<br>\end{align</em>}<br>$$</p>
-<p>这里的 $MP_k$ 是形如 $[x_k,y_k,z_k,w_k]^T$ 的用齐次坐标表示的向量，它与形如 $[x,y,z,1]^T$ 的 $P_k’$ 虽然在数学上表示同一个点，但在数值上不同。（还记得吗，齐次坐标下的 $[x,y,z,1<br>]$ 和 $[ax,ay,az,a]$ 表示同一个点）</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&MQ=\alpha MP_0+\beta MP_1+\gamma MP_2
+\end{align*}</script><p>这里的 $MP_k$ 是形如 $[x_k,y_k,z_k,w_k]^T$ 的用齐次坐标表示的向量，它与形如 $[x,y,z,1]^T$ 的 $P_k’$ 虽然在数学上表示同一个点，但在数值上不同。（还记得吗，齐次坐标下的 $[x,y,z,1<br>]$ 和 $[ax,ay,az,a]$ 表示同一个点）</p>
 <p>因此我们希望对向量的系数做一些调整，来让各个向量变成 $[x,y,z,1]^T$ 的形式，从而找出 $\alpha’, \beta’,\gamma’$ 和 $\alpha, \beta,\gamma$ 的关系。</p>
 <p> 简单变换一下，我们能把上面的式子写成</p>
-<p>$$<br>\begin{align<em>}<br>&amp;MQ=\alpha w_0\frac{MP_0}{w_0}+\beta w_1\frac{MP_1}{w_1}+\gamma w_2\frac{MP_2}{w_2}<br>\end{align</em>}<br>$$</p>
-<p>现在右边的各个向量 $\frac{MP_k}{w_k}$ 都已经是 $[x,y,z,1]^T$ 的形式了，我们给它们的系数做个归一化就能让左边的向量也变成 $[x,y,z,1]^T$ 的形式：</p>
-<p>$$<br>\frac{MQ}{\alpha w_0 + \beta w_1 + \gamma w_2}<br>=<br>\frac{1}{\alpha w_0 + \beta w_1 + \gamma w_2}<br>\bigg(<br>\alpha w_0\frac{MP_0}{w_0}+\beta w_1\frac{MP_1}{w_1}+\gamma w_2\frac{MP_2}{w_2}<br>\bigg)<br>$$</p>
-<p>由此我们就有</p>
-<p>$$<br>\begin{align<em>}<br>&amp;\frac{\alpha w_0}{\alpha w_0 + \beta w_1 + \gamma w_2}=\alpha’<br>\<br>&amp;\frac{\beta w_1}{\alpha w_0 + \beta w_1 + \gamma w_2}=\beta’<br>\<br>&amp;\frac{\gamma w_2}{\alpha w_0 + \beta w_1 + \gamma w_2}=\gamma’<br>\end{align</em>}<br>$$</p>
-<p>解上面的方程的小技巧是借助除法和重心坐标和为 $1$ 的性质得到下面的等价的方程组</p>
-<p>$$<br>\begin{align<em>}<br>&amp;\frac{\alpha’}{\beta’}=\frac{\alpha w_0}{\beta w_1}<br>\<br>&amp;\frac{\alpha’}{\gamma’}=\frac{\alpha w_0}{\gamma w_2}<br>\<br>&amp;\alpha + \beta + \gamma = 1<br>\end{align</em>}<br>$$</p>
-<p>然后就能求出</p>
-<p>$$<br>\begin{align<em>}<br>&amp;\alpha = \frac{\alpha’ / w_0}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\<br>&amp;\beta= \frac{\beta’ / w_1}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\<br>&amp;\gamma= \frac{\gamma’ / w_2}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\end{align</em>}<br>$$</p>
-<p>由此，我们就从屏幕空间的重心坐标 $\alpha’,\beta’,\gamma’$ 算出了世界空间的重心坐标 $\alpha,\beta,\gamma$，之后就能用世界空间的重心坐标来正确插值了。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&MQ=\alpha w_0\frac{MP_0}{w_0}+\beta w_1\frac{MP_1}{w_1}+\gamma w_2\frac{MP_2}{w_2}
+\end{align*}</script><p>现在右边的各个向量 $\frac{MP_k}{w_k}$ 都已经是 $[x,y,z,1]^T$ 的形式了，我们给它们的系数做个归一化就能让左边的向量也变成 $[x,y,z,1]^T$ 的形式：</p>
+<script type="math/tex; mode=display">
+\frac{MQ}{\alpha w_0 + \beta w_1 + \gamma w_2}
+=
+\frac{1}{\alpha w_0 + \beta w_1 + \gamma w_2}
+\bigg(
+\alpha w_0\frac{MP_0}{w_0}+\beta w_1\frac{MP_1}{w_1}+\gamma w_2\frac{MP_2}{w_2}
+\bigg)</script><p>由此我们就有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\frac{\alpha w_0}{\alpha w_0 + \beta w_1 + \gamma w_2}=\alpha'
+\\
+&\frac{\beta w_1}{\alpha w_0 + \beta w_1 + \gamma w_2}=\beta'
+\\
+&\frac{\gamma w_2}{\alpha w_0 + \beta w_1 + \gamma w_2}=\gamma'
+\end{align*}</script><p>解上面的方程的小技巧是借助除法和重心坐标和为 $1$ 的性质得到下面的等价的方程组</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\frac{\alpha'}{\beta'}=\frac{\alpha w_0}{\beta w_1}
+\\
+&\frac{\alpha'}{\gamma'}=\frac{\alpha w_0}{\gamma w_2}
+\\
+&\alpha + \beta + \gamma = 1
+\end{align*}</script><p>然后就能求出</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\alpha = \frac{\alpha' / w_0}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\\
+&\beta= \frac{\beta' / w_1}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\\
+&\gamma= \frac{\gamma' / w_2}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\end{align*}</script><p>由此，我们就从屏幕空间的重心坐标 $\alpha’,\beta’,\gamma’$ 算出了世界空间的重心坐标 $\alpha,\beta,\gamma$，之后就能用世界空间的重心坐标来正确插值了。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//Screen space rasterization</span>
 <span class="token keyword">void</span> rst<span class="token double-colon punctuation">::</span>rasterizer<span class="token double-colon punctuation">::</span><span class="token function">rasterize_triangle</span><span class="token punctuation">(</span><span class="token keyword">const</span> Triangle<span class="token operator">&amp;</span> t<span class="token punctuation">,</span> <span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>array<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3f<span class="token punctuation">,</span> <span class="token number">3</span><span class="token operator">></span><span class="token operator">&amp;</span> view_pos<span class="token punctuation">)</span> 
 <span class="token punctuation">&#123;</span>
@@ -1126,6 +1191,20 @@
                                         <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
                                             <i class="fa fa-file-text-o"></i>
                                             _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
                                         </a>
                                     </li>
                                     
