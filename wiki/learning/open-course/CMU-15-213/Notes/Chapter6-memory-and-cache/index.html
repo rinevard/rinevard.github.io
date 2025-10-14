@@ -303,7 +303,6 @@
 <p>随着 stride 增大，缓存命中率越来越低，耗时越来越大，直到某个临界点，每次都不命中。</p>
 <h2 id="缓存命中影响性能——以矩阵乘法为例"><a href="#缓存命中影响性能——以矩阵乘法为例" class="headerlink" title="缓存命中影响性能——以矩阵乘法为例"></a>缓存命中影响性能——以矩阵乘法为例</h2><p>假设我们在做矩阵乘法，我们的高速缓存的每个 line 的 block 能装下 $K$ 个值。</p>
 <h3 id="循环顺序对性能的影响"><a href="#循环顺序对性能的影响" class="headerlink" title="循环顺序对性能的影响"></a>循环顺序对性能的影响</h3><p>版本 1 是 ijk 循环，a 是行遍历，b 是列遍历，c 不在最内存循环内所以不计性能损耗。对 a 来说，每经过 K 个值，就有一次不命中；对 b 来说，每次都不命中。我们可以认为有这样的缓存<strong>不命中率</strong>：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -320,7 +319,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 版本1</span>
 <span class="token keyword">for</span> <span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">for</span> <span class="token punctuation">(</span>j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -332,7 +330,6 @@
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>如果把循环顺序改成 ikj，就能得到更好的性能。</p>
 <p>这时 a 不在最内层循环，不计性能损耗，b 是行遍历，c 也是行遍历，我们可以认为有这样的缓存不命中率：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -349,7 +346,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">for</span> <span class="token punctuation">(</span>k<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> k<span class="token operator">&lt;</span>n<span class="token punctuation">;</span> k<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
         r <span class="token operator">=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>k<span class="token punctuation">]</span><span class="token punctuation">;</span>
@@ -363,13 +359,12 @@
 <ul>
 <li>\frac{n}{K}$<br>次，因此总不命中次数大约为：</li>
 </ul>
-<script type="math/tex; mode=display">
-n^2 \times (\frac{n}{K} + \frac{n}{K})=\frac{2n^3}{K}</script><h3 id="blocking-对性能的影响"><a href="#blocking-对性能的影响" class="headerlink" title="blocking 对性能的影响"></a>blocking 对性能的影响</h3><p>其实我们还有更好的优化手段——矩阵分块乘法：</p>
+<p>$$<br>n^2 \times (\frac{n}{K} + \frac{n}{K})=\frac{2n^3}{K}<br>$$</p>
+<h3 id="blocking-对性能的影响"><a href="#blocking-对性能的影响" class="headerlink" title="blocking 对性能的影响"></a>blocking 对性能的影响</h3><p>其实我们还有更好的优化手段——矩阵分块乘法：</p>
 <p><img src="/images/learning/open-course/CMU-15213/Notes/Chapter6/matrix-blocking.png" alt=""></p>
 <p>结果里的每个 block 的计算需要访问 $\frac{2n}{B}$ 个小 blck，每个小 block 大概会不命中 $\frac{B^2<br>}{K}$ 次，因此总不命中次数大约为：</p>
-<script type="math/tex; mode=display">
-(\frac{n}{B}
-)^2 \times \frac{B^2}{K}\times \frac{2n}{B}=\frac{2n^3}{BK}</script><p>当然，我们不能无限地增大 $B$. 对于矩阵乘法 C=A×B，我们要同时在缓存中保存 A 的一个块、B 的一个块和 C 的一个块，从而希望有类似 $3B^2 &lt; C$ 的限制（这里的 $C$ 是 cache 的 capacity）。所以尽可能选大的 block，但保证不过大就好。</p>
+<p>$$<br>(\frac{n}{B}<br>)^2 \times \frac{B^2}{K}\times \frac{2n}{B}=\frac{2n^3}{BK}<br>$$</p>
+<p>当然，我们不能无限地增大 $B$. 对于矩阵乘法 C=A×B，我们要同时在缓存中保存 A 的一个块、B 的一个块和 C 的一个块，从而希望有类似 $3B^2 &lt; C$ 的限制（这里的 $C$ 是 cache 的 capacity）。所以尽可能选大的 block，但保证不过大就好。</p>
 
                                                                                                                             
                                                                                                                                 
@@ -781,13 +776,6 @@ n^2 \times (\frac{n}{K} + \frac{n}{K})=\frac{2n^3}{K}</script><h3 id="blocking-�
                                         <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
                                             <i class="fa fa-file-text-o"></i>
                                             第一章——系统接口
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            看我看我
                                         </a>
                                     </li>
                                     

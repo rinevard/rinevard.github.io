@@ -273,64 +273,58 @@
 <p>接下来让我们看看它们的具体定义。</p>
 <h2 id="Radiant-flux-power-Phi"><a href="#Radiant-flux-power-Phi" class="headerlink" title="Radiant flux/power $\Phi$"></a>Radiant flux/power $\Phi$</h2><p>Radiant flux/power 符号 $\Phi$，单位 $W$.</p>
 <p>定义为</p>
-<script type="math/tex; mode=display">
-\Phi = \frac{dQ}{dt}</script><h2 id="Radiant-intensity-I"><a href="#Radiant-intensity-I" class="headerlink" title="Radiant intensity $I$"></a>Radiant intensity $I$</h2><p>Radiant Intensity 符号 $I$，单位 $\frac{W}{\text{sr}}$，表示某个定点接收/穿过/发出的，在指定方向 $\vec{\omega}$ 上的，单位立体角的 Power.</p>
+<p>$$<br>\Phi = \frac{dQ}{dt}<br>$$</p>
+<h2 id="Radiant-intensity-I"><a href="#Radiant-intensity-I" class="headerlink" title="Radiant intensity $I$"></a>Radiant intensity $I$</h2><p>Radiant Intensity 符号 $I$，单位 $\frac{W}{\text{sr}}$，表示某个定点接收/穿过/发出的，在指定方向 $\vec{\omega}$ 上的，单位立体角的 Power.</p>
 <p>定义为</p>
-<script type="math/tex; mode=display">
-I(\vec{\omega})=\frac{d\Phi}{d\omega}</script><p>这里的符号略显混乱。左边的参数 $\vec{\omega}$ 是一个方向向量，右边的 $d\omega$ 则是这个方向上立体角的微分。</p>
+<p>$$<br>I(\vec{\omega})=\frac{d\Phi}{d\omega}<br>$$</p>
+<p>这里的符号略显混乱。左边的参数 $\vec{\omega}$ 是一个方向向量，右边的 $d\omega$ 则是这个方向上立体角的微分。</p>
 <p>我们知道方向向量 $\vec{\omega}$ 也能在球坐标下被表示为 $(\theta,\varphi)$。对给定的 $(\theta,\varphi)$，我们可以算出其在球面上的面积微分，也能进一步求出立体角微分 $d\omega$，如下所示</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&dA=r^2 \sin \theta \space d\theta \space d\varphi
-\\
-&d\omega=\frac{dA}{r^2}=\sin \theta \space d\theta \space d\varphi
-\end{align*}</script><p>下图是对  Solid angle 和 Radiant Intensity 两个概念的图解</p>
+<p>$$<br>\begin{align<em>}<br>&amp;dA=r^2 \sin \theta \space d\theta \space d\varphi<br>\<br>&amp;d\omega=\frac{dA}{r^2}=\sin \theta \space d\theta \space d\varphi<br>\end{align</em>}<br>$$</p>
+<p>下图是对  Solid angle 和 Radiant Intensity 两个概念的图解</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note6/solid_angle_and_intensity.png" alt=""></p>
 <h2 id="Irradiance-E"><a href="#Irradiance-E" class="headerlink" title="Irradiance $E$"></a>Irradiance $E$</h2><p>Irradiance 符号 $E$，单位 $\frac{W}{m^2}$.</p>
 <p>表示点 $x$ 周围单位面积接收/穿过/发出的 Power，定义为</p>
-<script type="math/tex; mode=display">
-E(x)=\frac{d\Phi}{dA}</script><p>下图计算并对比了平行光穿过两个不同截面时的 irradiance：垂直截面 $A$，以及与垂直方向成 $\theta$ 角的倾斜截面 $A’$。</p>
+<p>$$<br>E(x)=\frac{d\Phi}{dA}<br>$$</p>
+<p>下图计算并对比了平行光穿过两个不同截面时的 irradiance：垂直截面 $A$，以及与垂直方向成 $\theta$ 角的倾斜截面 $A’$。</p>
 <p>其中 $\Phi=\Phi’$ 是因为能量守恒，光束穿过任何一个完整截面的功率是固定的。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note6/irradiance.png" alt=""></p>
 <h2 id="Radiance-L"><a href="#Radiance-L" class="headerlink" title="Radiance $L$"></a>Radiance $L$</h2><p>Radiance $L$ 的单位是 $\frac{W}{\text{sr}\cdot \space m^2}$，表示表面某点 $x$ 周围单位投影面积接收/穿过/发出的，在指定方向 $\vec{w}$ 上的，单位立体角的 radiant flux.</p>
 <p>定义为</p>
-<script type="math/tex; mode=display">
-L(x,\vec{\omega})=\frac{d^2\Phi}{d\omega ds}=\frac{d^2\Phi}{d\omega ds_{0}\cos\theta}</script><p>这里的 $ds$ 是投影前面积，$ds_0 \cos\theta$ 是投影面积。</p>
+<p>$$<br>L(x,\vec{\omega})=\frac{d^2\Phi}{d\omega ds}=\frac{d^2\Phi}{d\omega ds_{0}\cos\theta}<br>$$</p>
+<p>这里的 $ds$ 是投影前面积，$ds_0 \cos\theta$ 是投影面积。</p>
 <p>下图是对 Irradiance 和 Radiance的图解</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note6/irradiance_and_radiance.png" alt=""></p>
 <h1 id="BRDF和材质"><a href="#BRDF和材质" class="headerlink" title="BRDF和材质"></a>BRDF和材质</h1><p>现在我们可以看看光照的物理模型了，其中最关键的是 BRDF，即双向反射分布函数。它定义了从方向 $\vec{\omega_i}$ 射入的光线打到某个表面上反射到 $\vec{\omega_r}$ 方向的强度：</p>
-<script type="math/tex; mode=display">
-f_r(p,\vec{\omega_i}, \vec{\omega_r}) = \frac{dL_r(p,\vec{\omega_r})}{dE_i(p,\vec{\omega_i})}</script><p>你可能会疑惑为什么之前我们说 $E$ 是关于 $x$ 的函数，现在却除了坐标 $p$ 外还多了一个方向参数 $\omega_i$，这是因为 BRDF 里的 $E$ 是微分。具体可以看看下面这个式子：</p>
-<script type="math/tex; mode=display">
-E(x) = \int_{\Omega} L_i(x,\vec{\omega_i}) \cos\theta_i d\omega_i
-\\
-dE_i(x, \vec{\omega_i}) = L_i(x, \vec{\omega_i}) \cos\theta_i d\omega_i</script><p>你可能还会疑惑，为什么分母用 $E$ 呢？和分母一样统一用 $L$ 不是更优雅吗？</p>
+<p>$$<br>f_r(p,\vec{\omega_i}, \vec{\omega_r}) = \frac{dL_r(p,\vec{\omega_r})}{dE_i(p,\vec{\omega_i})}<br>$$</p>
+<p>你可能会疑惑为什么之前我们说 $E$ 是关于 $x$ 的函数，现在却除了坐标 $p$ 外还多了一个方向参数 $\omega_i$，这是因为 BRDF 里的 $E$ 是微分。具体可以看看下面这个式子：</p>
+<p>$$<br>E(x) = \int_{\Omega} L_i(x,\vec{\omega_i}) \cos\theta_i d\omega_i<br>\<br>dE_i(x, \vec{\omega_i}) = L_i(x, \vec{\omega_i}) \cos\theta_i d\omega_i</p>
+<p>$$</p>
+<p>你可能还会疑惑，为什么分母用 $E$ 呢？和分母一样统一用 $L$ 不是更优雅吗？</p>
 <p>据 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28476602/answer/41003204">https://www.zhihu.com/question/28476602/answer/41003204</a> 这个答案所说，测量出射的 Radiance $L$ 很方便，但测量入射的 Irradiance $L$ 很困难，而测量入射的 $dE$ 挺方便，因此我们就使用了 $\frac{dL}{dE}$.</p>
 <p>我们把上面的 $dE_i(x,\vec{\omega_i})$ 代入 BRDF，就得到了</p>
-<script type="math/tex; mode=display">
-f_r(p,\vec{\omega_i}, \vec{\omega_r}) = \frac{dL_r(p,\vec{\omega_r})}{L_i(x,\vec{w_i})\cos\theta_i dw_i}</script><p>物体的材质就用 BSDF（反射的BRDF+折射的BTDF）表示。我们这里只聊 BRDF，因为 BTDF 和 BRDF 接近。BRDF 的获取包括但不限于这两种方式：</p>
+<p>$$<br>f_r(p,\vec{\omega_i}, \vec{\omega_r}) = \frac{dL_r(p,\vec{\omega_r})}{L_i(x,\vec{w_i})\cos\theta_i dw_i}<br>$$</p>
+<p>物体的材质就用 BSDF（反射的BRDF+折射的BTDF）表示。我们这里只聊 BRDF，因为 BTDF 和 BRDF 接近。BRDF 的获取包括但不限于这两种方式：</p>
 <ol>
 <li>现实测量。我们可以找到许多包含大量 BRDF 测量数据的数据集，比如 MERL 数据集。</li>
 <li>微表面模型。用粗糙度、金属度等参数来构建启发式的 BRDF 函数。</li>
 </ol>
 <p>还值得一提的是，由 Helmholtz Reciprocity Principle，有</p>
-<script type="math/tex; mode=display">
-f_r(p,\vec{\omega_i}, \vec{\omega_o}) = f_r(p,\vec{\omega_o}, \vec{\omega_i})</script><p>也就是说交换入射出射方向，BRDF 函数 $f_r$ 不变。</p>
+<p>$$<br>f_r(p,\vec{\omega_i}, \vec{\omega_o}) = f_r(p,\vec{\omega_o}, \vec{\omega_i})<br>$$</p>
+<p>也就是说交换入射出射方向，BRDF 函数 $f_r$ 不变。</p>
 <h1 id="渲染方程"><a href="#渲染方程" class="headerlink" title="渲染方程"></a>渲染方程</h1><p>现在我们先看看反射方程，再看看渲染方程。</p>
 <p>反射方程是通过 BRDF 求出 $L_r$ 的方程，对 BRDF 的公式积分一下就行：</p>
-<script type="math/tex; mode=display">
-L_r(p, \vec{\omega_r}) = \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_r}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot \vec{n}) d\omega_i</script><p>其中 $\vec{n}$ 是点 $p$ 处的法线方向，$\vec{\omega_i} \cdot \vec{n}$ 是 BRDF 定义里的 $\cos\theta_i$.</p>
+<p>$$<br>L_r(p, \vec{\omega_r}) = \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_r}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot \vec{n}) d\omega_i</p>
+<p>$$</p>
+<p>其中 $\vec{n}$ 是点 $p$ 处的法线方向，$\vec{\omega_i} \cdot \vec{n}$ 是 BRDF 定义里的 $\cos\theta_i$.</p>
 <p>而渲染方程，不考虑折射，只是比反射方程多了一个自发光项：</p>
-<script type="math/tex; mode=display">
-L_o(p, \vec{\omega_o}) = L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i</script><p>你可能会好奇右侧的 $L_i(p,\vec{\omega_i}<br>)$ 怎么求出来。由能量守恒，我们可以从 $p$ 出发顺着 $-\vec{\omega_i}$ 找到第一个交点 $q$，然后就有</p>
-<script type="math/tex; mode=display">
-L_i(p,\vec{\omega_i})=L_o(q,-\vec{\omega_i})</script><h1 id="实际算法"><a href="#实际算法" class="headerlink" title="实际算法"></a>实际算法</h1><p>由上可知，我们要求解下面的方程：</p>
-<script type="math/tex; mode=display">
-L_o(p, \vec{\omega_o}) = L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_o(\text{raycast}(p, -\vec{\omega_i}), -\vec{\omega_i}) (\vec{\omega_i} \cdot n) d\vec{\omega_i}</script><p>这是一个积分，还是一个递归，我们先用蒙特卡罗算法近似积分，得到</p>
-<script type="math/tex; mode=display">
-L_o(p, \vec{\omega_o}) \approx L_e(p, \vec{\omega_o}) + 
-\frac{1}{N}\sum_{k=1}^{N}\frac{f_r(p, \vec{\omega_i}^{(k)}, \vec{\omega_o}) L_o(\text{raycast}(p, -\vec{\omega_i}^{(k)}), -\vec{\omega_i}^{(k)}) (\vec{\omega_i} ^{(k)}\cdot n) }
-{p(\vec{\omega_i}^{(k)})}</script><p>其中 $\vec{\omega_i}^{(k)}$ 是随机采样的方向向量，$p(\vec{\omega_i}^{(k)})$ 是采样到它的概率。</p>
+<p>$$<br>L_o(p, \vec{\omega_o}) = L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i<br>$$</p>
+<p>你可能会好奇右侧的 $L_i(p,\vec{\omega_i}<br>)$ 怎么求出来。由能量守恒，我们可以从 $p$ 出发顺着 $-\vec{\omega_i}$ 找到第一个交点 $q$，然后就有</p>
+<p>$$<br>L_i(p,\vec{\omega_i})=L_o(q,-\vec{\omega_i})<br>$$</p>
+<h1 id="实际算法"><a href="#实际算法" class="headerlink" title="实际算法"></a>实际算法</h1><p>由上可知，我们要求解下面的方程：</p>
+<p>$$<br>L_o(p, \vec{\omega_o}) = L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_o(\text{raycast}(p, -\vec{\omega_i}), -\vec{\omega_i}) (\vec{\omega_i} \cdot n) d\vec{\omega_i}<br>$$</p>
+<p>这是一个积分，还是一个递归，我们先用蒙特卡罗算法近似积分，得到</p>
+<p>$$<br>L_o(p, \vec{\omega_o}) \approx L_e(p, \vec{\omega_o}) +<br>\frac{1}{N}\sum_{k=1}^{N}\frac{f_r(p, \vec{\omega_i}^{(k)}, \vec{\omega_o}) L_o(\text{raycast}(p, -\vec{\omega_i}^{(k)}), -\vec{\omega_i}^{(k)}) (\vec{\omega_i} ^{(k)}\cdot n) }<br>{p(\vec{\omega_i}^{(k)})}<br>$$</p>
+<p>其中 $\vec{\omega_i}^{(k)}$ 是随机采样的方向向量，$p(\vec{\omega_i}^{(k)})$ 是采样到它的概率。</p>
 <p>有了这个求和，我们就可以开始递归了，大致算法如下：</p>
 <ol>
 <li>从 $p$ 射出朝随机方向 $\vec{\omega_i}<br>^{(k)}$ 的射线，打到 $q^{(k)}$.</li>
@@ -762,13 +756,6 @@ L_o(p, \vec{\omega_o}) \approx L_e(p, \vec{\omega_o}) +
                                         <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
                                             <i class="fa fa-file-text-o"></i>
                                             第一章——系统接口
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/little-fish/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            看我看我
                                         </a>
                                     </li>
                                     
