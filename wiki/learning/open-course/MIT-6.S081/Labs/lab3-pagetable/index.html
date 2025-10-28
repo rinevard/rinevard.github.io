@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Lab 3 Page Tables | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Lab 3 Page Tables" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="Inspect a user-process page table这道题让我们解释一下 print_pgtbl 的打印结果，首先让我们来看看它打印了什么： print_pgtbl starting va 0x0 pte 0x21FCD85B pa 0x87F36000 perm 0x5B va 0x1000 pte 0x21FD141B pa 0x87F45000 perm 0x1B va 0x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 3 Page Tables">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="Inspect a user-process page table这道题让我们解释一下 print_pgtbl 的打印结果，首先让我们来看看它打印了什么： print_pgtbl starting va 0x0 pte 0x21FCD85B pa 0x87F36000 perm 0x5B va 0x1000 pte 0x21FD141B pa 0x87F45000 perm 0x1B va 0x2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/pte.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/user_addr_space.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/addr_translation.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/regular_vs_super.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/super_demote.png">
+<meta property="article:published_time" content="2025-10-28T08:28:22.000Z">
+<meta property="article:modified_time" content="2025-10-28T08:29:01.912Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/pte.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab3-pagetable" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/">MIT-6.S081</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+            <time datetime="2025-10-28T08:28:22.000Z" itemprop="datePublished">2025-10-28</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 3 Page Tables
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Inspect-a-user-process-page-table"><span class="toc-number">1.</span> <span class="toc-text">Inspect a user-process page table</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Speed-up-system-calls"><span class="toc-number">2.</span> <span class="toc-text">Speed up system calls</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Print-a-page-table"><span class="toc-number">3.</span> <span class="toc-text">Print a page table</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Use-superpages"><span class="toc-number">4.</span> <span class="toc-text">Use superpages</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">4.1.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sbrk-%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">4.2.</span> <span class="toc-text">sbrk 调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98"><span class="toc-number">4.3.</span> <span class="toc-text">分配内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8A%E6%94%BE%E5%86%85%E5%AD%98"><span class="toc-number">4.4.</span> <span class="toc-text">释放内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fork"><span class="toc-number">4.5.</span> <span class="toc-text">fork</span></a></li></ol></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <h1 id="Inspect-a-user-process-page-table"><a href="#Inspect-a-user-process-page-table" class="headerlink" title="Inspect a user-process page table"></a><strong>Inspect a user-process page table</strong></h1><p>这道题让我们解释一下 <code>print_pgtbl</code> 的打印结果，首先让我们来看看它打印了什么：</p>
+<pre class="line-numbers language-none"><code class="language-none">print_pgtbl starting
+va 0x0 pte 0x21FCD85B pa 0x87F36000 perm 0x5B
+va 0x1000 pte 0x21FD141B pa 0x87F45000 perm 0x1B
+va 0x2000 pte 0x21FD1017 pa 0x87F44000 perm 0x17
+va 0x3000 pte 0x21FD4007 pa 0x87F50000 perm 0x7
+va 0x4000 pte 0x21FC70D7 pa 0x87F1C000 perm 0xD7
+va 0x5000 pte 0x0 pa 0x0 perm 0x0
+va 0x6000 pte 0x0 pa 0x0 perm 0x0
+va 0x7000 pte 0x0 pa 0x0 perm 0x0
+va 0x8000 pte 0x0 pa 0x0 perm 0x0
+va 0x9000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFF6000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFF7000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFF8000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFF9000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFA000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFB000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFC000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFD000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFE000 pte 0x21FC94C7 pa 0x87F25000 perm 0xC7
+va 0xFFFFF000 pte 0x2000184B pa 0x80006000 perm 0x4B
+print_pgtbl: OK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>结合 <code>print_pgtbl</code> 的实现，我们可以知道 <code>pgtbltest</code> 遍历了用户进程虚拟地址空间开头和末尾的一些地址，并打印出它们对应的 PTE、物理地址、权限位。让我们先来看看 PTE 的结构：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/pte.png" alt=""></p>
+<p>然后我们以 <code>va 0x4000 pte 0x21FC70D7 pa 0x87F1C000 perm 0xD7</code> 为例，解析一下其打印的内容。首先我们从 PTE 中提取出 Physical Page Number（PPN）和权限位：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; 打印 PPN
+&#x2F;&#x2F; 虚拟地址的末尾 12 位是 0, 所以物理地址偏移量为 0
+&#x2F;&#x2F; 物理地址为 ((pte &gt;&gt; 10) &lt;&lt; 12) + 0 即 0x87f1c000
+(gdb) p &#x2F;x (0x21FC70D7 &gt;&gt; 10)
+$17 &#x3D; 0x87f1c
+
+&#x2F;&#x2F; 构造一个末尾 10 位为 1 的量, 方便后续取出权限位
+(gdb) set $mask &#x3D; ((1 &lt;&lt; 10) - 1)
+(gdb) p &#x2F;t $mask
+$18 &#x3D; 1111111111
+
+&#x2F;&#x2F; 分别用二进制和十六进制打印权限位
+(gdb) p &#x2F;t (0x21FC70D7 &amp; $mask)
+$19 &#x3D; 11010111
+(gdb) p &#x2F;x (0x21FC70D7 &amp; $mask)
+$20 &#x3D; 0xd7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>检验可知和 <code>print_pgtbl</code> 的打印结果一致。对照权限位的末五位 10111 和 PTE 的末尾五位 UXWRV，可知这里是用户内存、不可执行、可写、可读、合法。</p>
+<p>我们可以再检查一下 <code>va 0xFFFFF000 pte 0x2000184B pa 0x80006000 perm 0x4B</code>，会发现它的权限位末五位是 01011，说明这里是非用户内存、可以执行、不可写、可读、合法。</p>
+<p>对照下面的用户进程虚拟内存空间图可知我们分析的第一段虚拟地址 <code>0x4000</code> 大约在开头位置，确实是用户的东西；而分析的第二段 <code>0xFFFFF000</code> 则在接近末尾的位置，用于存储系统调用相关的陷阱代码。</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/user_addr_space.png" alt=""></p>
+<p>我们还可以进一步打印一下内存里的值。启动 gdb，用 <code>file user/_pgtbltest</code> 加载符号表，然后在 <code>main</code> 设置断点，这样我们就能在加载用户页表时打印各个虚拟地址的值：</p>
+<pre class="line-numbers language-none"><code class="language-none">(gdb) p *0x0
+$7 &#x3D; -335146751
+(gdb) p *0x1000
+$8 &#x3D; 72
+(gdb) p *0x5000
+Cannot access memory at address 0x5000
+(gdb) p *0xFFFFE000
+Cannot access memory at address 0xffffe000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>对照最开始的 <code>print_pgtbl</code> 的打印结果（关注其权限位），可以看到我们能正确打印 <code>0x0</code> 和 <code>0x1000</code> ，它们是用户内存、可读、合法的虚拟地址的内容。而 <code>0x5000</code> 是不合法的地址所以无法打印，<code>0xFFFFE000</code> 是非用户内存（内核内存）所以无法打印。</p>
+<h1 id="Speed-up-system-calls"><a href="#Speed-up-system-calls" class="headerlink" title="Speed up system calls"></a>Speed up system calls</h1><p>这道题让我们创建一个特殊的内存页并把进程 pid 存储在里面，这样我们在获取 pid 时就不必做系统调用 <code>getpid</code>，而是可以直接调用 <code>ugetpid</code>，从而无需陷入内核以提高效率。</p>
+<p>提示里说我们创建的这个页面会和 <code>trapframe</code> 有很多相似之处——它们都在进程初始化时自动创建，在进程退出时自动释放。所以我们可以分为以下几步完成任务：</p>
+<ol>
+<li>定义 <code>usyscall</code>：在 <code>struct proc</code> 里添加 <code>struct usyscall *usyscall</code></li>
+<li><p>进程初始化时创建页面：阅读 <code>fork</code> 的代码可以知道我们调用 <code>allocproc</code> 以创建进程。</p>
+<p> 在 <code>allocproc</code> 里，我们用 <code>kalloc</code> 给 <code>trapframe</code> 分配了一个物理页，然后调用 <code>proc_pagetable</code> 来做页表映射。</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">struct</span> <span class="token class-name">proc</span> <span class="token operator">*</span><span class="token function">allocproc</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ...</span>
+    <span class="token comment">// Allocate a trapframe page.</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>p<span class="token operator">-></span>trapframe <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">trapframe</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">freeproc</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// An empty user page table.</span>
+    p<span class="token operator">-></span>pagetable <span class="token operator">=</span> <span class="token function">proc_pagetable</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 所以照葫芦画瓢就行，先在 <code>allocproc</code> 里加入给 <code>usyscall</code> 分配物理页的代码（记得把 <code>pid</code> 存进去）：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// Allocate a usyscall page</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>p<span class="token operator">-></span>usyscall <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">usyscall</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">freeproc</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+p<span class="token operator">-></span>usyscall<span class="token operator">-></span>pid <span class="token operator">=</span> p<span class="token operator">-></span>pid<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 然后在 <code>proc_pagetable</code> 加入页表映射的代码：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// map the usyscall page just below the trapframe page, for</span>
+<span class="token comment">// data sharing between userspace and the kernel</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mappages</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> USYSCALL<span class="token punctuation">,</span> PGSIZE<span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span><span class="token punctuation">(</span>p<span class="token operator">-></span>usyscall<span class="token punctuation">)</span><span class="token punctuation">,</span>
+             PTE_R <span class="token operator">|</span> PTE_U<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> TRAPFRAME<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> TRAMPOLINE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">uvmfree</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>退出时释放：我们知道进程调用 <code>exit</code> 来下班，但其实调用 <code>exit</code> 后进程并没有立即销毁自身，而是进入 ZOMBIE 态等待父进程的 <code>wait</code> 来回收。具体可以看看 <code>proc.c</code>，这里不多赘述。</p>
+<p> 总之看向 <code>wait</code> 函数，可以发现我们调用 <code>freeproc</code> 来释放进程。</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">freeproc</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">proc</span> <span class="token operator">*</span>p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>trapframe<span class="token punctuation">)</span>
+        <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>p<span class="token operator">-></span>trapframe<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p<span class="token operator">-></span>trapframe <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>pagetable<span class="token punctuation">)</span>
+        <span class="token function">proc_freepagetable</span><span class="token punctuation">(</span>p<span class="token operator">-></span>pagetable<span class="token punctuation">,</span> p<span class="token operator">-></span>sz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 对照代码对 <code>trapframe</code> 的处理，我们要在 <code>freeproc</code> 里加入释放物理页的代码：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>usyscall<span class="token punctuation">)</span>
+    <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>p<span class="token operator">-></span>usyscall<span class="token punctuation">)</span><span class="token punctuation">;</span>
+p<span class="token operator">-></span>usyscall <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p> 然后修改 <code>proc_freepagetable</code> 以删除页表映射：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> USYSCALL<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+</li>
+</ol>
+<p>闲着也是闲着，不如和我一起看看 <code>uvmfree</code> 为什么没有自动释放 <code>trapframe</code> 和 <code>usyscall</code>：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">uvmfree</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>sz <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">PGROUNDUP</span><span class="token punctuation">(</span>sz<span class="token punctuation">)</span> <span class="token operator">/</span> PGSIZE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">freewalk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这段代码调用 <code>uvmunmap</code> 来释放所有在页表里有记录的物理页，然后调用 <code>freewalk</code> 来释放页表自身。</p>
+<p>这里的 <code>uvmunmap(pagetable, 0, PGROUNDUP(sz) / PGSIZE, 1)</code> 表示释放虚拟地址从 <code>0</code> 到 <code>0 + PGROUNDUP(sz) / PGSIZE</code> 的内容，即释放用户内存的内容。</p>
+<p>但 <code>trapframe</code> 和 <code>usyscall</code> 不是用户内存的内容，它们被存放在虚拟地址的顶部（分别在 TRAPFRAME 和 USYSCALL），所以它们没有被释放。</p>
+<h1 id="Print-a-page-table"><a href="#Print-a-page-table" class="headerlink" title="Print a page table"></a>Print a page table</h1><p>先来看看打印结果吧：</p>
+<pre class="line-numbers language-none"><code class="language-none">page table 0x0000000087f22000
+ ..0x0000000000000000: pte 0x0000000021fc7801 pa 0x0000000087f1e000
+ .. ..0x0000000000000000: pte 0x0000000021fc7401 pa 0x0000000087f1d000
+ .. .. ..0x0000000000000000: pte 0x0000000021fc7c5b pa 0x0000000087f1f000
+ .. .. ..0x0000000000001000: pte 0x0000000021fc701b pa 0x0000000087f1c000
+ .. .. ..0x0000000000002000: pte 0x0000000021fc6cd7 pa 0x0000000087f1b000
+ .. .. ..0x0000000000003000: pte 0x0000000021fc6807 pa 0x0000000087f1a000
+ .. .. ..0x0000000000004000: pte 0x0000000021fc64d7 pa 0x0000000087f19000
+ ..0xffffffffc0000000: pte 0x0000000021fc8401 pa 0x0000000087f21000
+ .. ..0xffffffffffe00000: pte 0x0000000021fc8001 pa 0x0000000087f20000
+ .. .. ..0xffffffffffffd000: pte 0x0000000021fd4c13 pa 0x0000000087f53000
+ .. .. ..0xffffffffffffe000: pte 0x0000000021fd00c7 pa 0x0000000087f40000
+ .. .. ..0xfffffffffffff000: pte 0x000000002000184b pa 0x0000000080006000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>结果比 2024 的作业文档多了一行</p>
+<pre class="line-numbers language-none"><code class="language-none">.. .. ..0x0000000000000000: pte 0x0000000021fc7c5b pa 0x0000000087f1f000<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>这是正确表现。2024 的作业文档这里写错了，2025 的版本就加入了这行。</p>
+<p>如提示所言，这个函数和 <code>freewalk</code> 很像，我们先来看看 <code>freewalk</code>：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">freewalk</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// there are 2^9 = 512 PTEs in a page table.</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">pte_t</span> pte <span class="token operator">=</span> pagetable<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> <span class="token punctuation">(</span>PTE_R <span class="token operator">|</span> PTE_W <span class="token operator">|</span> PTE_X<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// this PTE points to a lower-level page table.</span>
+            uint64 child <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">freewalk</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span><span class="token punctuation">)</span>child<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            pagetable<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"freewalk: leaf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>pagetable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>它遍历 L0 级页表的 512 个 PTE，对每个 PTE，用 <code>PTE2PA(pte)</code> 找到它指向的次级页表的物理地址，然后递归。它忽略了叶子 PTE，在打印时我们不需要忽略叶子。</p>
+<p>我们再来看看打印结果的形式</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token punctuation">.</span><span class="token punctuation">.</span> 虚拟地址<span class="token operator">:</span> pte PTE的值 pa 物理地址的值<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>参考 <code>freewalk</code> 我们就能拿到 PTE，调用 <code>PTE2PA</code> 就能得到 <code>pa</code>，但怎么获得虚拟地址呢？我们来看看虚拟地址的翻译：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/addr_translation.png" alt=""></p>
+<p>从这里可以看出，如果把 Offset 置零，我们需要 L2、L1、L0 页表的 PTE 的索引来确定虚拟地址。但我们当然有办法获得这些索引，我们不是在遍历页表吗，<code>for (int i = 0; i &lt; 512; i++)</code> 里的 <code>i</code> 就是我们需要的索引！所以如果我们的索引是 <code>i, j, k</code>，我们打印的虚拟地址就是 <code>((i &lt;&lt; 30) + (j &lt;&lt; 21) + (k &lt;&lt; 12))</code></p>
+<p>大致思路就是这样。还有一些小细节：</p>
+<ol>
+<li>作业文档里在遍历 L2 和 L1 级页表时也打印了虚拟地址，这里打印的地址是把次级索引当作零算出的地址。比如如果我们在遍历 L1 页表，L2 页表的索引是 <code>i</code>，L1 页表的索引是 <code>j</code>，打印的就是 <code>((i &lt;&lt; 30) + (j &lt;&lt; 21) + (0 &lt;&lt; 12))</code></li>
+<li>为了在递归时得知上一级页表的信息，我们加入了 <code>father_va</code> 用于记录上一级的虚拟地址</li>
+<li>符号拓展用了一些 tricky 的性质，在 255 &lt;&lt; 30 那行的注释里写的应该还算清楚</li>
+</ol>
+<p>总之可以写出下面的代码：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">const</span> <span class="token keyword">int</span> MAX_LEVEL <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token function">_vmprint_helper</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 father_va<span class="token punctuation">,</span> <span class="token keyword">int</span> level<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// there are 2^9 = 512 PTEs in a page table.</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">pte_t</span> pte <span class="token operator">=</span> pagetable<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> level<span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> MAX_LEVEL<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">" .."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token comment">// 255 &lt;&lt; 30 is automatically sign extended to 0xffffffffc0000000</span>
+            uint64 va <span class="token operator">=</span> father_va <span class="token operator">+</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span><span class="token number">12</span> <span class="token operator">+</span> <span class="token number">9</span> <span class="token operator">*</span> level<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p: pte %p pa %p\n"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>va<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>pte<span class="token punctuation">,</span>
+                   <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">PTE2PA</span><span class="token punctuation">(</span>pte<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">// this PTE points to a lower-level page table.</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>level <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">_vmprint_helper</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span><span class="token punctuation">)</span><span class="token function">PTE2PA</span><span class="token punctuation">(</span>pte<span class="token punctuation">)</span><span class="token punctuation">,</span> va<span class="token punctuation">,</span> level <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">vmprint</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"page table %p\n"</span><span class="token punctuation">,</span> pagetable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">_vmprint_helper</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MAX_LEVEL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="Use-superpages"><a href="#Use-superpages" class="headerlink" title="Use superpages"></a><strong>Use superpages</strong></h1><p>这道题让我们给 xv6 加入超级页。当用户请求一块超过 2MB 的内存，我们就分配超级页而非大量的小页来优化性能。</p>
+<p>我们先来看看普通页和超级页各自是如何翻译虚拟地址的：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/regular_vs_super.png" alt=""></p>
+<ol>
+<li><p>普通页：</p>
+<p> 普通页在翻译时把虚拟地址分成 L2, L1, L0, Offset 四个部分。前三者用于在不同级别的页表里做偏移找到下一个页的开头的物理地址（一个 Page Directory 也是一个页），Offset 则用于计算最终的物理地址偏移。</p>
+<p> Sv39 规定 PPN 宽度为 44 位，Offset 宽度 12 位，一个普通页的大小就是 $2^{12}$ bytes = 4KB.</p>
+<p> 在找到了 L0 leaf 后，我们就能用 <code>(PPN &lt;&lt; 12) + Offest</code> 来计算虚拟地址对应的物理地址了。</p>
+</li>
+<li><p>超级页：</p>
+<p> 超级页则把虚拟地址分成 L2, L1, Offset 三个部分。</p>
+<p> Sv39 规定超级页的 Offset 为 21 位，这是把原本的 L0 和 Offset 合并成了一个 21 位的 Offset。超级页大小就是 $2^{21}$ bytes 即 2MB.</p>
+<p> 超级页是 2MB 对齐的，所以我们需要 $56 - \log (2097152) = 35$ 位来描述一个超级页的开头，所以超级页对应的 L1 leaf 存储的 PPN 的末尾 9 位为 0. 这里有 $2097152$ 是因为 2MB = 2097152 bytes.</p>
+<p> 在找到 L1 leaf 后，我们同样用 <code>(PPN &lt;&lt; 12) + Offest</code> 来计算虚拟地址对应的物理地址。</p>
+</li>
+</ol>
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><p>遵循提示，我们先来看看 <code>superpg_test</code> 做了什么。要说明的是，2024 版本的测试不全面而且有 bug——在 <code>supercheck</code> 函数的末尾的 for 循环里，条件应该是 <code>i &lt; 512 * PGSIZE</code> 而非 <code>i &lt; 512</code>，应该改成下面这样：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// check whether different va are mapped to different pa</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span> <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> i <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s <span class="token operator">+</span> i<span class="token punctuation">)</span> <span class="token operator">=</span> i<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span> <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> i <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s <span class="token operator">+</span> i<span class="token punctuation">)</span> <span class="token operator">!=</span> i<span class="token punctuation">)</span>
+        <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"wrong value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>总之我们下面分析 2025 版本的测试。2025 版本的测试共包括 <code>supercheck</code>、<code>superpg_fork</code> 和 <code>superpg_free</code> 三个函数，我们主要关注 <code>supercheck</code>。<code>supercheck</code> 判断从 <code>end</code> 之后第一个对齐超级页的地址开始是否是超级页，具体的判断方法可以参考下面的注释：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">supercheck</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>end<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">pte_t</span> last_pte <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    uint64 a <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>end<span class="token punctuation">;</span>
+    uint64 s <span class="token operator">=</span> <span class="token function">SUPERPGROUNDUP</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Check that virtual address up to the next superpage boundary are mapped to PTE</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> a <span class="token operator">&lt;</span> s<span class="token punctuation">;</span> a <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">pte_t</span> pte <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">pte_t</span><span class="token punctuation">)</span><span class="token function">pgpte</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>pte <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"no pte"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Check that all virtual address in the superpage share the same valid PTE</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>uint64 p <span class="token operator">=</span> s<span class="token punctuation">;</span> p <span class="token operator">&lt;</span> s <span class="token operator">+</span> <span class="token number">512</span> <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> p <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">pte_t</span> pte <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">pte_t</span><span class="token punctuation">)</span><span class="token function">pgpte</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>pte <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"no pte"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>last_pte <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> pte <span class="token operator">!=</span> last_pte<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"pte different"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_R<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span>pte <span class="token operator">&amp;</span> PTE_W<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"pte wrong"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        last_pte <span class="token operator">=</span> pte<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Check that different va are mapped to different pa</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span> <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> i <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s <span class="token operator">+</span> i<span class="token punctuation">)</span> <span class="token operator">=</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">512</span> <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> i <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s <span class="token operator">+</span> i<span class="token punctuation">)</span> <span class="token operator">!=</span> i<span class="token punctuation">)</span>
+            <span class="token function">err</span><span class="token punctuation">(</span><span class="token string">"wrong value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后我们简要提一下另外两个函数的作用：</p>
+<ol>
+<li><code>superpg_fork</code> 检查超级页在 <code>fork</code> 后是否被正确复制为超级页。</li>
+<li><code>superpg_free</code> 检查 <code>sbrk</code> 能否正确释放整个超级页，以及能否在释放超级页的部分内存时将超级页退化为多个普通页（2024 版本没测试这一点，但这个是很值得做的功能）。</li>
+</ol>
+<h2 id="sbrk-调用链"><a href="#sbrk-调用链" class="headerlink" title="sbrk 调用链"></a>sbrk 调用链</h2><p>接下来我们分析用户在调用 <code>sbrk</code> 时具体调用了哪些函数。这分为两种情况：</p>
+<ol>
+<li>分配：sys_sbrk-&gt;growproc-&gt;uvmalloc -&gt; kalloc/kfree</li>
+<li>释放：sys_sbrk -&gt; growproc -&gt; uvmdealloc -&gt; uvmunmap</li>
+</ol>
+<p>要注意的是当分配内存出错时，<code>uvmalloc</code> 也会调用 <code>uvmdealloc</code>。</p>
+<p>我们从最底层出发，先在 kalloc.c 里完成对超级页的支持。这包括以下步骤：</p>
+<ol>
+<li><p>添加一个超级页链表</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">spinlock</span> lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>superlist<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>freelist<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> kmem<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>在初始化代码里初始化这个超级页链表</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">const</span> <span class="token keyword">int</span> MAX_SUPER <span class="token operator">=</span> <span class="token number">32</span><span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token function">freerange</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>pa_start<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>pa_end<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>p<span class="token punctuation">;</span>
+    p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">PGROUNDUP</span><span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa_start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> sz<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> super_cnt <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> p <span class="token operator">+</span> PGSIZE <span class="token operator">&lt;=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa_end<span class="token punctuation">;</span> p <span class="token operator">+=</span> sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>super_cnt <span class="token operator">&lt;</span> MAX_SUPER <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>p <span class="token operator">%</span> SUPERPGSIZE <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span>
+            p <span class="token operator">+</span> SUPERPGSIZE <span class="token operator">&lt;=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa_end<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+            <span class="token function">superfree</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            super_cnt <span class="token operator">+=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
+            <span class="token function">kfree</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>添加 superalloc 和 superfree 函数（照抄 kalloc 和 kfree）：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token operator">*</span><span class="token function">superalloc</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>r<span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    r <span class="token operator">=</span> kmem<span class="token punctuation">.</span>superlist<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+        kmem<span class="token punctuation">.</span>superlist <span class="token operator">=</span> r<span class="token operator">-></span>next<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+        <span class="token function">memset</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>r<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> SUPERPGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// fill with junk</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>r<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">superfree</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>pa<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>r<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">%</span> SUPERPGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa <span class="token operator">&lt;</span> end <span class="token operator">||</span>
+        <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">>=</span> PHYSTOP<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"superfree"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Fill with junk to catch dangling refs.</span>
+    <span class="token function">memset</span><span class="token punctuation">(</span>pa<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> SUPERPGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    r <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    r<span class="token operator">-></span>next <span class="token operator">=</span> kmem<span class="token punctuation">.</span>superlist<span class="token punctuation">;</span>
+    kmem<span class="token punctuation">.</span>superlist <span class="token operator">=</span> r<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ol>
+<p>至此，最底层的工作就做完了。</p>
+<h2 id="分配内存"><a href="#分配内存" class="headerlink" title="分配内存"></a>分配内存</h2><p>回顾内存分配的调用链：sys_sbrk-&gt;growproc-&gt;uvmalloc -&gt; kalloc/kfree，在开始编写代码之前我们先分析一下每一层的职责。</p>
+<ol>
+<li>sys_sbrk 是系统调用，负责系统和用户的交互</li>
+<li>grow_proc 是进程抽象的一个接口，负责管理进程状态</li>
+<li>uvmalloc 是虚拟内存层，负责管理进程眼中的“内存”，管理虚拟到物理的映射</li>
+<li>kalloc 和 kfree 则是物理内存层，管理物理内存</li>
+</ol>
+<p>我们在这里要修改的是 uvmalloc. 简单读下它原本的代码可以发现它主要调用的是 kalloc 和 mappages. 在超级页中，前者对应 superalloc，而对后者我自己写了一个 mapsuperpages 作为对应。为了让 mapsuperpages 跑起来，我还写了个 l1walk 函数用于找到一个虚拟地址对应的 L1 PTE. 先来看看 l1walk：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">pte_t</span> <span class="token operator">*</span><span class="token function">l1walk</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 va<span class="token punctuation">,</span> <span class="token keyword">int</span> alloc<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>va <span class="token operator">>=</span> MAXVA<span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"walk"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">pte_t</span> <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token operator">&amp;</span>pagetable<span class="token punctuation">[</span><span class="token function">PX</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> va<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        pagetable <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">pagetable_t</span><span class="token punctuation">)</span><span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span>pagetable<span class="token punctuation">[</span><span class="token function">PX</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> va<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>alloc <span class="token operator">||</span> <span class="token punctuation">(</span>pagetable <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">pde_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">memset</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token function">PA2PTE</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">)</span> <span class="token operator">|</span> PTE_V<span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span>pagetable<span class="token punctuation">[</span><span class="token function">PX</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> va<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>它和 walk 函数基本一致，不过 walk 是返回 leaf，而这里的 l1walk 返回 L1 PTE.</p>
+<p>然后看看 mapsuperpages：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">mapsuperpages</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 va<span class="token punctuation">,</span> uint64 size<span class="token punctuation">,</span> uint64 pa<span class="token punctuation">,</span>
+                  <span class="token keyword">int</span> perm<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint64 a<span class="token punctuation">,</span> last<span class="token punctuation">;</span>
+    <span class="token class-name">pte_t</span> <span class="token operator">*</span>pte<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>va <span class="token operator">%</span> SUPERPGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"mapsuperpages: va not aligned"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>size <span class="token operator">%</span> SUPERPGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"mapsuperpages: size not aligned"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"mapsuperpages: size"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    a <span class="token operator">=</span> va<span class="token punctuation">;</span>
+    last <span class="token operator">=</span> va <span class="token operator">+</span> size <span class="token operator">-</span> SUPERPGSIZE<span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">l1walk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"mapsuperpages: l1walk failed\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span>
+            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"mapsuperpages: remap"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token function">PA2PTE</span><span class="token punctuation">(</span>pa<span class="token punctuation">)</span> <span class="token operator">|</span> perm <span class="token operator">|</span> PTE_V <span class="token operator">|</span> PTE_R<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>a <span class="token operator">==</span> last<span class="token punctuation">)</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        a <span class="token operator">+=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+        pa <span class="token operator">+=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这基本是照抄 mappages，只是把普通页改成了超级页。</p>
+<p>最后看看我们对 uvmalloc 的修改。uvmalloc 主要分为两部分，第一部分是用 kalloc/superalloc 请求物理内存，第二部分是用 mappages/mapsuperpages 把虚拟内存映射到物理内存上。</p>
+<p>我们在注释里标出了修改的地方，修改 1 对应请求物理内存的第一部分，修改 2 对应做映射的第二部分：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">uvmalloc</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 oldsz<span class="token punctuation">,</span> uint64 newsz<span class="token punctuation">,</span> <span class="token keyword">int</span> xperm<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>mem<span class="token punctuation">;</span>
+    uint64 a<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> sz<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>newsz <span class="token operator">&lt;</span> oldsz<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> oldsz<span class="token punctuation">;</span>
+
+    oldsz <span class="token operator">=</span> <span class="token function">PGROUNDUP</span><span class="token punctuation">(</span>oldsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>a <span class="token operator">=</span> oldsz<span class="token punctuation">;</span> a <span class="token operator">&lt;</span> newsz<span class="token punctuation">;</span> a <span class="token operator">+=</span> sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 修改1从这里开始</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>a <span class="token operator">%</span> SUPERPGSIZE <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> a <span class="token operator">+</span> SUPERPGSIZE <span class="token operator">&lt;=</span> newsz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+            mem <span class="token operator">=</span> <span class="token function">superalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">// If no superpages, use regular pages</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>mem <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                sz <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
+                mem <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
+            mem <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">// 修改1到这里结束</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>mem <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">uvmdealloc</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> oldsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifndef</span> <span class="token expression">LAB_SYSCALL</span></span>
+        <span class="token function">memset</span><span class="token punctuation">(</span>mem<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> sz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+        <span class="token comment">// 修改2从这里开始</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>sz <span class="token operator">==</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mappages</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> sz<span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>mem<span class="token punctuation">,</span>
+                         PTE_R <span class="token operator">|</span> PTE_U <span class="token operator">|</span> xperm<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>mem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">uvmdealloc</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> oldsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mapsuperpages</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> sz<span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>mem<span class="token punctuation">,</span>
+                              PTE_R <span class="token operator">|</span> PTE_U <span class="token operator">|</span> xperm<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">superfree</span><span class="token punctuation">(</span>mem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">uvmdealloc</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> oldsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">// 修改2到这里结束</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> newsz<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="释放内存"><a href="#释放内存" class="headerlink" title="释放内存"></a>释放内存</h2><p>在完成了分配内存的工作后，我们就能写释放内存相关的代码了。</p>
+<p>回顾调用链：sys_sbrk -&gt; growproc -&gt; uvmdealloc -&gt; uvmunmap，我们要修改 uvmunmap. 这部分代码比较棘手。它原本只是在按部就班地删掉页表里从 va 出发的 npages 个物理页的映射，并选择性释放物理内存，但在加入超级页后它需要完成这些工作：</p>
+<ol>
+<li>让 <code>uint64 a</code> 从 <code>va</code> 出发，如果遇到了普通页，走普通页的 unmap 流程，然后 <code>a += PGSIZE</code></li>
+<li>如果遇到了超级页，判断 <code>a</code> 是超级页的开头还是超级页的中间<ol>
+<li>如果是超级页的开头，走超级页的 unmap 流程（和普通页 unmap 基本一致），然后 <code>a += SUPERPGSIZE</code></li>
+<li>如果是超级页的中间，把超级页退化成若干个普通页，再走普通页释放流程，然后 <code>a += PGSIZE</code></li>
+</ol>
+</li>
+</ol>
+<p>这里主要是上面步骤中的 2b 的“退化”比较棘手，我是把页表里对应超级页的 L1 leaf 设置成了 invalid，然后把超级页视作多个普通页的合并，从超级页的开头出发做若干次 mappages 从而完成退化。思路可以参考下图：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab3-pagetable/super_demote.png" alt=""></p>
+<p>这里是退化部分的代码：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> perm <span class="token operator">=</span> <span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+uint64 super_va_st <span class="token operator">=</span> <span class="token function">SUPERPGROUNDDOWN</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+uint64 super_pa_st <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">>></span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// Make pte invalid to make `mappages` work</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>uint64 super_va <span class="token operator">=</span> super_va_st<span class="token punctuation">,</span> super_pa <span class="token operator">=</span> super_pa_st<span class="token punctuation">;</span>
+     super_va <span class="token operator">&lt;</span> super_va_st <span class="token operator">+</span> SUPERPGSIZE<span class="token punctuation">;</span>
+     super_va <span class="token operator">+=</span> PGSIZE<span class="token punctuation">,</span> super_pa <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mappages</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> super_va<span class="token punctuation">,</span> PGSIZE<span class="token punctuation">,</span> super_pa<span class="token punctuation">,</span> perm<span class="token punctuation">)</span> <span class="token operator">!=</span>
+        <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: mappages failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>当然这样的退化有一个潜在风险——每个进程的超级页上限在进程启动时就决定了，我们的退化会让本进程的超级页上限减一。如果有什么自动合并普通页为超级页的功能就好了…</p>
+<p>另外，我的代码把之前步骤里描述的 1 和 2b 整合了一下（毕竟它们最后都走的是普通页释放流程），总之这里是完整代码：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">uvmunmap</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 va<span class="token punctuation">,</span> uint64 npages<span class="token punctuation">,</span> <span class="token keyword">int</span> do_free<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint64 a<span class="token punctuation">;</span>
+    <span class="token class-name">pte_t</span> <span class="token operator">*</span>pte<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> sz<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>va <span class="token operator">%</span> PGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not aligned"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>a <span class="token operator">=</span> va<span class="token punctuation">;</span> a <span class="token operator">&lt;</span> va <span class="token operator">+</span> npages <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> a <span class="token operator">+=</span> sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// If `a` corresponds to a superpage and the superpage starts at `a`,</span>
+        <span class="token comment">// free the superpage</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">l1walk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token function">PTE_LEAF</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+            a <span class="token operator">%</span> SUPERPGSIZE <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"va=%ld pte=%ld\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not mapped"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>do_free<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                uint64 pa <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">superfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            sz <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
+            <span class="token comment">// If `a` corresponds to a superpage but the superpage doesn't</span>
+            <span class="token comment">// start at `a`, demote the superpage into regular pages</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>pte <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token function">PTE_LEAF</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// Potential issue:</span>
+                <span class="token comment">// Each process has a max number of superpages defined as</span>
+                <span class="token comment">// `MAX_SUPER`. But whenever a superpage is demoted, the</span>
+                <span class="token comment">// process's max number of superpages permanently minus one,</span>
+                <span class="token comment">// since we view superpage as multiple regular pages.</span>
+                <span class="token comment">//</span>
+                <span class="token comment">// A possible solution is to kalloc multiple regular pages,</span>
+                <span class="token comment">// copy memory into them, and superfree the superpage.</span>
+                <span class="token keyword">int</span> perm <span class="token operator">=</span> <span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                uint64 super_va_st <span class="token operator">=</span> <span class="token function">SUPERPGROUNDDOWN</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                uint64 super_pa_st <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">>></span> <span class="token number">1</span><span class="token punctuation">)</span>
+                       <span class="token operator">&lt;&lt;</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// Make pte invalid to make `mappages` work</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span>uint64 super_va <span class="token operator">=</span> super_va_st<span class="token punctuation">,</span> super_pa <span class="token operator">=</span> super_pa_st<span class="token punctuation">;</span>
+                     super_va <span class="token operator">&lt;</span> super_va_st <span class="token operator">+</span> SUPERPGSIZE<span class="token punctuation">;</span>
+                     super_va <span class="token operator">+=</span> PGSIZE<span class="token punctuation">,</span> super_pa <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mappages</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> super_va<span class="token punctuation">,</span> PGSIZE<span class="token punctuation">,</span> super_pa<span class="token punctuation">,</span> perm<span class="token punctuation">)</span> <span class="token operator">!=</span>
+                        <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: mappages failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token comment">// Free the regular page that begins at `a`</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">walk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: walk"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"va=%ld pte=%ld\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not mapped"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span> <span class="token operator">==</span> PTE_V<span class="token punctuation">)</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not a leaf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>do_free<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                uint64 pa <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="fork"><a href="#fork" class="headerlink" title="fork"></a>fork</h2><p>最艰难的工作已经做完了，我们只要修改 uvmcopy 就能下班了！这里的修改只是加入一个简单的分类，在遇到普通页时走普通流程，遇到超级页时走超级流程。咱就直接放代码了：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">uvmcopy</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> old<span class="token punctuation">,</span> <span class="token class-name">pagetable_t</span> new<span class="token punctuation">,</span> uint64 sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">pte_t</span> <span class="token operator">*</span>pte<span class="token punctuation">;</span>
+    uint64 pa<span class="token punctuation">,</span> i<span class="token punctuation">;</span>
+    uint flags<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>mem<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> szinc<span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sz<span class="token punctuation">;</span> i <span class="token operator">+=</span> szinc<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// super page case</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">l1walk</span><span class="token punctuation">(</span>old<span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token function">PTE_LEAF</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            szinc <span class="token operator">=</span> SUPERPGSIZE<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmcopy: page not present"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            pa <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            flags <span class="token operator">=</span> <span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>mem <span class="token operator">=</span> <span class="token function">superalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">goto</span> err<span class="token punctuation">;</span>
+            <span class="token function">memmove</span><span class="token punctuation">(</span>mem<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">,</span> SUPERPGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mapsuperpages</span><span class="token punctuation">(</span>new<span class="token punctuation">,</span> i<span class="token punctuation">,</span> SUPERPGSIZE<span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>mem<span class="token punctuation">,</span> flags<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">superfree</span><span class="token punctuation">(</span>mem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> err<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">// regular page case</span>
+        <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            szinc <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">walk</span><span class="token punctuation">(</span>old<span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmcopy: pte should exist"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmcopy: page not present"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            pa <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            flags <span class="token operator">=</span> <span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>mem <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">goto</span> err<span class="token punctuation">;</span>
+            <span class="token function">memmove</span><span class="token punctuation">(</span>mem<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">,</span> PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mappages</span><span class="token punctuation">(</span>new<span class="token punctuation">,</span> i<span class="token punctuation">,</span> PGSIZE<span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>mem<span class="token punctuation">,</span> flags<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>mem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> err<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+err<span class="token operator">:</span>
+    <span class="token function">uvmunmap</span><span class="token punctuation">(</span>new<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> i <span class="token operator">/</span> PGSIZE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">探索日志[3]</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
