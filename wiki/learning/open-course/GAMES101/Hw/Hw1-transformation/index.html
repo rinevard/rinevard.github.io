@@ -338,8 +338,15 @@ Eigen<span class="token double-colon punctuation">::</span>Matrix4f <span class=
 <li>$[-n,-f]$ 被映射到了 $[-1,1]$</li>
 </ol>
 <p>最终我们能写出这样的投影矩阵：</p>
-<p>$$<br>\large<br>\text{M}_\text{per} =<br>\begin{bmatrix}<br>\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; \frac{1}{\tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; -\frac{f+n}{f-n} &amp; -\frac{2fn}{f-n} \<br>0 &amp; 0 &amp; -1 &amp; 0<br>\end{bmatrix}<br>$$</p>
-<p>翻译成代码就好。</p>
+<script type="math/tex; mode=display">
+\large
+\text{M}_\text{per} =
+\begin{bmatrix}
+\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
+0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
+0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
+0 & 0 & -1 & 0
+\end{bmatrix}</script><p>翻译成代码就好。</p>
 <h1 id="代码框架里有趣的地方"><a href="#代码框架里有趣的地方" class="headerlink" title="代码框架里有趣的地方"></a>代码框架里有趣的地方</h1><h2 id="ind-的作用"><a href="#ind-的作用" class="headerlink" title="ind 的作用"></a>ind 的作用</h2><p>首先我们看向 main.cpp 的 main 函数里的这段代码</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3f<span class="token operator">></span> pos<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
 std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>Eigen<span class="token double-colon punctuation">::</span>Vector3i<span class="token operator">></span> ind<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -765,6 +772,20 @@ r<span class="token punctuation">.</span><span class="token function">draw</span
                                         <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
                                             <i class="fa fa-file-text-o"></i>
                                             探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
                                         </a>
                                     </li>
                                     

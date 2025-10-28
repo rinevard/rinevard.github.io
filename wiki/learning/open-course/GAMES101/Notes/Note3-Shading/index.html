@@ -284,20 +284,20 @@
 <li>光源方向 $\mathbf{l}$.</li>
 </ol>
 <p>最终结果可以写成 </p>
-<p>$$<br>L_d = c_r c_l \max (0, \mathbf{n} \cdot \mathbf{l})<br>$$</p>
-<p>由于光强一般随距离衰减，所以 $c_l$ 一般反比于距离的平方 $r^2$. </p>
+<script type="math/tex; mode=display">
+L_d = c_r c_l \max (0, \mathbf{n} \cdot \mathbf{l})</script><p>由于光强一般随距离衰减，所以 $c_l$ 一般反比于距离的平方 $r^2$. </p>
 <h2 id="镜面反射（Specular-Reflection）"><a href="#镜面反射（Specular-Reflection）" class="headerlink" title="镜面反射（Specular Reflection）"></a>镜面反射（Specular Reflection）</h2><p>镜面反射中，光主要向一个方向反射，所以镜面反射的光与摄像机位置有关。</p>
-<p>$$<br>L_s = c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p<br>$$</p>
-<p>其中 $c_p$ 是自定义的 RGB 值，允许我们控制高光颜色，指数 $p$ 是为了保证我们只在小范围内看到高光，$p$ 越大这个高光可见范围越小，而 $\mathbf h$ 的定义如下：</p>
-<p>$$<br>\mathbf h = (\mathbf e + \mathbf l).\text{normalized()}<br>$$</p>
-<p>还有一种写法把 $\mathbf n \cdot \mathbf h$ 换成了 $\mathbf r \cdot \mathbf e$，简单计算可以发现 $\mathbf<br>n$ 和 $\mathbf h$ 的夹角是 $\mathbf r$ 和 $\mathbf e$ 的夹角的一半，所以这两个写法在思路上是一样的，都在考虑反射光方向和摄像机方向的夹角，不过在数值上会略有差别。本文采用 $\mathbf n \cdot \mathbf h$ 的写法。</p>
+<script type="math/tex; mode=display">
+L_s = c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p</script><p>其中 $c_p$ 是自定义的 RGB 值，允许我们控制高光颜色，指数 $p$ 是为了保证我们只在小范围内看到高光，$p$ 越大这个高光可见范围越小，而 $\mathbf h$ 的定义如下：</p>
+<script type="math/tex; mode=display">
+\mathbf h = (\mathbf e + \mathbf l).\text{normalized()}</script><p>还有一种写法把 $\mathbf n \cdot \mathbf h$ 换成了 $\mathbf r \cdot \mathbf e$，简单计算可以发现 $\mathbf<br>n$ 和 $\mathbf h$ 的夹角是 $\mathbf r$ 和 $\mathbf e$ 的夹角的一半，所以这两个写法在思路上是一样的，都在考虑反射光方向和摄像机方向的夹角，不过在数值上会略有差别。本文采用 $\mathbf n \cdot \mathbf h$ 的写法。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/specular.png" alt=""></p>
 <h2 id="环境光（Ambient-Lighting）"><a href="#环境光（Ambient-Lighting）" class="headerlink" title="环境光（Ambient Lighting）"></a>环境光（Ambient Lighting）</h2><p>如果只考虑漫反射和镜面反射，我们会发现没有面朝光源的物体完全是黑色的，但现实里显然不是如此。这是因为在现实里，光经过多次反射而照亮了那些没有面朝光源的物体。我们可以近似地认为有一种充斥着整个空间的光，并把它叫做环境光，公式如下：</p>
-<p>$$<br>L_a=c_r c_a<br>$$</p>
-<p>其中 $c_a$ 是环境光的强度。</p>
+<script type="math/tex; mode=display">
+L_a=c_r c_a</script><p>其中 $c_a$ 是环境光的强度。</p>
 <h2 id="冯氏光照模型"><a href="#冯氏光照模型" class="headerlink" title="冯氏光照模型"></a>冯氏光照模型</h2><p>综合来看，我们就得到了<strong>冯氏光照模型</strong>，公式如下：</p>
-<p>$$<br>L=c_r(c_a+c_l\max{(0,\mathbf n \cdot \mathbf l)})+c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p<br>$$</p>
-<p>其中 </p>
+<script type="math/tex; mode=display">
+L=c_r(c_a+c_l\max{(0,\mathbf n \cdot \mathbf l)})+c_pc_l\max(0, \mathbf n \cdot \mathbf h)^p</script><p>其中 </p>
 <ol>
 <li>$c_r$ 是物体材质，表示物体对光的反射率，一般是一个 Vector3f 类型的值，因为物体对不同颜色的光有不同反射率；</li>
 <li>$c_a$ 是环境光强，一般是一个 Vector3f 类型的值；</li>
@@ -320,12 +320,18 @@
 <p>那么顶点的法线是什么呢？一个顶点一般在多个面上，把这些面的法线做加权平均就好，权值可以是面的面积。</p>
 <h2 id="逐像素着色（Phong-Shading）"><a href="#逐像素着色（Phong-Shading）" class="headerlink" title="逐像素着色（Phong Shading）"></a>逐像素着色（Phong Shading）</h2><p>逐像素着色同样求三角形顶点的法线，然后对内部的每个点插值内部法线，从法线再求各个点的颜色。</p>
 <p>插值是通过重心坐标来插值。对三角形 $ABC$ 内的某一点 $P$，它可以表示为</p>
-<p>$$<br>P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}<br>$$</p>
-<p>这里的 $S$ 是面积，这里的形如 $S_{APB}/S_{ABC}$ 的式子就是各个点的权值。</p>
+<script type="math/tex; mode=display">
+P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}</script><p>这里的 $S$ 是面积，这里的形如 $S<em>{APB}/S</em>{ABC}$ 的式子就是各个点的权值。</p>
 <p>在插值时，我们希望在世界空间 / 摄像机空间做插值，即在 viewing transformation 前进行插值，而不是 viewing transformation 后。</p>
 <p>但我们一般在光栅化时才进行插值，这时已经把物体变换到了 NDC 空间，所以我们还要进行透视矫正。公式如下，具体推导可以参考 Homework 3 的笔记。</p>
-<p>$$<br>\begin{align<em>}<br>&amp;\alpha = \frac{\alpha’ / w_0}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\<br>&amp;\beta= \frac{\beta’ / w_1}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\<br>&amp;\gamma= \frac{\gamma’ / w_2}{\alpha’ / w_0 + \beta’ / w_1 + \gamma’ / w_2}<br>\end{align</em>}<br>$$</p>
-<p>其中 $\alpha’,\beta’,\gamma’$ 是屏幕空间的重心坐标，$\alpha,\beta,\gamma$ 是世界空间的重心坐标。我们用世界空间的重心坐标作为权重来插值。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\alpha = \frac{\alpha' / w_0}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\\
+&\beta= \frac{\beta' / w_1}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\\
+&\gamma= \frac{\gamma' / w_2}{\alpha' / w_0 + \beta' / w_1 + \gamma' / w_2}
+\end{align*}</script><p>其中 $\alpha’,\beta’,\gamma’$ 是屏幕空间的重心坐标，$\alpha,\beta,\gamma$ 是世界空间的重心坐标。我们用世界空间的重心坐标作为权重来插值。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/shading-freq.png" alt=""></p>
 <h1 id="渲染管线"><a href="#渲染管线" class="headerlink" title="渲染管线"></a>渲染管线</h1><p>渲染流程基本如下：</p>
 <ol>
@@ -346,8 +352,8 @@
 <p>首先我们要创建“缩小的贴图”，Mipmap链包含一系列纹理 $D_0, D_1, D_2, \ldots, D_N$，其中 $D_i$ 的分辨率为 $\frac{W}{2^i} \times \frac{H}{2^i}$，直到最内层为 $1 \times 1$ 像素。</p>
 <p>然后我们要分析单个屏幕像素覆盖了多少纹理像素，大致思路是计算屏幕空间的相邻点映射到贴图空间后的距离。贴图空间里相邻像素距离为 $1$，所以如果屏幕空间的相邻点映射到贴图空间后的距离为 $x$，我们就认为它覆盖了 $x$ 个像素。</p>
 <p>这个“单个屏幕像素覆盖了多少纹理像素”的估算被记作 $\rho$，公式如下：</p>
-<p>$$<br>\rho = \max\left( \sqrt{\left(\frac{\partial u}{\partial x}\right)^2 + \left(\frac{\partial v}{\partial x}\right)^2}, \sqrt{\left(\frac{\partial u}{\partial y}\right)^2 + \left(\frac{\partial v}{\partial y}\right)^2} \right)<br>$$</p>
-<p>取 $\max$ 是为了尽可能取层级更低的 Mipmap。一个屏幕像素覆盖的纹理像素越多，它对应的 Mipmap 层级就越小。总之，我们宁可模糊，也不要欠采样。</p>
+<script type="math/tex; mode=display">
+\rho = \max\left( \sqrt{\left(\frac{\partial u}{\partial x}\right)^2 + \left(\frac{\partial v}{\partial x}\right)^2}, \sqrt{\left(\frac{\partial u}{\partial y}\right)^2 + \left(\frac{\partial v}{\partial y}\right)^2} \right)</script><p>取 $\max$ 是为了尽可能取层级更低的 Mipmap。一个屏幕像素覆盖的纹理像素越多，它对应的 Mipmap 层级就越小。总之，我们宁可模糊，也不要欠采样。</p>
 <p>最后用 $\lambda = \log_2{\rho}$ 就能算出这个屏幕像素对应的纹理层级。比如当 $\lambda = 0$ 时，表示一个屏幕像素恰好对应一个纹理像素，应使用原始纹理 $D_0$.</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note3/downsample.png" alt=""></p>
 <p>计算出层级 $\lambda$ 后还要做采样。显然 $\lambda$ 大多数时候都不是整数，所以有两种常见的采样方法：</p>
@@ -357,8 +363,8 @@
 </li>
 <li><p>三线性滤波（Trilinear Filtering）</p>
 <p> 确定 $\lambda$ 两侧的两个整数层级：$d_1 = \lfloor\lambda\rfloor$ 和 $d_2 = \lceil\lambda\rceil = d_1 + 1$，在这两层分别做双线性滤波采样得到颜色 $C_1$ 和 $C_2$，然后得到最终颜色</p>
-<p> $$<br> C = (1 - f) \cdot C_1 + f \cdot C_2<br> $$</p>
-<p> 其中 $f = \lambda - \lfloor\lambda\rfloor$ 为 $\lambda$ 的小数部分。</p>
+<script type="math/tex; mode=display">
+ C = (1 - f) \cdot C_1 + f \cdot C_2</script><p> 其中 $f = \lambda - \lfloor\lambda\rfloor$ 为 $\lambda$ 的小数部分。</p>
 </li>
 </ol>
 <h1 id="其他小知识"><a href="#其他小知识" class="headerlink" title="其他小知识"></a>其他小知识</h1><p>虎书提到的planar projection、spherical coordinates、cylindrical coordinates、cubemaps本质上都是把3d表面投影到一个理想的简单几何体上，然后把简单几何体展开成平面。</p>
@@ -756,6 +762,20 @@
                                         <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
                                             <i class="fa fa-file-text-o"></i>
                                             探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
                                         </a>
                                     </li>
                                     

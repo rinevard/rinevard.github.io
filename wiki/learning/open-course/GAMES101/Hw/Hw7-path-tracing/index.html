@@ -14,12 +14,12 @@
                     <meta name="keywords" content="Assignment 7 Path Tracing" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="大致流程这次的作业挺难的。首先我们来对照公式解释一下大致的代码流程： $$\begin{align*}L_o(p, \vec{\omega_o})&#x3D; &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cd">
+                        <meta name="description" content="大致流程这次的作业挺难的。首先我们来对照公式解释一下大致的代码流程：  \begin{align*} L_o(p, \vec{\omega_o})  &#x3D; &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Assignment 7 Path Tracing">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="大致流程这次的作业挺难的。首先我们来对照公式解释一下大致的代码流程： $$\begin{align*}L_o(p, \vec{\omega_o})&#x3D; &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cd">
+<meta property="og:description" content="大致流程这次的作业挺难的。首先我们来对照公式解释一下大致的代码流程：  \begin{align*} L_o(p, \vec{\omega_o})  &#x3D; &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw7/screenshot.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/GAMES101/Assignments/hw7/wiwodir.png">
@@ -263,9 +263,16 @@
                                                                                                                     </div>
                                                                                                                     
                                                                                                                         <h1 id="大致流程"><a href="#大致流程" class="headerlink" title="大致流程"></a>大致流程</h1><p>这次的作业挺难的。首先我们来对照公式解释一下大致的代码流程：</p>
-<p>$$<br>\begin{align*}<br>L_o(p, \vec{\omega_o})<br>= &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i<br>\<br>= &amp;L_e(p, \vec{\omega_o}) + \int_{\Omega_{光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i<br>\<br>&amp;+ \int_{\Omega_{非光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i</p>
-<p>\end{align*}<br>$$</p>
-<ol>
+<script type="math/tex; mode=display">
+\begin{align*}
+L_o(p, \vec{\omega_o}) 
+= &L_e(p, \vec{\omega_o}) + \int_{\Omega} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i 
+\\
+= &L_e(p, \vec{\omega_o}) + \int_{\Omega_{光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i 
+\\
+&+ \int_{\Omega_{非光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i
+
+\end{align*}</script><ol>
 <li>如果点 $p$ 是光源，直接返回其自发光项 $L_e$.</li>
 <li>随机采样一个光源方向 $w_s$，根据公式计算 $L_\text{direct}$.</li>
 <li><p>随机采样一个方向 $w_i$，按轮盘赌决定是否结束弹射。</p>
@@ -364,9 +371,13 @@ Intersection inter_between_light <span class="token operator">=</span> <span cla
     <span class="token operator">/</span> std<span class="token double-colon punctuation">::</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token punctuation">(</span>light_sample<span class="token punctuation">.</span>coords <span class="token operator">-</span> direct_ray_origin<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">norm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">/</span> pdf_light<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>另外，我们有从光源采样计算直接光的公式：</p>
-<p>$$<br>\begin{align*}<br>&amp;\int_{\Omega_{光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i<br>\<br>=&amp;\int_{A} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) \frac{\cos\theta\cos\theta_i}{\lVert p’-p \rVert^2} dA </p>
-<p>\end{align*}<br>$$</p>
-<p>用蒙特卡罗近似就是代码里写的东西了。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\int_{\Omega_{光源方向}} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) (\vec{\omega_i} \cdot n) d\omega_i 
+\\
+=&\int_{A} f_r(p, \vec{\omega_i}, \vec{\omega_o}) L_i(p, \vec{\omega_i}) \frac{\cos\theta\cos\theta_i}{\lVert p'-p \rVert^2} dA 
+
+\end{align*}</script><p>用蒙特卡罗近似就是代码里写的东西了。</p>
 <p><img src="/images/learning/open-course/GAMES101/Assignments/hw7/nee.png" alt=""></p>
 <h2 id="L-text-indirect"><a href="#L-text-indirect" class="headerlink" title="$L_\text{indirect}$"></a>$L_\text{indirect}$</h2><p>间接部分。首先要做俄罗斯轮盘赌，然后要检查打到的是否是光源。</p>
 <p>如果通过了轮盘赌，而且打到的不是光源，就要计算间接光。</p>
@@ -786,6 +797,20 @@ Intersection inter_between_light <span class="token operator">=</span> <span cla
                                         <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
                                             <i class="fa fa-file-text-o"></i>
                                             探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
                                         </a>
                                     </li>
                                     

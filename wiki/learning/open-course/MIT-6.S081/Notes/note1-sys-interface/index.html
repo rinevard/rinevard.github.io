@@ -14,12 +14,12 @@
                     <meta name="keywords" content="第一章——系统接口" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="img{     width: 70%; }   常用的系统接口   系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n)">
+                        <meta name="description" content="img{     width: 70%; }   常用的系统接口    系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第一章——系统接口">
 <meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="img{     width: 70%; }   常用的系统接口   系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n)">
+<meta property="og:description" content="img{     width: 70%; }   常用的系统接口    系统调用 描述     fork() 创建进程   exit() 结束当前进程   wait() 等待子进程结束   kill(pid) 结束 pid 所指进程   getpid() 获得当前进程 pid   sleep(n) 睡眠 n 秒   exec(filename, *argv) 加载并执行一个文件   sbrk(n">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png">
@@ -267,7 +267,8 @@ img{
 }
 </style>
 
-<h1 id="常用的系统接口"><a href="#常用的系统接口" class="headerlink" title="常用的系统接口"></a>常用的系统接口</h1><table>
+<h1 id="常用的系统接口"><a href="#常用的系统接口" class="headerlink" title="常用的系统接口"></a>常用的系统接口</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
@@ -357,7 +358,9 @@ img{
 </tr>
 </tbody>
 </table>
-<h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><table>
+</div>
+<h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
@@ -395,7 +398,9 @@ img{
 </tr>
 </tbody>
 </table>
-<h1 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h1><table>
+</div>
+<h1 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
@@ -425,6 +430,7 @@ img{
 </tr>
 </tbody>
 </table>
+</div>
 <p>代码示例：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">512</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
@@ -465,7 +471,8 @@ img{
 <p>不妨再来看看CSAPP的两张图</p>
 <h3 id="open两次："><a href="#open两次：" class="headerlink" title="open两次："></a><strong>open两次：</strong></h3><p><img src="/images/learning/open-course/MIT-6.S081/notes/note1-syscall/opentwice.png" alt=""></p>
 <h3 id="fork："><a href="#fork：" class="headerlink" title="fork："></a><strong>fork：</strong></h3><p><img src="/images/learning/open-course/MIT-6.S081/notes/note1-syscall/fork.png" alt=""></p>
-<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><table>
+<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
@@ -479,6 +486,7 @@ img{
 </tr>
 </tbody>
 </table>
+</div>
 <ul>
 <li>p[0]: 读端(read end)的文件描述符</li>
 <li>p[1]: 写端(write end)的文件描述符</li>
@@ -510,7 +518,8 @@ img{
     <span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">break</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><table>
+<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th><strong>系统调用</strong></th>
@@ -544,6 +553,7 @@ img{
 </tr>
 </tbody>
 </table>
+</div>
 <p>我们通常认为文件名就是文件本身，但实际上名称是一个硬链接(hard link)。一个文件可以有多个硬链接——例如，一个目录至少有两个硬链接：目录名和 <code>.</code> （在目录内时）。它还有来自每个子目录的一个硬链接（每个子目录中的 <code>..</code> 文件）。</p>
 <p>那文件是什么呢？一个文件和一个 inode 一一对应，inode存放着这个文件的相关信息</p>
 <p>xv6系统的inode结构包括下面这些内容：</p>
@@ -1017,6 +1027,20 @@ open-course  programs<span aria-hidden="true" class="line-numbers-rows"><span></
                                         <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
                                             <i class="fa fa-file-text-o"></i>
                                             探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
                                         </a>
                                     </li>
                                     
