@@ -6,23 +6,23 @@
         
             <title>
                 
-                    Lab 2 System calls | 
+                    Lab 4 Traps | 
                             Rinevard
             </title>
             
                 
-                    <meta name="keywords" content="Lab 2 System calls" />
+                    <meta name="keywords" content="Lab 4 Traps" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta name="description" content="在开始之前，我们回顾一下怎么启动调试模式： 在一个终端里执行 make qemu-gdb ，make qemu-gdb CPUS&#x3D;1 可以只使用一个核心，比起多线程更便于调试。 在另一个终端里执行 gdb-multiarch kernel&#x2F;kernel ，进入 gdb 后执行 target remote localhost:26001，这里的端口号不一定是 26001，看 make qemu-gd">
+                        <meta name="description" content="RISC-V assembly在 lab 开始时，我们要简单回答一些问题。这里只简单聊聊最后两道：  下面的代码会打印什么？  unsigned int i &#x3D; 0x00646c72; printf(&quot;H%x Wo%s&quot;, 57616, (char *) &amp;i);  57616 转换到十六进制是 E110，所以空格前打印的是 HE110.  RISC-V 使用小端法，所以 i 在内存中的存">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Lab 2 System calls">
-<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/index.html">
+<meta property="og:title" content="Lab 4 Traps">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/index.html">
 <meta property="og:site_name" content="Rinevard">
-<meta property="og:description" content="在开始之前，我们回顾一下怎么启动调试模式： 在一个终端里执行 make qemu-gdb ，make qemu-gdb CPUS&#x3D;1 可以只使用一个核心，比起多线程更便于调试。 在另一个终端里执行 gdb-multiarch kernel&#x2F;kernel ，进入 gdb 后执行 target remote localhost:26001，这里的端口号不一定是 26001，看 make qemu-gd">
+<meta property="og:description" content="RISC-V assembly在 lab 开始时，我们要简单回答一些问题。这里只简单聊聊最后两道：  下面的代码会打印什么？  unsigned int i &#x3D; 0x00646c72; printf(&quot;H%x Wo%s&quot;, 57616, (char *) &amp;i);  57616 转换到十六进制是 E110，所以空格前打印的是 HE110.  RISC-V 使用小端法，所以 i 在内存中的存">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-10-15T07:54:38.000Z">
-<meta property="article:modified_time" content="2025-10-15T08:10:39.024Z">
+<meta property="article:published_time" content="2025-10-30T14:28:22.000Z">
+<meta property="article:modified_time" content="2025-10-30T14:38:20.127Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
                             
@@ -205,7 +205,7 @@
 
                 <div class="outer">
                     
-                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab2-syscall" class="article article-type-post" itemscope
+                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab4-traps" class="article article-type-post" itemscope
     itemprop="blogPost">
     <div class="article-inner">
         
@@ -223,8 +223,8 @@
                                             
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
-            <time datetime="2025-10-15T07:54:38.000Z" itemprop="datePublished">2025-10-15</time>
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+            <time datetime="2025-10-30T14:28:22.000Z" itemprop="datePublished">2025-10-30</time>
         </a>
     </div>
 
@@ -236,7 +236,7 @@
                                     
     
         <h1 class="article-title" itemprop="name">
-            Lab 2 System calls
+            Lab 4 Traps
         </h1>
     
 
@@ -255,199 +255,188 @@
                                                                                                                             class="toc-title">
                                                                                                                             文章目录
                                                                                                                         </strong>
-                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Using-gdb"><span class="toc-number">1.</span> <span class="toc-text">Using gdb</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#System-call-tracing"><span class="toc-number">2.</span> <span class="toc-text">System call tracing</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Attack-xv6"><span class="toc-number">3.</span> <span class="toc-text">Attack xv6</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E8%A2%AB%E5%9B%9E%E6%94%B6%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">进程被回收的过程</span></a></li></ol>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RISC-V-assembly"><span class="toc-number">1.</span> <span class="toc-text">RISC-V assembly</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Backtrace"><span class="toc-number">2.</span> <span class="toc-text">Backtrace</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">解法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C-CSAPP-%E4%BB%8B%E7%BB%8D%E7%9A%84%E6%A0%88%E7%BB%93%E6%9E%84%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">2.2.</span> <span class="toc-text">和 CSAPP 介绍的栈结构的对比</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Alarm"><span class="toc-number">3.</span> <span class="toc-text">Alarm</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%B7%A5%EF%BC%81"><span class="toc-number">3.1.</span> <span class="toc-text">开工！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%B0%8F%E6%83%B3%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">一些小想法</span></a></li></ol></li></ol>
                                                                                                                     </div>
                                                                                                                     
-                                                                                                                        <p>在开始之前，我们回顾一下怎么启动调试模式：</p>
-<p>在一个终端里执行 <code>make qemu-gdb</code> ，<code>make qemu-gdb CPUS=1</code> 可以只使用一个核心，比起多线程更便于调试。</p>
-<p>在另一个终端里执行 <code>gdb-multiarch kernel/kernel</code> ，进入 gdb 后执行 <code>target remote localhost:26001</code>，这里的端口号不一定是 26001，看 <code>make qemu-gdb CPUS=1</code> 的打印结果就行。</p>
-<p>这样就进入调试模式了。另外，我习惯用 <code>set prompt \001\033[1;33m\002(gdb) \001\033[0m\002</code> 来高亮 “(gdb)” 这几个字。</p>
-<h1 id="Using-gdb"><a href="#Using-gdb" class="headerlink" title="Using gdb"></a>Using gdb</h1><p>lab 开头让我们熟悉一下 gdb 的使用。启动调试模式以后按部就班就能完成，我们这里记录一下常用的一些 gdb 指令：</p>
-<pre class="line-numbers language-none"><code class="language-none">c 或 continue - 继续执行直到遇到下一个断点
-
-n 或 next - 单步执行,会跳过函数调用
-
-s 或 step - 单步执行,会进入函数内部
-
-si - 执行一条汇编指令
-
-finish - 运行到当前函数返回为止
-
-p &#x2F;x $mstatus - 以十六进制打印CPU当前模式
-
-backtrace（缩写bt） - 显示函数调用栈
-
-set prompt \\001\\033[1;33m\\002(gdb) \\001\\033[0m\\002 - 高亮(gdb)
-
-until - 运行到指定行号为止<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="System-call-tracing"><a href="#System-call-tracing" class="headerlink" title="System call tracing"></a>System call tracing</h1><p>这道题让我们实现一个系统调用，按着 hints 按部就班就能做掉。唯一要注意的是在 syscall 里打印 trace 相关的内容时要把系统调用的返回值 ret 从原本的 <code>uint64</code> 转换为 <code>long long</code>，否则对那些可能返回 -1 的系统调用，我们无法正确打印 -1.</p>
-<p>在照着 hints 实现之后，看看系统调用是如何进行的也是更有趣的事情。我在 <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/" title="Lab 2.1 系统调用流程——以sleep为例">Lab 2.1 系统调用流程——以sleep为例</a> 中写得还挺详细的，这里不多赘述细节。</p>
-<p>简而言之，当我们进行系统调用时：</p>
+                                                                                                                        <h1 id="RISC-V-assembly"><a href="#RISC-V-assembly" class="headerlink" title="RISC-V assembly"></a><strong>RISC-V assembly</strong></h1><p>在 lab 开始时，我们要简单回答一些问题。这里只简单聊聊最后两道：</p>
 <ol>
-<li>进入由 <code>usys.pl</code> 生成的 <code>usys.S</code> </li>
-<li>ecall 触发异常并跳转到 <code>trapoline.S</code> 的 uservec 处</li>
-<li>到达 <code>trap.c</code> 的 usertrap 函数，它会调用 syscall 函数以执行系统函数的逻辑</li>
-<li>系统函数执行完成后进入usertrapret函数</li>
-<li>跳转到 <code>trapoline.S</code> 的userret处</li>
-<li>最后回到 <code>usys.S</code></li>
-<li>回到用户的代码里。</li>
+<li><p>下面的代码会打印什么？</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">unsigned</span> <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0x00646c72</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"H%x Wo%s"</span><span class="token punctuation">,</span> <span class="token number">57616</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p> 57616 转换到十六进制是 E110，所以空格前打印的是 HE110.</p>
+<p> RISC-V 使用小端法，所以 <code>i</code> 在内存中的存储是 <code>72 6c 64 00</code>，所以空格后打印的是 rld.</p>
+<p> 总之我们打印了 HE110, World!（以后咱就用这个去水贴</p>
+</li>
+<li><p>下面的代码在 “y=” 后会打印什么？</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"x=%d y=%d"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p> 我们没有传入第三个参数，所以我们会把寄存器 a2 里的东西当作 int 来打印。</p>
+</li>
 </ol>
-<p>让我们根据这个流程来看看 hints 的每一步的原因：</p>
+<h1 id="Backtrace"><a href="#Backtrace" class="headerlink" title="Backtrace"></a>Backtrace</h1><p>这里要求我们实现一个 backtrace 函数，打印出当前调用栈。</p>
+<h2 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h2><p>我们先来回顾一下 xv6 的栈结构：</p>
+<pre class="line-numbers language-none"><code class="language-none">                 .
+                 .
+    +-&gt;          .
+    |   +-----------------+   |
+    |   | return address  |   |
+    |   |   previous fp ------+
+    |   | saved registers |
+    |   | local variables |
+    |   |       ...       | &lt;-+
+    |   +-----------------+   |
+    |   | return address  |   |
+    +------ previous fp   |   |
+        | saved registers |   |
+        | local variables |   |
+    +-&gt; |       ...       |   |
+    |   +-----------------+   |
+    |   | return address  |   |
+    |   |   previous fp ------+
+    |   | saved registers |
+    |   | local variables |
+    |   |       ...       | &lt;-+
+    |   +-----------------+   |
+    |   | return address  |   |
+    +------ previous fp   |   |
+        | saved registers |   |
+        | local variables |   |
+$fp --&gt; |       ...       |   |
+        +-----------------+   |
+        | return address  |   |
+        |   previous fp ------+
+        | saved registers |
+$sp --&gt; | local variables |
+        +-----------------+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以概括算法流程如下：</p>
 <ol>
-<li>把 <code>$U/_trace</code> 加入到 Makefile 中是为了编译时识别到 <code>trace</code>。</li>
-<li>在 <code>user.h</code> 里加入 <code>trace</code> 是为了让用户的 <code>trace.c</code> 识别到 <code>trace</code> 这个函数。</li>
-<li>在 <code>usys.pl</code> 里加入 <code>trace</code> 是为了让 <code>usys.pl</code> 在生成的 <code>usys.S</code> 里加入 <code>trace</code> 相关的内容，它是我们进行系统调用时的第一站。</li>
-<li>在 <code>syscall.h</code> 里加入 <code>trace</code> 是因为我们通过寄存器里存储的整数确定调用的系统函数，很多地方都使用了这个文件里定义的常量。</li>
-<li>在 <code>syscall.c</code> 和 <code>sysproc.c</code> 里加入的函数则是实际的逻辑部分，由 syscall 函数调用。</li>
+<li>找到当前 stack frame 的 fp，这在初始化时就是找到寄存器 s0 里存储的指针。</li>
+<li>找到当前 stack frame 的 previous fp，判断 previous fp 和当前 fp 是否在一个 page 内<ol>
+<li>如果在，用 %p 打印这个 frame 存储的跳转值，然后继续循环</li>
+<li>如果不在就结束循环</li>
 </ol>
-<h1 id="Attack-xv6"><a href="#Attack-xv6" class="headerlink" title="Attack xv6"></a>Attack xv6</h1><p>在 xv6 的 syscall 分支上有一个漏洞——进程被回收后，它曾经使用的物理内存不会被重置为垃圾数据，而是保持之前的状态。所以我们可以打破内存隔离，访问别的已经被回收的进程的内存。</p>
-<p>我们看向 <code>secret.c</code>，会发现它请求了 32 个物理页大小的物理内存，然后把一串字符放在了某个物理页的开头。所以我们只要在 <code>attck.c</code> 里也请求一些物理页，然后找到这串字符串就行。</p>
-<p>我们先请求 32 个物理页然后依次打印出每个物理页开头的一串字符，结果如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">第 1 页: ��
-第 2 页: �              第 3 页:  �
-第 4 页: ��             第 5 页: �
-第 6 页: 0�             第 7 页:  �
-第 8 页: �              第 9 页: ��&#x2F;cea.ae
-第 10 页: @�7�G�������f���13��fv␦3              第 11 页: P�#4��&quot;�����&#96;Bdaa��q�&quot;�
-                                                                                 ��
-第 12 页: ��
+</li>
+</ol>
+<p>总之代码如下：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">backtrace</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint64 fp <span class="token operator">=</span> <span class="token function">r_fp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-� attackte              第 13 页: p�
-第 14 页: &#96;�            第 15 页:  ���
-第 16 页: ��7�G�������f���13��fv␦3              第 17 页: ��very very secret pw is: &#x2F;cea.ae
-第 18 页: ��            第 19 页: p�
-第 20 页: 0�            第 21 页: 0��
-第 22 页: @��           第 23 页: P��
-第 24 页: ��            第 25 页: ���
-第 26 页: P�            第 27 页: @�
-第 28 页: 0�            第 29 页: �
-�&amp;�J����lE�&#96;*&amp;�J�               第 31 页: ������?���
-第 32 页: ���          <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>可以注意到大多数都是乱码，这是因为内存里有非文本的二进制数据，它们不能被当作文本输出。</p>
-<p>当然，我们会注意到第 17 页有 “very very secret pw is: /cea.ae”，它与 <code>secret.c</code> 写入的内容唯一的区别是少了 “my very ” 这八个字符。为什么会有八个字符的差异呢？</p>
-<p>看向 <code>kallc.c</code> 的 <code>kfree</code>：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>pa<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>r<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"backtrace:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>uint64 cur_fp <span class="token operator">=</span> fp<span class="token punctuation">;</span> <span class="token function">PGROUNDDOWN</span><span class="token punctuation">(</span>cur_fp<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token function">PGROUNDDOWN</span><span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+         cur_fp <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>uint64 <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>cur_fp <span class="token operator">-</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        uint64 ret_addr <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>uint64 <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>cur_fp <span class="token operator">-</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>ret_addr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="和-CSAPP-介绍的栈结构的对比"><a href="#和-CSAPP-介绍的栈结构的对比" class="headerlink" title="和 CSAPP 介绍的栈结构的对比"></a>和 CSAPP 介绍的栈结构的对比</h2><p>我们会注意到 xv6 的栈结构和 CSAPP 里介绍的略有差异，主要是 CSAPP 的栈帧不包含 <code>previous fp</code>。下面的是 CSAPP 介绍的栈结构</p>
+<pre class="line-numbers language-none"><code class="language-none">高地址
+            |  参数7                |
+            |  参数8                |
+            |  ...                 |  ← 调用前push
+            |  返回地址             |  ← call指令自动push
+            |  保存的寄存器值        |  ← 刚进入函数时push
+            |  本地变量1            |
+            |  本地变量2            |
+            |  ...                 |   ← 当前rsp指向这里
+低地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面我们来编译 CSAPP 书中的一段代码：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">long</span> <span class="token function">caller</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">long</span> arg1 <span class="token operator">=</span> <span class="token number">534</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> arg2 <span class="token operator">=</span> <span class="token number">1057</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> sum <span class="token operator">=</span> <span class="token function">swap_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>arg1<span class="token punctuation">,</span> <span class="token operator">&amp;</span>arg2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> diff <span class="token operator">=</span> arg1 <span class="token operator">-</span> arg2<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> sum <span class="token operator">*</span> diff<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里是 CSAPP 书上给出的编译结果：</p>
+<pre class="line-numbers language-nasm" data-language="nasm"><code class="language-nasm"><span class="token label function">caller:</span>
+    subq    <span class="token number">$16</span>, <span class="token operator">%</span><span class="token register variable">rsp</span>       <span class="token comment">; Allocate 16 bytes for stack frame</span>
+    movq    <span class="token number">$534</span>, (<span class="token operator">%</span><span class="token register variable">rsp</span>)    <span class="token comment">; Store 534 in arg1</span>
+    movq    <span class="token number">$1057</span>, <span class="token number">8</span>(<span class="token operator">%</span><span class="token register variable">rsp</span>)  <span class="token comment">; Store 1057 in arg2</span>
+    leaq    <span class="token number">8</span>(<span class="token operator">%</span><span class="token register variable">rsp</span>), <span class="token operator">%</span><span class="token register variable">rsi</span>   <span class="token comment">; Compute &amp;arg2 as second argument</span>
+    movq    <span class="token operator">%</span><span class="token register variable">rsp</span>, <span class="token operator">%</span><span class="token register variable">rdi</span>      <span class="token comment">; Compute &amp;arg1 as first argument</span>
+    call    swap_add        <span class="token comment">; Call swap_add(&amp;arg1, &amp;arg2)</span>
+    movq    (<span class="token operator">%</span><span class="token register variable">rsp</span>), <span class="token operator">%</span><span class="token register variable">rdx</span>    <span class="token comment">; Get arg1</span>
+    subq    <span class="token number">8</span>(<span class="token operator">%</span><span class="token register variable">rsp</span>), <span class="token operator">%</span><span class="token register variable">rdx</span>   <span class="token comment">; Compute diff = arg1 - arg2</span>
+    imulq   <span class="token operator">%</span><span class="token register variable">rdx</span>, <span class="token operator">%</span><span class="token register variable">rax</span>      <span class="token comment">; Compute sum * diff</span>
+    addq    <span class="token number">$16</span>, <span class="token operator">%</span><span class="token register variable">rsp</span>       <span class="token comment">; Deallocate stack frame</span>
+    ret                     <span class="token comment">; Return</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里则是在 xv6 里得到的编译结果：</p>
+<pre class="line-numbers language-none"><code class="language-none">0000000000000034 &lt;caller&gt;:
 
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">%</span> PGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa <span class="token operator">&lt;</span> end <span class="token operator">||</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">>=</span> PHYSTOP<span class="token punctuation">)</span>
-        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"kfree"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+long caller()
+  34:	1141                	addi	sp,sp,-16
+  36:	e422                	sd	s0,8(sp)
+  38:	0800                	addi	s0,sp,16
+  3a:	000cb537          	  lui	a0,0xcb
+  3e:	25d50513          	  addi	a0,a0,605 # cb25d &lt;base+0xca24d&gt;
+  42:	6422                	ld	s0,8(sp)
+  44:	0141                	addi	sp,sp,16
+  46:	8082                	ret<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以注意到 CSAPP 只是把局部变量 arg1 和 arg2 存储在了栈中，而 xv6 的 <code>sd s0,8(sp)</code> 把调用者的栈帧指针压入了栈中。</p>
+<p>产生这种差异的原因是编译器的优化，CSAPP 里的编译器认为通过 <code>subq $16, %rsp</code> 和 <code>addq $16, %rsp</code> 就能完成这个函数的工作，所以没有存储栈帧指针；xv6 则为了方便教学，包含了栈帧指针。</p>
+<h1 id="Alarm"><a href="#Alarm" class="headerlink" title="Alarm"></a>Alarm</h1><p>这里我们要实现一个叫做 <code>sigalarm(interval, handler)</code> 的系统调用，它会每隔 interval 个 ticks 调用一次 handler. </p>
+<p>每个 tick 都会产生一个中断，我们要做的就是每中断若干次调用一下 handler.</p>
+<p>我们还需要实现 <code>sigreturn</code>，它是一个辅助 <code>sigalarm</code> 正确工作的系统调用。我们有这样的 promise——用户在调用 <code>sigalram</code> 时提供的 handler 函数必须在结尾调用 <code>sigreturn</code>。总之，<code>sigreturn</code> 的工作主要是把用户进程状态恢复到被中断时的状态。</p>
+<h2 id="开工！"><a href="#开工！" class="headerlink" title="开工！"></a>开工！</h2><p>我们可以按下面的流程完成任务：</p>
+<ol>
+<li><p>在开始之前：</p>
+<p> 在 <code>usys.pl</code> 等地方做一些基建来把两个系统调用加入到系统里</p>
+</li>
+<li><p>每隔若干 ticks 调用一次 handler：</p>
+<p> 在 <code>proc.h</code> 里加入存储 interval、handler 以及距离上一次调用 handler 过去的 ticks 的字段</p>
+<p> 在 <code>sysproc.c</code> 里实现 <code>sys_sigalarm</code>，它记录并存储用户传进来的 interval 和 handler</p>
+<p> 在 <code>trap.c</code> 的 <code>usertrap</code> 里加入对 handler 的调用。还记得吗，当执行 SERT 时，程序计数器 pc 被设置为存储在 sepc 寄存器中的值，所以我们要修改 <code>p-&gt;trapframe-&gt;epc</code>.</p>
+</li>
+<li><p>把用户进程状态恢复到被中断时的状态：</p>
+<p> 我们需要保存的是用户中断时的 <code>struct trapframe</code>. 所以我们需要在 proc.h 里新增 <code>struct trapframe alarm_tf</code> 字段，在 handler 被调用时把 p-&gt;trapframe 复制到 alarm_tf，并在 <code>sys_sigreturn</code> 被调用时把 alarm_tf 复制回 p-&gt;trapframe.</p>
+</li>
+</ol>
+<p>我们就直接放最终代码了。</p>
+<p>首先在 proc.h 的 struct proc 里新增这些字段：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> alarm_freq<span class="token punctuation">;</span>              <span class="token comment">// How many ticks to call alarm_handler once</span>
+uint64 alarm_handler<span class="token punctuation">;</span>        <span class="token comment">// Handler's user virtual address</span>
+<span class="token keyword">int</span> tick_from_last<span class="token punctuation">;</span>          <span class="token comment">// How many ticks have passed since the last call</span>
+<span class="token keyword">int</span> is_alarming<span class="token punctuation">;</span>
+<span class="token keyword">struct</span> <span class="token class-name">trapframe</span> alarm_tf<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后在 sys_proc.c 里把用户传入的 interval 和 handler 保存下来，并初始化一些和调用 handler 相关的变量：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_sigalarm</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> ticks<span class="token punctuation">;</span>
+    uint64 handler<span class="token punctuation">;</span>
 
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifndef</span> <span class="token expression">LAB_SYSCALL</span></span>
-    <span class="token comment">// Fill with junk to catch dangling refs.</span>
-    <span class="token function">memset</span><span class="token punctuation">(</span>pa<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token function">argint</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>ticks<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argaddr</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>handler<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    r <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">;</span>
+    <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span>alarm_freq <span class="token operator">=</span> ticks<span class="token punctuation">;</span>
+    <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span>alarm_handler <span class="token operator">=</span> handler<span class="token punctuation">;</span>
+    <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span>tick_from_last <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span>is_alarming <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
 
-    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    r<span class="token operator">-></span>next <span class="token operator">=</span> kmem<span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
-    kmem<span class="token punctuation">.</span>freelist <span class="token operator">=</span> r<span class="token punctuation">;</span>
-    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmem<span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>结合 <code>struct run</code> 的定义，就能知道 <code>r-&gt;next = kmem.freelist</code> 这句语句是把一个指针放在了输入的物理地址的前八个 bytes 中。这正是之前八个字符的差异的由来。</p>
-<p>总结一下，在运行 <code>secret.c</code> 的进程被回收后，其中包含 “my very very very secret pw is: /cea.ae” 的物理页的开头八个 bytes 被指针覆盖，所以只剩下了 “[8 bytes 指针]very very secret pw is: /cea.ae”. 所以我们多请求几个新的物理页然后遍历它们，用前缀 “very very secret pw is: ” 来匹配就行。</p>
-<p>我们在文末会更具体地讲讲进程被回收的过程，但先让我们来看看代码：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">strncmp</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str1<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str2<span class="token punctuation">,</span> <span class="token keyword">int</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">// kalloc.c 的 kfree 函数里把物理页的开头换成了一个指针.</span>
-<span class="token comment">// 所以我们丢失了开头的 sizeof(指针) 个字符.</span>
-<span class="token keyword">const</span> <span class="token keyword">int</span> overwrite_len <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>end<span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>prefix <span class="token operator">=</span> <span class="token string">"my very very very secret pw is: "</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> cmplen <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>prefix<span class="token punctuation">)</span> <span class="token operator">-</span> overwrite_len<span class="token punctuation">;</span>
-
-    <span class="token comment">// 遍历新插入的32个物理页</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">32</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        end <span class="token operator">=</span> <span class="token function">sbrk</span><span class="token punctuation">(</span>PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strncmp</span><span class="token punctuation">(</span>end <span class="token operator">+</span> overwrite_len<span class="token punctuation">,</span> prefix <span class="token operator">+</span> overwrite_len<span class="token punctuation">,</span> cmplen<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token function">write</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> end <span class="token operator">+</span> <span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>之后修改 trap.c 完成对 handler 的调用以及对用户进程状态的保存：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>which_dev <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>alarm_freq <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>p<span class="token operator">-></span>is_alarming <span class="token operator">&amp;&amp;</span> p<span class="token operator">-></span>tick_from_last <span class="token operator">>=</span> p<span class="token operator">-></span>alarm_freq <span class="token operator">&amp;&amp;</span>
+            p<span class="token operator">-></span>tick_from_last <span class="token operator">%</span> p<span class="token operator">-></span>alarm_freq <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            p<span class="token operator">-></span>is_alarming <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token function">memmove</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token operator">-></span>alarm_tf<span class="token punctuation">,</span> p<span class="token operator">-></span>trapframe<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token operator">*</span>p<span class="token operator">-></span>trapframe<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            p<span class="token operator">-></span>trapframe<span class="token operator">-></span>epc <span class="token operator">=</span> p<span class="token operator">-></span>alarm_handler<span class="token punctuation">;</span>
+            p<span class="token operator">-></span>tick_from_last <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            p<span class="token operator">-></span>tick_from_last <span class="token operator">+=</span> <span class="token number">1</span><span class="token punctuation">;</span>
         <span class="token punctuation">&#125;</span>
     <span class="token punctuation">&#125;</span>
-    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>这里把内容写进文件描述符 2 是因为 <code>attacktest.c</code> 里开了一个管道，运行 <code>attack.c</code> 的进程的文件描述符 2 连接着管道写端，运行 <code>attacktest.c</code> 的进程则在读取管道读端。下面的代码就是把 <code>attack.c</code> 的文件描述符 2 连接到管道写端的代码：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>pid <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token function">close</span><span class="token punctuation">(</span>fds<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">close</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">dup</span><span class="token punctuation">(</span>fds<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>newargv<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">"attack"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-    <span class="token function">exec</span><span class="token punctuation">(</span>newargv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> newargv<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"exec %s failed\n"</span><span class="token punctuation">,</span> newargv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="进程被回收的过程"><a href="#进程被回收的过程" class="headerlink" title="进程被回收的过程"></a>进程被回收的过程</h1><p>一个进程调用 exit(int) 后会进入 ZOMBIE 状态，但并不立即释放物理内存，而是会唤醒其父进程：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">exit</span><span class="token punctuation">(</span><span class="token keyword">int</span> status<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// 我们在这里省略了很多代码，有兴趣可以自己看 proc.c</span>
-    <span class="token function">wakeup</span><span class="token punctuation">(</span>p<span class="token operator">-></span>parent<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    p<span class="token operator">-></span>state <span class="token operator">=</span> ZOMBIE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>父进程调用 wait(uint64) 会找到 ZOMBIE 子进程并调用 <code>freeproc</code> 来回收它：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">wait</span><span class="token punctuation">(</span>uint64 addr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// 我们在这里省略了很多代码，有兴趣可以自己看 proc.c</span>
-    <span class="token keyword">struct</span> <span class="token class-name">proc</span> <span class="token operator">*</span>pp<span class="token punctuation">;</span>
+    <span class="token function">yield</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>最后在返回时重置用户进程状态：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_sigreturn</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">struct</span> <span class="token class-name">proc</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">for</span> <span class="token punctuation">(</span>pp <span class="token operator">=</span> proc<span class="token punctuation">;</span> pp <span class="token operator">&lt;</span> <span class="token operator">&amp;</span>proc<span class="token punctuation">[</span>NPROC<span class="token punctuation">]</span><span class="token punctuation">;</span> pp<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">if</span> <span class="token punctuation">(</span>pp<span class="token operator">-></span>parent <span class="token operator">==</span> p <span class="token operator">&amp;&amp;</span> pp<span class="token operator">-></span>state <span class="token operator">==</span> ZOMBIE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token comment">// Found one.</span>
-                pid <span class="token operator">=</span> pp<span class="token operator">-></span>pid<span class="token punctuation">;</span>
-                <span class="token function">freeproc</span><span class="token punctuation">(</span>pp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token keyword">return</span> pid<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token comment">// Wait for a child to exit.</span>
-        <span class="token function">sleep</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token operator">&amp;</span>wait_lock<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// DOC: wait-sleep</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>freeproc 则又调用 <code>proc_freepagetable</code> 来回收物理内存：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// Free a process's page table, and free the</span>
-<span class="token comment">// physical memory it refers to.</span>
-<span class="token keyword">void</span> <span class="token function">proc_freepagetable</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> TRAMPOLINE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> TRAPFRAME<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">uvmfree</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> sz<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>其中的 <code>uvmfree(pagetable, sz)</code> 就在释放物理内存了：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// Free user memory pages,</span>
-<span class="token comment">// then free page-table pages.</span>
-<span class="token keyword">void</span> <span class="token function">uvmfree</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>sz <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token function">uvmunmap</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">PGROUNDUP</span><span class="token punctuation">(</span>sz<span class="token punctuation">)</span> <span class="token operator">/</span> PGSIZE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">freewalk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>让我们看向 <code>uvmunmap</code>，它获取每一页的物理地址然后调用 <code>kfree</code>：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// Remove npages of mappings starting from va. va must be</span>
-<span class="token comment">// page-aligned. The mappings must exist.</span>
-<span class="token comment">// Optionally free the physical memory.</span>
-<span class="token keyword">void</span> <span class="token function">uvmunmap</span><span class="token punctuation">(</span><span class="token class-name">pagetable_t</span> pagetable<span class="token punctuation">,</span> uint64 va<span class="token punctuation">,</span> uint64 npages<span class="token punctuation">,</span> <span class="token keyword">int</span> do_free<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    uint64 a<span class="token punctuation">;</span>
-    <span class="token class-name">pte_t</span> <span class="token operator">*</span>pte<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> sz<span class="token punctuation">;</span>
-
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>va <span class="token operator">%</span> PGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not aligned"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>a <span class="token operator">=</span> va<span class="token punctuation">;</span> a <span class="token operator">&lt;</span> va <span class="token operator">+</span> npages <span class="token operator">*</span> PGSIZE<span class="token punctuation">;</span> a <span class="token operator">+=</span> sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        sz <span class="token operator">=</span> PGSIZE<span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>pte <span class="token operator">=</span> <span class="token function">walk</span><span class="token punctuation">(</span>pagetable<span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: walk"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>pte <span class="token operator">&amp;</span> PTE_V<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"va=%ld pte=%ld\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not mapped"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PTE_FLAGS</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span> <span class="token operator">==</span> PTE_V<span class="token punctuation">)</span>
-            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"uvmunmap: not a leaf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>do_free<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            uint64 pa <span class="token operator">=</span> <span class="token function">PTE2PA</span><span class="token punctuation">(</span><span class="token operator">*</span>pte<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token operator">*</span>pte <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>更细节的释放 trapframe、释放页表我们就不在这里多说了。</p>
+    <span class="token function">memmove</span><span class="token punctuation">(</span>p<span class="token operator">-></span>trapframe<span class="token punctuation">,</span> <span class="token operator">&amp;</span>p<span class="token operator">-></span>alarm_tf<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token operator">*</span>p<span class="token operator">-></span>trapframe<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p<span class="token operator">-></span>is_alarming <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> p<span class="token operator">-></span>alarm_tf<span class="token punctuation">.</span>a0<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="一些小想法"><a href="#一些小想法" class="headerlink" title="一些小想法"></a>一些小想法</h2><p>为什么说“Prevent re-entrant calls to the handler——if a handler hasn’t returned yet, the kernel shouldn’t call it again. test2 tests this.”，即不能在上次对 handler 的调用完成前进行下次调用？我猜是因为我们会保存调用前的用户进程状态，而在上次 handler 完成前再次调用 handler 就会保存上次 handler 正在执行时的用户进程状态，这会覆盖最开始的用户进程状态。</p>
+<p>再说句题外话，感觉 Page Tables 的 hard 的难度比这个难不少……果然 All hards are hard, but some hards are harder than others🫠🫠</p>
 
                                                                                                                             
                                                                                                                                 
@@ -461,19 +450,10 @@ until - 运行到指定行号为止<span aria-hidden="true" class="line-numbers-
     
 <nav id="article-nav">
     
-        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    Lab 2.1 系统调用流程——以sleep为例
-                
-            </div>
-        </a>
     
-    
-        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">探索日志[1]</div>
+            <div class="article-nav-title">Lab 3 Page Tables</div>
         </a>
     
 </nav>
@@ -705,7 +685,7 @@ until - 运行到指定行号为止<span aria-hidden="true" class="line-numbers-
                                         </a>
                                     </li>
                                     
-                                    <li class="file active">
+                                    <li class="file">
                                         <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 2 System calls
@@ -726,7 +706,7 @@ until - 运行到指定行号为止<span aria-hidden="true" class="line-numbers-
                                         </a>
                                     </li>
                                     
-                                    <li class="file">
+                                    <li class="file active">
                                         <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 4 Traps
