@@ -69,3 +69,17 @@ pre[class*="language-"] {
     background-color: #393939;
   }
 }
+/* Remove unwanted Prism token backgrounds for operators/punctuation */
+pre[class*="language-"] .token.operator,
+pre[class*="language-"] .token.punctuation,
+pre[class*="language-"] .token.entity,
+pre[class*="language-"] .token.symbol,
+code[class*="language-"] .token.operator,
+code[class*="language-"] .token.punctuation,
+code[class*="language-"] .token.entity,
+code[class*="language-"] .token.symbol {
+  background: transparent !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
