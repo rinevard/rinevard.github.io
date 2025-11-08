@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Lab 6 Networking | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Lab 6 Networking" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="这个 lab 分两个部分，第一部分是补全 E1000 网卡驱动的数据包收发相关代码，第二部分是添加代码完成 UDP 包的接收。在开始之前，我们应该先去把讲网络的 lecture 看掉，因为里面涉及了很多相关内容。你可能会疑惑为什么课程把 lab 安排在 lec 前面，我在本文的文末吐槽里写了可能的原因。 让我们进入正题。 E1000 网卡驱动我们在编写代码时要回答两个问题——我们如何借助网卡接收数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 6 Networking">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="这个 lab 分两个部分，第一部分是补全 E1000 网卡驱动的数据包收发相关代码，第二部分是添加代码完成 UDP 包的接收。在开始之前，我们应该先去把讲网络的 lecture 看掉，因为里面涉及了很多相关内容。你可能会疑惑为什么课程把 lab 安排在 lec 前面，我在本文的文末吐槽里写了可能的原因。 让我们进入正题。 E1000 网卡驱动我们在编写代码时要回答两个问题——我们如何借助网卡接收数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab6-net/rxring.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab6-net/txring.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab6-net/packet.png">
+<meta property="article:published_time" content="2025-11-08T23:41:29.000Z">
+<meta property="article:modified_time" content="2025-11-08T23:58:14.625Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab6-net/rxring.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab6-net" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/">MIT-6.S081</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+            <time datetime="2025-11-08T23:41:29.000Z" itemprop="datePublished">2025-11-09</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 6 Networking
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#E1000-%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">E1000 网卡驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UDP-%E5%8C%85%E7%9A%84%E6%8E%A5%E6%94%B6"><span class="toc-number">2.</span> <span class="toc-text">UDP 包的接收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E5%B0%8F%E7%9F%A5%E8%AF%86"><span class="toc-number">3.</span> <span class="toc-text">杂七杂八小知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E6%9D%83%E8%BD%AC%E7%A7%BB"><span class="toc-number">3.1.</span> <span class="toc-text">所有权转移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-attribute-packed"><span class="toc-number">3.2.</span> <span class="toc-text">什么是 attribute((packed))</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E6%9C%AB%E5%90%90%E6%A7%BD"><span class="toc-number">4.</span> <span class="toc-text">文末吐槽</span></a></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>这个 lab 分两个部分，第一部分是补全 E1000 网卡驱动的数据包收发相关代码，第二部分是添加代码完成 UDP 包的接收。在开始之前，我们应该先去把讲网络的 lecture 看掉，因为里面涉及了很多相关内容。你可能会疑惑为什么课程把 lab 安排在 lec 前面，我在本文的文末吐槽里写了可能的原因。</p>
+<p>让我们进入正题。</p>
+<h1 id="E1000-网卡驱动"><a href="#E1000-网卡驱动" class="headerlink" title="E1000 网卡驱动"></a>E1000 网卡驱动</h1><p>我们在编写代码时要回答两个问题——我们如何借助网卡接收数据，又如何发送数据？我们对照文档第三章来分析一下，然后在分析的结尾分别给出 e1000_recv 和 e1000_transmit 的代码：</p>
+<ol>
+<li><p>我们如何借助网卡接收数据？</p>
+<p> 我们在初始化里设置了 RDTR，这让网卡在收到包时发出中断，这一部分和文档的 3.2.8 Receive Interrupts 有关：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// ask e1000 for receive interrupts.</span>
+regs<span class="token punctuation">[</span>E1000_RDTR<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment">// interrupt after every received packet (no timer)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p> 我们还在初始化里设置了 RDBAL，这让网卡在收到包时把数据放到 rx_ring 中：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// [E1000 14.4] Receive initialization</span>
+<span class="token function">memset</span><span class="token punctuation">(</span>rx_ring<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>rx_ring<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> RX_RING_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    rx_bufs<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>rx_bufs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"e1000"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rx_ring<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>addr <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>rx_bufs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+regs<span class="token punctuation">[</span>E1000_RDBAL<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>rx_ring<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 具体来说，它会把包放到 rx_ring[RDH] 里，我们则用 RDT 来读取。</p>
+<p> 下图是 rx_ring 的示意图，硬件可向 [HEAD, TAIL) 中写入内容， TAIL 处留空以区分空环和满环。</p>
+<p> <img src="/images/learning/open-course/MIT-6.S081/labs/lab6-net/rxring.png" alt=""></p>
+<p> 网卡传来的数据格式在 e1000_dev.h 里定义，可参考文档 3.2.3 Receive Descriptor Format：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">rx_desc</span> <span class="token punctuation">&#123;</span>
+    uint64 addr<span class="token punctuation">;</span>   <span class="token comment">/* Address of the descriptor's data buffer */</span>
+    uint16 length<span class="token punctuation">;</span> <span class="token comment">/* Length of data DMAed into data buffer */</span>
+    uint16 csum<span class="token punctuation">;</span>   <span class="token comment">/* Packet checksum */</span>
+    uint8 status<span class="token punctuation">;</span>  <span class="token comment">/* Descriptor status */</span>
+    uint8 errors<span class="token punctuation">;</span>  <span class="token comment">/* Descriptor Errors */</span>
+    uint16 special<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 网卡发出中断后，内核会调用 e1000_intr，e1000_intr 又会进一步调用 e1000_recv. </p>
+<p> 对照 rx_ring 的示意图，我们就知道 e1000_recv 应该去 rx_ring[RDT + 1] 处读取数据，直到读到无效数据为止。参考文档的 3.2.3.1 Receive Descriptor Status Field，我们可以根据 rx_desc 的 status 的 DD 位得知数据是否有效。</p>
+<p> 总之代码如下所示：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">e1000_recv</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Check for packets that have arrived from the e1000</span>
+    <span class="token comment">// Create and deliver a buf for each packet (using net_rx()).</span>
+    <span class="token comment">//</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    uint32 idx <span class="token operator">=</span> <span class="token punctuation">(</span>regs<span class="token punctuation">[</span>E1000_RDT<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">&amp;</span> E1000_RXD_STAT_DD<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+        <span class="token keyword">char</span> <span class="token operator">*</span>recv_buf <span class="token operator">=</span> rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> buflen <span class="token operator">=</span> rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+        rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"e1000"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>addr <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        idx <span class="token operator">=</span> <span class="token punctuation">(</span>idx <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+
+        <span class="token comment">// net_rx could call e1000_transmit, so release lock before calling it</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">net_rx</span><span class="token punctuation">(</span>recv_buf<span class="token punctuation">,</span> buflen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// set RDT to the last processed index</span>
+    regs<span class="token punctuation">[</span>E1000_RDT<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>idx <span class="token operator">+</span> RX_RING_SIZE <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 这里的 <code>regs[E1000_RDT] = (idx + RX_RING_SIZE - 1) % RX_RING_SIZE</code> 可能比较 tricky，总之就是 RDT 应该指在最后一个被取出的描述符处以实现留空。</p>
+</li>
+<li><p>我们如何借助网卡发送数据？</p>
+<p> 如文档 3.4.3 Transmit Interrupts 所写，我们也可以设置网卡在传输完成时发生中断，不过在 xv6 里我们没有这么设置，所以发送成功不会中断。</p>
+<p> 与读取数据要把 rx_ring 的位置告诉网卡类似，我们要把 tx_ring 的位置在初始化里告诉网卡：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// [E1000 14.5] Transmit initialization</span>
+<span class="token function">memset</span><span class="token punctuation">(</span>tx_ring<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>tx_ring<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> TX_RING_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    tx_ring<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> E1000_TXD_STAT_DD<span class="token punctuation">;</span>
+    tx_bufs<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+regs<span class="token punctuation">[</span>E1000_TDBAL<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>tx_ring<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 我们会把数据放到 tx_ring[TDT] 里，网卡会自动走动 TDH 直到追上 TDT.</p>
+<p> 下图是 rx_ring 的示意图，TAIL 指向硬件能够处理的最后一个描述符之后的位置，这也是软件写入第一个新描述符的位置。与 rx_ring 不同，tx_ring 无留空。</p>
+<p> <img src="/images/learning/open-course/MIT-6.S081/labs/lab6-net/txring.png" alt=""></p>
+<p> 传给网卡的数据结构也在 e1000_dev.h 里定义，可参考文档 3.3.2 Transmit Descriptors：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">tx_desc</span> <span class="token punctuation">&#123;</span>
+    uint64 addr<span class="token punctuation">;</span>
+    uint16 length<span class="token punctuation">;</span>
+    uint8 cso<span class="token punctuation">;</span>
+    uint8 cmd<span class="token punctuation">;</span>
+    uint8 status<span class="token punctuation">;</span>
+    uint8 css<span class="token punctuation">;</span>
+    uint16 special<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> 对照 tx_ring 的示意图，我们要把数据存在 tx_ring[TDT] 里。要注意如果 TDT 指向的内容已经被网卡成功发送了（可以通过 status 的 DD 位来判断），我们要释放 TDT 指向的内存以避免内存泄漏；另外我们还要更新 cmd 位，具体可以参考 3.3.3.1 Transmit Descriptor Command Field Format. 总之下面是代码：</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">e1000_transmit</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>buf<span class="token punctuation">,</span> <span class="token keyword">int</span> len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// buf contains an ethernet frame; program it into</span>
+    <span class="token comment">// the TX descriptor ring so that the e1000 sends it. Stash</span>
+    <span class="token comment">// a pointer so that it can be freed after send completes.</span>
+    <span class="token comment">//</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    uint32 idx <span class="token operator">=</span> regs<span class="token punctuation">[</span>E1000_TDT<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">&amp;</span> E1000_TXD_STAT_DD<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// free old buf that has been sent away</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>addr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">kfree</span><span class="token punctuation">(</span>tx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    tx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span> <span class="token operator">=</span> buf<span class="token punctuation">;</span>
+    tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>addr <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>tx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>length <span class="token operator">=</span> len<span class="token punctuation">;</span>
+    tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>cmd <span class="token operator">=</span> E1000_TXD_CMD_EOP <span class="token operator">|</span> E1000_TXD_CMD_RS<span class="token punctuation">;</span>
+    tx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    regs<span class="token punctuation">[</span>E1000_TDT<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>idx <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> TX_RING_SIZE<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ol>
+<h1 id="UDP-包的接收"><a href="#UDP-包的接收" class="headerlink" title="UDP 包的接收"></a>UDP 包的接收</h1><p>我们先来梳理一下整个收信流程是怎样的：外部会发 packet 给网卡，网卡在收到后会引发中断，内核发现中断由网卡引发就会调用 <code>e1000_intr</code>，之后 packet 会被发给 <code>net_rx</code> 来让内核做进一步处理。如果 <code>net_rx</code> 发现这是一个 IP packet 就会进一步调用 <code>ip_rx</code>，然后就到我们的工作了。</p>
+<p>我们只需要处理 ETH-IP-UDP 嵌套的 packet，让我们回顾一下它的结构：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab6-net/packet.png" alt=""></p>
+<p>具体的 packet header 的定义在 net.h 里。</p>
+<p>总之我们要实现 recv、bind、ip_rx 这三个函数。应用会调用 bind 来监听一个端口，当端口被监听时我们需要保存到达这个端口的数据包，所以要在 <code>net.h</code> 中定义如下的数据结构：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAX_LISTEN_PORTS</span> <span class="token expression"><span class="token number">128</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PACKET_RING_SIZE</span> <span class="token expression"><span class="token number">16</span> </span><span class="token comment">// for any given port, no more than 16 packets should be saved</span></span>
+<span class="token keyword">struct</span> <span class="token class-name">listener</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> used<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> port<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>packet_ring<span class="token punctuation">[</span>PACKET_RING_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> head<span class="token punctuation">;</span> <span class="token comment">// used by writer</span>
+    <span class="token keyword">int</span> tail<span class="token punctuation">;</span> <span class="token comment">// used by reader</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里的 used 字段可能有点奇怪，我来解释一下：我们希望每当一个应用调用 bind，我们就新增一个 listener，但由于 C 语言实现动态数组很麻烦，所以我们选择创建静态大小的 listeners 数组。那为什么不用链表呢？因为我们新增内存的手段只有 kalloc，而一整个页对一个 listener 来说太大了。</p>
+<p>struct listener 里的 used 字段就是为了判断 listeners 数组里的某个 listener 是否已经被使用。</p>
+<p>我们要在 net.c 里初始化 listeners 数组：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">struct</span> <span class="token class-name">listener</span> listeners<span class="token punctuation">[</span>MAX_LISTEN_PORTS<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">netinit</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">initlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">,</span> <span class="token string">"netlock"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> MAX_LISTEN_PORTS<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>used <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> PACKET_RING_SIZE<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>packet_ring<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>接下来我们分析一下每个函数要做什么，再给出代码：</p>
+<ol>
+<li><p>recv(int dport, int *src, short *sport, char *buf, int maxlen)</p>
+<p> 接收到达 dport 端口的 UDP packet. 如果到达了多个，取出第一个 packet；如果没有东西到达，等待直到有东西到达。</p>
+<p> 本函数把取出的 packet 里 32 位的源 IP 地址复制到 *src，UDP 源端口号复制到 *sport，payload 的至多 maxlen 个字节复制到 buf. 成功则返回复制的 payload 字节数，失败返回 -1.</p>
+<p> 注意网络字节序和系统字节序不同，要用 <code>ntohs</code> 和 <code>ntohl</code> 来逆转字节序。</p>
+<p> 另外，这里的各个指针是用户空间的虚拟地址，我们要用 copyout 把 packet 里的内容（它们在内核空间）复制到用户空间。</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_recv</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+    <span class="token keyword">struct</span> <span class="token class-name">proc</span> <span class="token operator">*</span>p<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> dport<span class="token punctuation">;</span>
+    uint64 src<span class="token punctuation">;</span>
+    uint64 sport<span class="token punctuation">;</span>
+    uint64 buf<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> maxlen<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">listener</span> <span class="token operator">*</span>listener <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    p <span class="token operator">=</span> <span class="token function">myproc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argint</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>dport<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argaddr</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>src<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argaddr</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>sport<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argaddr</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">argint</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>maxlen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// find listener related to dport</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> MAX_LISTEN_PORTS<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        listener <span class="token operator">=</span> <span class="token operator">&amp;</span>listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>listener<span class="token operator">-></span>used <span class="token operator">&amp;&amp;</span> listener<span class="token operator">-></span>port <span class="token operator">==</span> dport<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        listener <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>listener<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// return the earliest waiting packet or wait until a packet arrives</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>listener<span class="token operator">-></span>packet_ring<span class="token punctuation">[</span>listener<span class="token operator">-></span>tail<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// extract a packet from the ring</span>
+            <span class="token keyword">char</span> <span class="token operator">*</span>packet <span class="token operator">=</span> listener<span class="token operator">-></span>packet_ring<span class="token punctuation">[</span>listener<span class="token operator">-></span>tail<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            listener<span class="token operator">-></span>packet_ring<span class="token punctuation">[</span>listener<span class="token operator">-></span>tail<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            listener<span class="token operator">-></span>tail <span class="token operator">=</span> <span class="token punctuation">(</span>listener<span class="token operator">-></span>tail <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> PACKET_RING_SIZE<span class="token punctuation">;</span>
+
+            <span class="token comment">// extract data from the packet</span>
+            <span class="token keyword">struct</span> <span class="token class-name">ip</span> <span class="token operator">*</span>ip_packet <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">ip</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>packet <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">struct</span> <span class="token class-name">udp</span> <span class="token operator">*</span>udp_packet <span class="token operator">=</span>
+                <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">udp</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>packet <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">ip</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">void</span> <span class="token operator">*</span>payload <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>udp_packet<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">udp</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment">// re-arrange the bytes</span>
+            uint32 src_ip <span class="token operator">=</span> <span class="token function">ntohl</span><span class="token punctuation">(</span>ip_packet<span class="token operator">-></span>ip_src<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            uint16 src_port <span class="token operator">=</span> <span class="token function">ntohs</span><span class="token punctuation">(</span>udp_packet<span class="token operator">-></span>sport<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">copyout</span><span class="token punctuation">(</span>p<span class="token operator">-></span>pagetable<span class="token punctuation">,</span> src<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>src_ip<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>src_ip<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span>
+                <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>packet<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">copyout</span><span class="token punctuation">(</span>p<span class="token operator">-></span>pagetable<span class="token punctuation">,</span> sport<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>src_port<span class="token punctuation">,</span>
+                        <span class="token keyword">sizeof</span><span class="token punctuation">(</span>src_port<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>packet<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token comment">// copy at most maxlen bytes of the payload and free the packet</span>
+            uint16 buflen <span class="token operator">=</span> <span class="token function">ntohs</span><span class="token punctuation">(</span>udp_packet<span class="token operator">-></span>ulen<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">udp</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            uint64 cplen <span class="token operator">=</span> <span class="token punctuation">(</span>buflen <span class="token operator">></span> maxlen<span class="token punctuation">)</span> <span class="token operator">?</span> maxlen <span class="token operator">:</span> buflen<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">copyout</span><span class="token punctuation">(</span>p<span class="token operator">-></span>pagetable<span class="token punctuation">,</span> buf<span class="token punctuation">,</span> payload<span class="token punctuation">,</span> cplen<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>packet<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token function">kfree</span><span class="token punctuation">(</span>packet<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> cplen<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// wait until a packet arrives</span>
+            <span class="token function">sleep</span><span class="token punctuation">(</span>listener<span class="token operator">-></span>packet_ring<span class="token punctuation">,</span> <span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+
+bad<span class="token operator">:</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>bind(int port)</p>
+<p> 进程在调用 recv 前应当先调用 bind 来监听特定端口，bind 被调用时应该要初始化 port 对应的待处理区。</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_bind</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+
+    <span class="token keyword">int</span> port<span class="token punctuation">;</span>
+
+    <span class="token function">argint</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>port<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// return error if repeated binding</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> MAX_LISTEN_PORTS<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>used <span class="token operator">&amp;&amp;</span> listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>port <span class="token operator">==</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> MAX_LISTEN_PORTS<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>used<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// use the first unused listener for port</span>
+            listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>used <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
+            listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>head <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>tail <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">goto</span> bad<span class="token punctuation">;</span>
+
+bad<span class="token operator">:</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>ip_rx(char *buf, int len)</p>
+<p> e1000_recv 会把 packet 转发给 net_rx，net_rx 在发现收到的 packet 是 IP packet 时会把 packet 转发给 ip_rx.</p>
+<p> 我们需要检查 destination port 是否在正在被监听，如果未监听或待处理区已满就丢弃包，否则存到待处理区。</p>
+ <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">ip_rx</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>buf<span class="token punctuation">,</span> <span class="token keyword">int</span> len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// don't delete this printf; make grade depends on it.</span>
+    <span class="token keyword">static</span> <span class="token keyword">int</span> seen_ip <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>seen_ip <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"ip_rx: received an IP packet\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seen_ip <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+    <span class="token keyword">struct</span> <span class="token class-name">udp</span> <span class="token operator">*</span>udp_packet<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">listener</span> <span class="token operator">*</span>listener <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    udp_packet <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">udp</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>buf <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">ip</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> MAX_LISTEN_PORTS<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        listener <span class="token operator">=</span> <span class="token operator">&amp;</span>listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token comment">// try best to save packet in listener related to dport</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>listener<span class="token operator">-></span>used <span class="token operator">&amp;&amp;</span> listener<span class="token operator">-></span>port <span class="token operator">==</span> <span class="token function">ntohs</span><span class="token punctuation">(</span>udp_packet<span class="token operator">-></span>dport<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">int</span> head <span class="token operator">=</span> listener<span class="token operator">-></span>head<span class="token punctuation">;</span>
+
+            <span class="token comment">// if ring is full, drop the incoming packet</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>listener<span class="token operator">-></span>packet_ring<span class="token punctuation">[</span>head<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">kfree</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token comment">// save packet in listener</span>
+            listener<span class="token operator">-></span>packet_ring<span class="token punctuation">[</span>head<span class="token punctuation">]</span> <span class="token operator">=</span> buf<span class="token punctuation">;</span>
+            listener<span class="token operator">-></span>head <span class="token operator">=</span> <span class="token punctuation">(</span>head <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> PACKET_RING_SIZE<span class="token punctuation">;</span>
+
+            <span class="token function">wakeup</span><span class="token punctuation">(</span>listener<span class="token operator">-></span>packet_ring<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">kfree</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>netlock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ol>
+<p>然后我们就下班了！</p>
+<h1 id="杂七杂八小知识"><a href="#杂七杂八小知识" class="headerlink" title="杂七杂八小知识"></a>杂七杂八小知识</h1><h2 id="所有权转移"><a href="#所有权转移" class="headerlink" title="所有权转移"></a>所有权转移</h2><p>看一眼 e1000_recv 的代码，我们会发现它调用了 kalloc，却没有在内部显式释放新建的内存，这是内存泄漏吗？</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">e1000_recv</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Your code here.</span>
+    <span class="token comment">//</span>
+    <span class="token comment">// Check for packets that have arrived from the e1000</span>
+    <span class="token comment">// Create and deliver a buf for each packet (using net_rx()).</span>
+    <span class="token comment">//</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    uint32 idx <span class="token operator">=</span> <span class="token punctuation">(</span>regs<span class="token punctuation">[</span>E1000_RDT<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">&amp;</span> E1000_RXD_STAT_DD<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+        <span class="token keyword">char</span> <span class="token operator">*</span>recv_buf <span class="token operator">=</span> rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 在这里取出</span>
+        <span class="token keyword">int</span> buflen <span class="token operator">=</span> rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+        rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 在这里分配新内存</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"e1000"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>addr <span class="token operator">=</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>rx_bufs<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        rx_ring<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        idx <span class="token operator">=</span> <span class="token punctuation">(</span>idx <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+
+        <span class="token comment">// net_rx could call e1000_transmit, so release lock before calling it</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">net_rx</span><span class="token punctuation">(</span>recv_buf<span class="token punctuation">,</span> buflen<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 在这里转移所有权</span>
+        <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// set RDT to the last processed index</span>
+    regs<span class="token punctuation">[</span>E1000_RDT<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>idx <span class="token operator">+</span> RX_RING_SIZE <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> RX_RING_SIZE<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e1000_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这并不是内存泄漏，而是一种所有权转移。对每个新建的 <code>rx_bufs[idx] = kalloc()</code>，我们都会在未来通过 <code>recv_buf = rx_bufs[idx]</code> 把它取出，并把其所有权通过 <code>net_rx(recv_buf, buflen)</code> 转移给 <code>net_rx</code>. 也就是说，<code>net_rx</code> 负责释放传入的 buf.</p>
+<p>而 <code>net_rx</code> 也可能把 buf 的所有权转移给 <code>app_rx</code> 或 <code>ip_rx</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">net_rx</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>buf<span class="token punctuation">,</span> <span class="token keyword">int</span> len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">eth</span> <span class="token operator">*</span>eth <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span> <span class="token operator">*</span><span class="token punctuation">)</span>buf<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">>=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">arp</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+        <span class="token function">ntohs</span><span class="token punctuation">(</span>eth<span class="token operator">-></span>type<span class="token punctuation">)</span> <span class="token operator">==</span> ETHTYPE_ARP<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">arp_rx</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">>=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">eth</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">ip</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+               <span class="token function">ntohs</span><span class="token punctuation">(</span>eth<span class="token operator">-></span>type<span class="token punctuation">)</span> <span class="token operator">==</span> ETHTYPE_IP<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">ip_rx</span><span class="token punctuation">(</span>buf<span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">kfree</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这和 C++ 里的 move 语义类似，都是“转移所有权”。</p>
+<h2 id="什么是-attribute-packed"><a href="#什么是-attribute-packed" class="headerlink" title="什么是 attribute((packed))"></a>什么是 <strong>attribute((packed))</strong></h2><p>net.h 里有 packet header 的定义，这里 struct eth 里的 <code>__attribute((packed))__</code> 是在告知编译器取消内存对齐优化，让结构体成员紧凑排列。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">eth</span> <span class="token punctuation">&#123;</span>
+    uint8 dhost<span class="token punctuation">[</span>ETHADDR_LEN<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    uint8 shost<span class="token punctuation">[</span>ETHADDR_LEN<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    uint16 type<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>packed<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>还记得对齐优化是什么吗？为了提高 CPU 访问内存的效率，结构体中的每个成员的起始地址相对于结构体起始地址的偏移量需要是该成员自身大小的整数倍。如果不是，编译器会在前一个成员后面填充一些空白字节。</p>
+<p>比如对下面的结构体，sizeof(struct Test) 是 12 字节，而不是成员大小之和的 1 + 4 + 1 = 6 字节。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">Test</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="文末吐槽"><a href="#文末吐槽" class="headerlink" title="文末吐槽"></a>文末吐槽</h1><p>Lab Net 经历了不少变迁，在 2019 和 2020 年它还是课程的最后一个 lab，而从 2021 年开始它就被移到了课程中期，而网络 lec 则一直在课程后期，所以就造成了 lab 和 lec 的错位。</p>
+<p><a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/labs/net.html">2023 年版本的 Net Lab</a> 只要求实现 Part One 而且标注的难度还是 hard，2024 年就变成了 moderate 还新加了一个 Part Two，果然课程难度也是会通货膨胀的🫠🫠</p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/others/thoughts/moon/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">透过望远镜给月亮拍照</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Traps
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab5-cow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Copy-on-Write Fork
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Networking
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/moon/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            透过望远镜给月亮拍照
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
