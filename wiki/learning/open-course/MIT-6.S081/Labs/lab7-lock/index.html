@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Lab 7 Lock | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Lab 7 Lock" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="这个 lab 让我们熟悉对锁的使用。除了 2024 的题外我还顺便做了下 2025 新增的读写锁（2025 年用 Read-write lock 换掉了 Buffer cache），让我们依次来看看这几道题。 Memory allocator在 xv6 里，多个进程同时尝试新增 &#x2F; 释放内存时会在 kalloc.c 的 kmem 上产生激烈的锁竞争，这道题让我们给每个 CPU 设置一个自己的空闲块">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 7 Lock">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="这个 lab 让我们熟悉对锁的使用。除了 2024 的题外我还顺便做了下 2025 新增的读写锁（2025 年用 Read-write lock 换掉了 Buffer cache），让我们依次来看看这几道题。 Memory allocator在 xv6 里，多个进程同时尝试新增 &#x2F; 释放内存时会在 kalloc.c 的 kmem 上产生激烈的锁竞争，这道题让我们给每个 CPU 设置一个自己的空闲块">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab7-lock/user_kernel.png">
+<meta property="article:published_time" content="2025-12-02T04:15:29.000Z">
+<meta property="article:modified_time" content="2025-12-02T04:15:32.298Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab7-lock/user_kernel.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab7-lock" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/">MIT-6.S081</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/">
+            <time datetime="2025-12-02T04:15:29.000Z" itemprop="datePublished">2025-12-02</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 7 Lock
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Memory-allocator"><span class="toc-number">1.</span> <span class="toc-text">Memory allocator</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Buffer-cache"><span class="toc-number">2.</span> <span class="toc-text">Buffer cache</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Read-write-lock"><span class="toc-number">3.</span> <span class="toc-text">Read-write lock</span></a></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>这个 lab 让我们熟悉对锁的使用。除了 2024 的题外我还顺便做了下 2025 新增的读写锁（2025 年用 Read-write lock 换掉了 Buffer cache），让我们依次来看看这几道题。</p>
+<h1 id="Memory-allocator"><a href="#Memory-allocator" class="headerlink" title="Memory allocator"></a>Memory allocator</h1><p>在 xv6 里，多个进程同时尝试新增 / 释放内存时会在 kalloc.c 的 kmem 上产生激烈的锁竞争，这道题让我们给每个 CPU 设置一个自己的空闲块链表来缓解竞争问题。比较 tricky 的地方是当一个 CPU 的空闲块链表为空时，它要去别的 CPU 那里偷空闲块。</p>
+<p>我们先来看看测试代码在做什么吧，先来看看 test2：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> free0 <span class="token operator">=</span> <span class="token function">countfree</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> free1<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> n <span class="token operator">=</span> <span class="token punctuation">(</span>PHYSTOP <span class="token operator">-</span> KERNBASE<span class="token punctuation">)</span> <span class="token operator">/</span> PGSIZE<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"start test2\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"total free number of pages: %d (out of %d)\n"</span><span class="token punctuation">,</span> free0<span class="token punctuation">,</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> free0 <span class="token operator">></span> <span class="token number">1000</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"test2 FAILED: cannot allocate enough memory"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">50</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        free1 <span class="token operator">=</span> <span class="token function">countfree</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">%</span> <span class="token number">10</span> <span class="token operator">==</span> <span class="token number">9</span><span class="token punctuation">)</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>free1 <span class="token operator">!=</span> free0<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"test2 FAIL: losing pages %d %d\n"</span><span class="token punctuation">,</span> free0<span class="token punctuation">,</span> free1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\ntest2 OK\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里的 countfree 函数在 sbrk 尽可能多的内存，计算一共新增了多少页，然后返回新增的页数。可以看出 test2 就是在检查分配 / 释放内存时有没有丢页。</p>
+<p>test1 则更复杂一些。它把多进程 sbrk 前后锁自旋的总次数存在 m 和 n 中并计算 n - m。如果我们的实现较好，锁就会自旋较少，就能通过 if (n - m &lt; 10) 然后通过测试：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">test1</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> n<span class="token punctuation">,</span> m<span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"start test1\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    m <span class="token operator">=</span> <span class="token function">ntas</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 创建 NCHILD 个子进程并让他们不断 sbrk</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> NCHILD<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// ...</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">int</span> status <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> NCHILD<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">wait</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    n <span class="token operator">=</span> <span class="token function">ntas</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> m <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">)</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"test1 OK\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">else</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"test1 FAIL\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里的 ntas 很神奇，我花了蛮长时间才弄明白它是怎么获取锁的自旋次数的。感兴趣的话可以看看，不感兴趣的话记住它最终借助了 spinlock.c 的 statslock 来获取锁的自旋总次数就行。</p>
+<p>首先 ntas 调用了 statistics，看向 statistics.c，它在读取 statistics 文件：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">statistics</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>buf<span class="token punctuation">,</span> <span class="token keyword">int</span> sz<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> fd<span class="token punctuation">,</span> i<span class="token punctuation">,</span> n<span class="token punctuation">;</span>
+
+    fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"statistics"</span><span class="token punctuation">,</span> O_RDONLY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">"stats: open failed\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sz<span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>n <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> buf <span class="token operator">+</span> i<span class="token punctuation">,</span> sz <span class="token operator">-</span> i<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        i <span class="token operator">+=</span> n<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> i<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>那 statistics 文件在哪呢？statistics 文件在 init.c 里被初始化。我们在内核的 stats.c 的 statsinit 里初始化了 STATS，把对它的读设置为调用 statsread，并在 statsread 里调用 spinlock.c 里的 statslock. 注意这里有内核的 stats.c 和用户的 stats.c，我们说的是前者。</p>
+<p>总之 statistics 函数会读取 statistics，对 statistics 的读会调用 statsread，statsread 在 statistics 被读完后会调用 statslock 来更新内容。</p>
+<p>我们当然会问为什么要绕这么大一圈，直接读spinlock.c里的东西不行吗？这是因为用户和内核有隔离。statistics 是用户态的函数，不能也不应该直接读内核的 spinlock.c 里的数据。</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab7-lock/user_kernel.png" alt=""></p>
+<p>test3 则是 test1 和 test2 的整合高清重制豪华加强版。我的代码能通过 2023 年和 2025 年版本的完整测试，但不能稳定通过 2024 版本的 test3（大部分时间过不了，运气好能过）。</p>
+<p>2023 年的版本没有这种整合测试，2025 年的版本写的是 n-m &lt; (NCHILD4-1)*10000，感觉 2025 比 2024 的测试更合理，那就认为我的代码已经满足要求了吧。</p>
+<p>然后我们上代码。先放在初始化的部分和 kfree：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">spinlock</span> lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>freelist<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> kmems<span class="token punctuation">[</span>NCPU<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">static</span> <span class="token keyword">char</span> kmemlockname<span class="token punctuation">[</span>NCPU<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">int</span> STOLEN_NUM <span class="token operator">=</span> <span class="token number">8</span><span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">kinit</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> ncpu<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">snprintf</span><span class="token punctuation">(</span>kmemlockname<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>kmemlockname<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"kmem_%d"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">initlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">,</span> kmemlockname<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">freerange</span><span class="token punctuation">(</span>end<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>PHYSTOP<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">freerange</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>pa_start<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>pa_end<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>p<span class="token punctuation">;</span>
+    p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">PGROUNDUP</span><span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa_start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> p <span class="token operator">+</span> PGSIZE <span class="token operator">&lt;=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa_end<span class="token punctuation">;</span> p <span class="token operator">+=</span> PGSIZE<span class="token punctuation">)</span>
+        <span class="token function">kfree</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">kfree</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>pa<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>r<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">%</span> PGSIZE<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa <span class="token operator">&lt;</span> end <span class="token operator">||</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>pa <span class="token operator">>=</span> PHYSTOP<span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"kfree"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Fill with junk to catch dangling refs.</span>
+    <span class="token function">memset</span><span class="token punctuation">(</span>pa<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    r <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span><span class="token punctuation">)</span>pa<span class="token punctuation">;</span>
+
+    <span class="token function">push_off</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> id <span class="token operator">=</span> <span class="token function">cpuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    r<span class="token operator">-></span>next <span class="token operator">=</span> kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+    kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist <span class="token operator">=</span> r<span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">pop_off</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>代码思路很清晰，每个 CPU 一个自己的空闲链表，kfree 把释放掉的块加到当前 CPU 的链表上。</p>
+<p>我还试了下在 kinit 结尾打印出每个 CPU 的空闲块链表长度，然后发现所有的空闲块都在一个 CPU 那里。原本我还以为 freerange 的过程中每个 CPU 都会跑一跑 kfree，然后让空闲块均匀分布在各个 CPU 上呢。</p>
+<p>然后我们看看 kalloc：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token operator">*</span><span class="token function">kalloc</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// We can consistently pass the 2025 tests, but occasionally fail the 2024</span>
+    <span class="token comment">// test3. I think this is good enough, so we won't continue further.</span>
+    <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>r<span class="token punctuation">;</span>
+
+    <span class="token function">push_off</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> id <span class="token operator">=</span> <span class="token function">cpuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    r <span class="token operator">=</span> kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist <span class="token operator">=</span> r<span class="token operator">-></span>next<span class="token punctuation">;</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// There isn't a fixed acquire order for CPU locks</span>
+        <span class="token comment">// so release the lock before acquiring other locks to avoid deadlock</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>stolen_head <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">run</span> <span class="token operator">*</span>stolen_end <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token comment">// Steal STOLEN_NUM pages from another CPU's free list</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token punctuation">(</span>id <span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">+</span> ncpu<span class="token punctuation">)</span> <span class="token operator">%</span> ncpu<span class="token punctuation">;</span> i <span class="token operator">!=</span> id<span class="token punctuation">;</span>
+             i <span class="token operator">=</span> <span class="token punctuation">(</span>i <span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">+</span> ncpu<span class="token punctuation">)</span> <span class="token operator">%</span> ncpu<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">continue</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            stolen_head <span class="token operator">=</span> kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> cnt <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">(</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>cnt <span class="token operator">&lt;</span> STOLEN_NUM<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                 cnt<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                stolen_end <span class="token operator">=</span> kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+                kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist <span class="token operator">=</span> stolen_end<span class="token operator">-></span>next<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            stolen_end<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>stolen_head<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            stolen_end<span class="token operator">-></span>next <span class="token operator">=</span> kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+            kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist <span class="token operator">=</span> stolen_head<span class="token punctuation">;</span>
+            r <span class="token operator">=</span> kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist<span class="token punctuation">;</span>
+            kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>freelist <span class="token operator">=</span> r<span class="token operator">-></span>next<span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>kmems<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token function">pop_off</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+        <span class="token function">memset</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>r<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> PGSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// fill with junk</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>r<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里比较 trickky 的就是 else 里窃取别的 CPU 的块的部分。首先如我的注释所言，各个 CPU 的 kmem lock 没有固定的获取顺序，所以我们要先释放自己的 kmem lock 再开偷，保证同一时间只拿着一个 CPU 的 kmem lock，不然有死锁风险。</p>
+<p>然后我们从当前 CPU 开始往后遍历，找到合适的 CPU 以后就抓它的锁然后偷 STOLEN_NUM 个块暂存在 stolen_head 这个链表里，偷完以后释放它的锁并抓自己的锁再把链表接到自己头上。</p>
+<p>这样一来窃取和新增块都是原子性的，不会有并发问题。</p>
+<p>我测出来设置 STOLEN_NUM 为 1 或 8 时效果最好，更大反而效果欠佳，挺神奇的。</p>
+<h1 id="Buffer-cache"><a href="#Buffer-cache" class="headerlink" title="Buffer cache"></a>Buffer cache</h1><p>文件系统的缓存层也有一个较激烈的锁竞争，我们可以通过把缓存链表拆分成若干个小的链表，给每个链表设置单独的锁来缓解竞争。</p>
+<p>那么怎么拆分链表呢？我们知道每个 block 有 blockno，因此我们可以把 block 放到编号为 hash(blockno) 的链表中。基本思路就是这样，接下来看代码吧，首先是初始化部分：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">BUCKET_SIZE</span> <span class="token expression"><span class="token number">13</span></span></span>
+
+<span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">spinlock</span>
+        steal_lock<span class="token punctuation">;</span> <span class="token comment">// steal lock, only one process is stealing at a time</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> buf<span class="token punctuation">[</span>NBUF<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> head<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> bcache<span class="token punctuation">;</span>
+
+<span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">spinlock</span> lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> head<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> buckets<span class="token punctuation">[</span>BUCKET_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+uint <span class="token function">hash</span><span class="token punctuation">(</span>uint blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> blockno <span class="token operator">%</span> BUCKET_SIZE<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">binit</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">;</span>
+
+    <span class="token function">initlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>bcache<span class="token punctuation">.</span>steal_lock<span class="token punctuation">,</span> <span class="token string">"bcache"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> BUCKET_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">initlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">,</span> <span class="token string">"bcache.bucket"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Put all buffers into bucket[0] initially</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>cur<span class="token punctuation">;</span>
+    cur <span class="token operator">=</span> <span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> bcache<span class="token punctuation">.</span>buf<span class="token punctuation">;</span> b <span class="token operator">&lt;</span> bcache<span class="token punctuation">.</span>buf <span class="token operator">+</span> NBUF<span class="token punctuation">;</span> b<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        cur<span class="token operator">-></span>next <span class="token operator">=</span> b<span class="token punctuation">;</span>
+        b<span class="token operator">-></span>prev <span class="token operator">=</span> cur<span class="token punctuation">;</span>
+        <span class="token function">initsleeplock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">,</span> <span class="token string">"buffer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        cur <span class="token operator">=</span> b<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里主要是对链表做了下拆分。这里的 steal_lock 和接下来的 bget 相关，主要是为了防止下面这种情况：</p>
+<ol>
+<li>进程 A 和进程 B 都在请求 blockno，我们令 dest = hash(blockno)</li>
+<li>进程 A 和 B 都没在 buckets[dest] 找到块，开始窃取。</li>
+<li>进程 B 比 A 先窃取到了一个空闲块，把它放进了 buckets[dest] 并填入了数据。</li>
+<li>进程 A 也找到了一个空闲块并把它放入 buckets[dest] 并填入数据。</li>
+<li>这会导致两个 buf 有相同的 blockno，这不是我们想要的。</li>
+</ol>
+<p>这里的 steal_lock 保证同一时间只有一个进程在试图窃取别的 bucket 的 buf. 配合在窃取前再次检查一遍 bucket[dest] 就能避免上述情况的发生。</p>
+<p>我们现在来看看 bget：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span><span class="token function">bget</span><span class="token punctuation">(</span>uint dev<span class="token punctuation">,</span> uint blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">;</span>
+
+    uint dest <span class="token operator">=</span> <span class="token function">hash</span><span class="token punctuation">(</span>blockno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Is the block already cached?</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> b<span class="token punctuation">;</span> b <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>dev <span class="token operator">==</span> dev <span class="token operator">&amp;&amp;</span> b<span class="token operator">-></span>blockno <span class="token operator">==</span> blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            b<span class="token operator">-></span>refcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> b<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// --------------------下面是窃取代码--------------------</span>
+    <span class="token comment">// Not cached.</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>bcache<span class="token punctuation">.</span>steal_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// double check, other process might have stolen before we steal</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> b<span class="token punctuation">;</span> b <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>dev <span class="token operator">==</span> dev <span class="token operator">&amp;&amp;</span> b<span class="token operator">-></span>blockno <span class="token operator">==</span> blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            b<span class="token operator">-></span>refcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>bcache<span class="token punctuation">.</span>steal_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> b<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// steal from another bucket</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> BUCKET_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// iterate through bucket to find a free buf</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> b<span class="token punctuation">;</span> b <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>refcnt <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// remove b from orig bucket</span>
+                b<span class="token operator">-></span>prev<span class="token operator">-></span>next <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    b<span class="token operator">-></span>next<span class="token operator">-></span>prev <span class="token operator">=</span> b<span class="token operator">-></span>prev<span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                b<span class="token operator">-></span>prev <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment">// put b into dest bucket</span>
+                <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>prev <span class="token operator">=</span> <span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>next <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>prev<span class="token operator">-></span>next <span class="token operator">=</span> b<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    b<span class="token operator">-></span>next<span class="token operator">-></span>prev <span class="token operator">=</span> b<span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                b<span class="token operator">-></span>dev <span class="token operator">=</span> dev<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>blockno <span class="token operator">=</span> blockno<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>valid <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>refcnt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>bcache<span class="token punctuation">.</span>steal_lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> b<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"bget: no buffers"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>也有不加 steal_lock 的写法，可以在填入数据前检查 buckets[dest] 中是否有 blockno 对应的 buf，如果有就不填数据而是把空块加入 buckets[dest]，如果没有再填数据，如下所示：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span><span class="token function">bget</span><span class="token punctuation">(</span>uint dev<span class="token punctuation">,</span> uint blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">;</span>
+
+    uint dest <span class="token operator">=</span> <span class="token function">hash</span><span class="token punctuation">(</span>blockno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Is the block already cached?</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> b<span class="token punctuation">;</span> b <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>dev <span class="token operator">==</span> dev <span class="token operator">&amp;&amp;</span> b<span class="token operator">-></span>blockno <span class="token operator">==</span> blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            b<span class="token operator">-></span>refcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> b<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// Not cached.</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// steal from another bucket</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> BUCKET_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// iterate through bucket to find a free buf</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>b <span class="token operator">=</span> buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> b<span class="token punctuation">;</span> b <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>refcnt <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// remove b from orig bucket</span>
+                b<span class="token operator">-></span>prev<span class="token operator">-></span>next <span class="token operator">=</span> b<span class="token operator">-></span>next<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    b<span class="token operator">-></span>next<span class="token operator">-></span>prev <span class="token operator">=</span> b<span class="token operator">-></span>prev<span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                b<span class="token operator">-></span>prev <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment">// put b into dest bucket</span>
+                <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>prev <span class="token operator">=</span> <span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>next <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>prev<span class="token operator">-></span>next <span class="token operator">=</span> b<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>b<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    b<span class="token operator">-></span>next<span class="token operator">-></span>prev <span class="token operator">=</span> b<span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token comment">// double check, other process might have stolen before we steal</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>check <span class="token operator">=</span> buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>head<span class="token punctuation">.</span>next<span class="token punctuation">;</span> check<span class="token punctuation">;</span>
+                     check <span class="token operator">=</span> check<span class="token operator">-></span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>check<span class="token operator">-></span>dev <span class="token operator">==</span> dev <span class="token operator">&amp;&amp;</span> check<span class="token operator">-></span>blockno <span class="token operator">==</span> blockno<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        check<span class="token operator">-></span>refcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+                        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>check<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">return</span> check<span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+                b<span class="token operator">-></span>dev <span class="token operator">=</span> dev<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>blockno <span class="token operator">=</span> blockno<span class="token punctuation">;</span>
+                b<span class="token operator">-></span>valid <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                b<span class="token operator">-></span>refcnt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>dest<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">acquiresleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> b<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"bget: no buffers"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>最后几个要改的函数把原本的锁换成 bucket 的锁就可以了。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">brelse</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">holdingsleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"brelse"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">releasesleep</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token operator">-></span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    uint idx <span class="token operator">=</span> <span class="token function">hash</span><span class="token punctuation">(</span>b<span class="token operator">-></span>blockno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    b<span class="token operator">-></span>refcnt<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">bpin</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint idx <span class="token operator">=</span> <span class="token function">hash</span><span class="token punctuation">(</span>b<span class="token operator">-></span>blockno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    b<span class="token operator">-></span>refcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">bunpin</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>b<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint idx <span class="token operator">=</span> <span class="token function">hash</span><span class="token punctuation">(</span>b<span class="token operator">-></span>blockno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    b<span class="token operator">-></span>refcnt<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buckets<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>lock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="Read-write-lock"><a href="#Read-write-lock" class="headerlink" title="Read-write lock"></a>Read-write lock</h1><p>我还抽空做了下 2025 版本新增的 Read-write lock，这要求我们实现一个读写锁。读写锁把用户分为读者和写者，同一时间可以有多个读者或一个写者持有读写锁。另外在这道题里，如果读者和写者同时在等待，写者优先持锁。</p>
+<p>我的实现思路还是比较朴素的，我们先看数据结构吧：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">spinlock</span> l<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> readers<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> writer_active<span class="token punctuation">;</span> <span class="token comment">// 0 or 1</span>
+    <span class="token keyword">int</span> waiting_writers<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>读者仅在没有写者持锁且没有写者在等待时才能持锁，所以我们需要 writer_active 和 waiting_writers 两个字段；写者仅在没有别的写者持锁且没有读者持锁时才能持锁，所以我们也需要 readers 字段。这里的 spinlock 则是为了保护这些共享数据。</p>
+<p>其实也可以不用 spinlock 而全用原子语句写，但我感觉太难了就没这么做。</p>
+<p>函数的实现思路也比较朴素，可以直接看代码。要注意我们被要求实现自旋版本的读写锁，所以在 acquire 的条件不满足时我们不能 sleep，而应释放锁然后不断循环。</p>
+<p>现实里也存在睡眠版本的读写锁，不过这和我们的 lab 没关系。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">read_acquire_inner</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token operator">*</span>rwlk<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>rwlk<span class="token operator">-></span>writer_active <span class="token operator">||</span> rwlk<span class="token operator">-></span>waiting_writers <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">continue</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    rwlk<span class="token operator">-></span>readers<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">read_release_inner</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token operator">*</span>rwlk<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>readers<span class="token operator">--</span><span class="token punctuation">;</span>
+  <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">write_acquire_inner</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token operator">*</span>rwlk<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>waiting_writers<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>rwlk<span class="token operator">-></span>readers <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">||</span> rwlk<span class="token operator">-></span>writer_active<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">continue</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    rwlk<span class="token operator">-></span>waiting_writers<span class="token operator">--</span><span class="token punctuation">;</span>
+    rwlk<span class="token operator">-></span>writer_active <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">write_release_inner</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token operator">*</span>rwlk<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">acquire</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>writer_active <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token function">release</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里是 initrwlock 的代码</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">initrwlock</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">rwspinlock</span> <span class="token operator">*</span>rwlk<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Replace this with your implementation.</span>
+  <span class="token function">initlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rwlk<span class="token operator">-></span>l<span class="token punctuation">,</span> <span class="token string">"rwlk"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>readers <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>waiting_writers <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  rwlk<span class="token operator">-></span>writer_active <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>测试时我们遇到了一个神奇的现象，在 make qemu 后第一次运行 rwlktest 总是能通过的，而之后运行总是不能通过的。重新 make qemu 以后还是第一次运行能通过，后续运行无法通过。</p>
+<p>经过漫长的 debug 时光，我们发现问题出在下面的测试函数上：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">rwspinlock_test_step</span><span class="token punctuation">(</span>uint step<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>msg<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">static</span> uint barrier<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> uint ncpu <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+
+  <span class="token function">__atomic_fetch_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>barrier<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> __ATOMIC_ACQ_REL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">__atomic_load_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>barrier<span class="token punctuation">,</span> __ATOMIC_RELAXED<span class="token punctuation">)</span> <span class="token operator">&lt;</span> ncpu <span class="token operator">*</span> step<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// spin</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">cpuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"rwspinlock_test: step %d: %s\n"</span><span class="token punctuation">,</span> step<span class="token punctuation">,</span> msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这个函数的设计原意应该是起这两个作用：</p>
+<ol>
+<li>同步 CPU，保证四个 CPU 都到达了这里再继续往下运行</li>
+<li>打印当前运行到的测试编号（step）</li>
+</ol>
+<p>这个函数通过下面的代码实现 CPU 同步。它让 barrier 原子性地加一，表示一个 CPU 跑到了这里，然后如果四个 CPU 中还有人没来就自旋等待。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">__atomic_fetch_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>barrier<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> __ATOMIC_ACQ_REL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">__atomic_load_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>barrier<span class="token punctuation">,</span> __ATOMIC_RELAXED<span class="token punctuation">)</span> <span class="token operator">&lt;</span> ncpu <span class="token operator">*</span> step<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// spin</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>为了保证 barrier 被四个 CPU 共享，barrier 被设置为静态变量 static uint barrier. 但测试代码又没在测试开始时把它重置为 0，所以就出现了这种第一次测试能通过，之后的测试不能通过的情况。</p>
+<p>第一次测试时，barrier 是初始值 0，所以一切正常；之后的测试里 barrier 保留了之前的值，while 的条件始终为假，于是这种同步功能也就完全失效了。在同步功能失效后，跑得快的 CPU 都跑完 30 个 steps 了，跑得慢的 CPU 可能还在第 8 个 step 挣扎，这就让 rwlktest 也跟着失效了。</p>
+<p>气氛都到这儿了，不给个修复也不好意思🫠🫠用下面的代码就行了</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">rwspinlock_test_step</span><span class="token punctuation">(</span>uint step<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>msg<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">static</span> uint count<span class="token punctuation">;</span>
+  <span class="token keyword">static</span> uint sense<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> uint ncpu <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">int</span> local_sense <span class="token operator">=</span> <span class="token function">__atomic_load_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sense<span class="token punctuation">,</span> __ATOMIC_RELAXED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">__atomic_fetch_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>count<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> __ATOMIC_ACQ_REL<span class="token punctuation">)</span> <span class="token operator">==</span> ncpu <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// Let the last reached CPU reset values and print message</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"rwspinlock_test: step %d: %s\n"</span><span class="token punctuation">,</span> step<span class="token punctuation">,</span> msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">__atomic_store_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>count<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> __ATOMIC_RELAXED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">__atomic_store_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sense<span class="token punctuation">,</span> <span class="token operator">!</span>local_sense<span class="token punctuation">,</span> __ATOMIC_RELEASE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">__atomic_load_n</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sense<span class="token punctuation">,</span> __ATOMIC_ACQUIRE<span class="token punctuation">)</span> <span class="token operator">==</span> local_sense<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// spin</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>count 和 sense 是共享的变量，所以要用原子语句读写。__ATOMIC_RELAXED 之类的东西是对内存顺序（memory orders）的限制，这能防止指令重排，具体可以看 <a target="_blank" rel="noopener" href="https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html">https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html</a>.</p>
+<p>发现这个 bug 以后我也给 6S081 的官方发了邮件，没想到还真收到回复了！他们说加入了一个类似的修复，会在 2026 年的版本更新。感觉自己对 MIT 的滤镜更厚了（）</p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Lab 6 Networking</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Traps
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab5-cow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Copy-on-Write Fork
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Networking
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 7 Lock
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/moon/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            透过望远镜给月亮拍照
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
