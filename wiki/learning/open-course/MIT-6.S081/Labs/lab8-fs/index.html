@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Lab 8 File System | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Lab 8 File System" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="感觉 xv6 的文件系统还是挺有深度的。这个 lab 带我们简单复习了下 inode 如何指向 blocks，以及通过路径名查找文件的方法。 Large files这道题让我们增大 xv6 最大文件的大小。原本的 xv6 的每个 inode 支持 12 个普通块和一个间接块，那么原本的最大文件占据 12 + 256 &#x3D; 268 个块。我们需要把 inode 修改为支持 11 个普通块、一个间接块、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 8 File System">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab8-fs/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="感觉 xv6 的文件系统还是挺有深度的。这个 lab 带我们简单复习了下 inode 如何指向 blocks，以及通过路径名查找文件的方法。 Large files这道题让我们增大 xv6 最大文件的大小。原本的 xv6 的每个 inode 支持 12 个普通块和一个间接块，那么原本的最大文件占据 12 + 256 &#x3D; 268 个块。我们需要把 inode 修改为支持 11 个普通块、一个间接块、">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab8-fs/doub_indirect.png">
+<meta property="article:published_time" content="2025-12-03T15:01:11.000Z">
+<meta property="article:modified_time" content="2025-12-03T15:03:40.522Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/MIT-6.S081/labs/lab8-fs/doub_indirect.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/MIT-6.S081/Labs/lab8-fs" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/">MIT-6.S081</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab8-fs/">
+            <time datetime="2025-12-03T15:01:11.000Z" itemprop="datePublished">2025-12-03</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 8 File System
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Large-files"><span class="toc-number">1.</span> <span class="toc-text">Large files</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Symbolic-links"><span class="toc-number">2.</span> <span class="toc-text">Symbolic links</span></a></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>感觉 xv6 的文件系统还是挺有深度的。这个 lab 带我们简单复习了下 inode 如何指向 blocks，以及通过路径名查找文件的方法。</p>
+<h1 id="Large-files"><a href="#Large-files" class="headerlink" title="Large files"></a>Large files</h1><p>这道题让我们增大 xv6 最大文件的大小。原本的 xv6 的每个 inode 支持 12 个普通块和一个间接块，那么原本的最大文件占据 12 + 256 = 268 个块。我们需要把 inode 修改为支持 11 个普通块、一个间接块、一个双重间接块，这样最大文件就能占据 11 + 256 + 256 * 256 = 65803 个块。</p>
+<p>首先我们要去 fs.h 里修改 dinode 和一些常量的定义，再去 file.h 里修改 inode 的定义，主要是修改 addrs：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">NDIRECT</span> <span class="token expression"><span class="token number">11</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">NINDIRECT</span> <span class="token expression"><span class="token punctuation">(</span>BSIZE <span class="token operator">/</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>uint<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">NDOUBLYINDIRECT</span> <span class="token expression"><span class="token punctuation">(</span>NINDIRECT <span class="token operator">*</span> NINDIRECT<span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAXFILE</span> <span class="token expression"><span class="token punctuation">(</span>NDIRECT <span class="token operator">+</span> NINDIRECT <span class="token operator">+</span> NDOUBLYINDIRECT<span class="token punctuation">)</span></span></span>
+
+<span class="token keyword">struct</span> <span class="token class-name">dinode</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 其他内容保持不变</span>
+    uint addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 其他内容保持不变</span>
+    uint addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后我们可以画一画 ip-&gt;addrs 的结构，如下图所示：</p>
+<p><img src="/images/learning/open-course/MIT-6.S081/labs/lab8-fs/doub_indirect.png" alt=""></p>
+<p>对给定的 bn，如果它在 $[0,11)$ 之间，就查找普通块；如果在 $[11,11+256)$ 之间，就查找间接块；如果在 $[11+256,256+256\times256)$ 之间，就查找双重间接块。再参考 bmap 原有的代码就能完成修改了：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> uint <span class="token function">bmap</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span>ip<span class="token punctuation">,</span> uint bn<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    uint addr<span class="token punctuation">,</span> <span class="token operator">*</span>a<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>bp<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>bn <span class="token operator">&lt;</span> NDIRECT<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>bn<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>bn<span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> addr<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    bn <span class="token operator">-=</span> NDIRECT<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>bn <span class="token operator">&lt;</span> NINDIRECT<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Load indirect block, allocating if necessary.</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        bp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> addr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        a <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> a<span class="token punctuation">[</span>bn<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                a<span class="token punctuation">[</span>bn<span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+                <span class="token function">log_write</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">brelse</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> addr<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    bn <span class="token operator">-=</span> NINDIRECT<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>bn <span class="token operator">&lt;</span> NDOUBLYINDIRECT<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Load doubly indirect block, allocating if necessary.</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token comment">// Load indirect block, allocating if necessary.</span>
+        bp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> addr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        a <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> a<span class="token punctuation">[</span><span class="token punctuation">(</span>bn <span class="token operator">/</span> NINDIRECT<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                a<span class="token punctuation">[</span><span class="token punctuation">(</span>bn <span class="token operator">/</span> NINDIRECT<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+                <span class="token function">log_write</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">brelse</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>addr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token comment">// Find addr in block</span>
+        bp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> addr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        a <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>addr <span class="token operator">=</span> a<span class="token punctuation">[</span>bn <span class="token operator">%</span> NINDIRECT<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            addr <span class="token operator">=</span> <span class="token function">balloc</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>addr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                a<span class="token punctuation">[</span>bn <span class="token operator">%</span> NINDIRECT<span class="token punctuation">]</span> <span class="token operator">=</span> addr<span class="token punctuation">;</span>
+                <span class="token function">log_write</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">brelse</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> addr<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"bmap: out of range"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们还需要修改 itrunc，它释放传入的 inode 占用的所有数据块。仿照 itrunc 原有的代码加入释放双重间接块的代码就行：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">itrunc</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span>ip<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> k<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">buf</span> <span class="token operator">*</span>bp<span class="token punctuation">,</span> <span class="token operator">*</span>bbp<span class="token punctuation">;</span>
+    uint <span class="token operator">*</span>a<span class="token punctuation">,</span> <span class="token operator">*</span>aa<span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> NDIRECT<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        bp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        a <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> NINDIRECT<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>a<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span>
+                <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> a<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">brelse</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Free doubly indirect block</span>
+        bp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        a <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> NINDIRECT<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>a<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// Free indirect block j</span>
+                bbp <span class="token operator">=</span> <span class="token function">bread</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> a<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                aa <span class="token operator">=</span> <span class="token punctuation">(</span>uint <span class="token operator">*</span><span class="token punctuation">)</span>bbp<span class="token operator">-></span>data<span class="token punctuation">;</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span>k <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> k <span class="token operator">&lt;</span> NINDIRECT<span class="token punctuation">;</span> k<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>aa<span class="token punctuation">[</span>k<span class="token punctuation">]</span><span class="token punctuation">)</span>
+                        <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> aa<span class="token punctuation">[</span>k<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token function">brelse</span><span class="token punctuation">(</span>bbp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> a<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">brelse</span><span class="token punctuation">(</span>bp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">bfree</span><span class="token punctuation">(</span>ip<span class="token operator">-></span>dev<span class="token punctuation">,</span> ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ip<span class="token operator">-></span>addrs<span class="token punctuation">[</span>NDIRECT <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    ip<span class="token operator">-></span>size <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token function">iupdate</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="Symbolic-links"><a href="#Symbolic-links" class="headerlink" title="Symbolic links"></a>Symbolic links</h1><p>这道题让我们给 xv6 加入符号链接，不过这里的符号链接是青春版。符号链接正统版应该能指向目录，我们的只能指向文件。</p>
+<p>这里就不放配置系统调用的代码了（大家都已经品鉴过无数次了），我们先看看 man 手册是怎么介绍 symlink 的。这里我们主要看 man 2 symlink 和 man 7 symlink，前者是给使用者看的函数说明，后者是函数原理。</p>
+<p><a target="_blank" rel="noopener" href="https://linux.die.net/man/2/symlink">symlink(2): make new name for file - Linux man page</a></p>
+<p><a target="_blank" rel="noopener" href="https://linux.die.net/man/7/symlink">symlink(7): symbolic link handling - Linux man page</a></p>
+<p>symlink 的签名是 <code>int symlink(const char *oldpath, const char *newpath);</code>，它创建一个名为 newpath 的指向 oldpath 的符号链接文件，这个文件里存储着 oldpath 这个字符串。</p>
+<p>对照 hint，我们知道要去 stat.h 里新增一种叫作 T_SYMLINK 的文件类型，这就是符号链接类型。至此我们就能新增 sys_symlink 函数了。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_symlink</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> old<span class="token punctuation">[</span>MAXPATH<span class="token punctuation">]</span><span class="token punctuation">,</span> new<span class="token punctuation">[</span>MAXPATH<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span>ip<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> len<span class="token punctuation">;</span>
+
+    <span class="token function">begin_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">argstr</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> old<span class="token punctuation">,</span> MAXPATH<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token function">argstr</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> new<span class="token punctuation">,</span> MAXPATH<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span>
+        <span class="token punctuation">(</span>ip <span class="token operator">=</span> <span class="token function">create</span><span class="token punctuation">(</span>new<span class="token punctuation">,</span> T_SYMLINK<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    len <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>old<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">writei</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span><span class="token operator">&amp;</span>len<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">writei</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>old<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">,</span> len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我一开始对 iunlock、iunlockput 很疑惑，主要是不知道 iput 有什么用。其实 iput 和 inode 的工作方式密切相关，我们接下来简要分析一下。这里涉及到的文件是 fs.c。</p>
+<p>考虑到我们只能直接和内存交互，而磁盘上又有很多 inode，我们会把有人在用的的 inode 保存在 itable.inode 中，并用 inode.ref 来记录有多少人在用。用完的人要调用 iput 说自己用完了，这样 ref 就会减少。未来我们在把磁盘 inode 放到内存中时会找到 ref == 0 的东西来替换。</p>
+<p>举个例子，dirlookup 找路径对应的 inode，这种“找”最终总会调用 iget，iget 会检查想找的 inode 在不在内存中的 itable.inode 中，如果不在就在 itable.inode 里找个 ref == 0 的元素，把它替换成想找的 inode 并设置其 ref。相应地，调用者在用完 inode 后要负责调用 iput 说自己用完了，不然 itable.inode 的空间被占满后就不能加载新的 inode 了。</p>
+<p>所以在 sys_symlink 的末尾我们要调用 iunlockput 而不是只调用 iunlock，毕竟我们在 sys_symlink 里不再使用这个 inode 了。</p>
+<p>接下来我们看看 open 函数。首先照着 hint 在 fcntl.h 里加入 O_NOFOLLOW，然后对符号链接类型的文件，读取其 path 然后顺藤摸瓜就行：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">uint64 <span class="token function">sys_open</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> path<span class="token punctuation">[</span>MAXPATH<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> fd<span class="token punctuation">,</span> omode<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">file</span> <span class="token operator">*</span>f<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span>ip<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> n<span class="token punctuation">,</span> symcnt<span class="token punctuation">,</span> len<span class="token punctuation">;</span>
+
+    <span class="token function">argint</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>omode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>n <span class="token operator">=</span> <span class="token function">argstr</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> path<span class="token punctuation">,</span> MAXPATH<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+
+    <span class="token function">begin_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_CREATE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        ip <span class="token operator">=</span> <span class="token function">create</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> T_FILE<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ip <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_NOFOLLOW<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ip <span class="token operator">=</span> <span class="token function">namei</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">ilock</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>type <span class="token operator">==</span> T_DIR <span class="token operator">&amp;&amp;</span> omode <span class="token operator">!=</span> O_RDONLY<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        symcnt <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ip <span class="token operator">=</span> <span class="token function">namei</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">ilock</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>type <span class="token operator">==</span> T_SYMLINK<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            symcnt<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>symcnt <span class="token operator">>=</span> <span class="token number">10</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token function">readi</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span><span class="token operator">&amp;</span>len<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">readi</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>uint64<span class="token punctuation">)</span>path<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">,</span> len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ip <span class="token operator">=</span> <span class="token function">namei</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token function">ilock</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>type <span class="token operator">==</span> T_DIR <span class="token operator">&amp;&amp;</span> omode <span class="token operator">!=</span> O_RDONLY<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>type <span class="token operator">==</span> T_DEVICE <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>major <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> ip<span class="token operator">-></span>major <span class="token operator">>=</span> NDEV<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>f <span class="token operator">=</span> <span class="token function">filealloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token punctuation">(</span>fd <span class="token operator">=</span> <span class="token function">fdalloc</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+            <span class="token function">fileclose</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">iunlockput</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ip<span class="token operator">-></span>type <span class="token operator">==</span> T_DEVICE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        f<span class="token operator">-></span>type <span class="token operator">=</span> FD_DEVICE<span class="token punctuation">;</span>
+        f<span class="token operator">-></span>major <span class="token operator">=</span> ip<span class="token operator">-></span>major<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        f<span class="token operator">-></span>type <span class="token operator">=</span> FD_INODE<span class="token punctuation">;</span>
+        f<span class="token operator">-></span>off <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    f<span class="token operator">-></span>ip <span class="token operator">=</span> ip<span class="token punctuation">;</span>
+    f<span class="token operator">-></span>readable <span class="token operator">=</span> <span class="token operator">!</span><span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_WRONLY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    f<span class="token operator">-></span>writable <span class="token operator">=</span> <span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_WRONLY<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_RDWR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>omode <span class="token operator">&amp;</span> O_TRUNC<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> ip<span class="token operator">-></span>type <span class="token operator">==</span> T_FILE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">itrunc</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token function">iunlock</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">end_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> fd<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>顺提一句，make grade 显示 Timeout FAIL 可能是因为后台的进程太多了导致 CPU 没有全力以赴。尽量把别的进程（比如浏览器）关掉只保留一个在跑 make grade 的终端。</p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Lab 7 Lock</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Traps
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab5-cow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Copy-on-Write Fork
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Networking
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 7 Lock
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab8-fs/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 8 File System
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/moon/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            透过望远镜给月亮拍照
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
