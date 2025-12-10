@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://rinevard.github.io/wiki/learning/open-course/CS144/labs/lab0-network-warmup/</loc>
+    
+    <lastmod>2025-12-10</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://rinevard.github.io/wiki/learning/open-course/MIT-6.S081/Labs/lab9-mmap/</loc>
     
     <lastmod>2025-12-07</lastmod>
@@ -445,7 +454,7 @@
 
   <url>
     <loc>http://rinevard.github.io/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -454,92 +463,106 @@
 
   
   <url>
-    <loc>http://rinevard.github.io/categories/gamejam/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/</loc>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://rinevard.github.io/categories/%E6%B8%B8%E6%88%8F%E8%AE%BE%E8%AE%A1/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <loc>http://rinevard.github.io/categories/gamejam/</loc>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/</loc>
-    <lastmod>2025-12-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E7%A2%8E%E7%A2%8E%E5%BF%B5/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E7%BF%BB%E8%AF%91/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E6%9D%82%E8%B0%88/%E4%BA%8C%E6%AC%A1%E5%85%83/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/</loc>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Labs/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/Labs/</loc>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://rinevard.github.io/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/MIT-6-S081/Notes/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <lastmod>2025-12-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

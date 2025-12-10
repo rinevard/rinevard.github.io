@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    Lab 0 Networking Warmup | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="Lab 0 Networking Warmup" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="在这个 Lab 里我们要实现一个发 GET 请求的函数和一个“内存字节流”，我们开始吧。 webget首先我们回顾一下 CSAPP 里客户端使用 socket 接口的方法：getaddrinfo -&gt; socket -&gt; connect -&gt; read&#x2F;write -&gt; close 然后对照 socket.hh 和 file_descriptor.hh 写出 C++ 版本的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 0 Networking Warmup">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CS144/labs/lab0-network-warmup/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="在这个 Lab 里我们要实现一个发 GET 请求的函数和一个“内存字节流”，我们开始吧。 webget首先我们回顾一下 CSAPP 里客户端使用 socket 接口的方法：getaddrinfo -&gt; socket -&gt; connect -&gt; read&#x2F;write -&gt; close 然后对照 socket.hh 和 file_descriptor.hh 写出 C++ 版本的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/ring.png">
+<meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/test.png">
+<meta property="article:published_time" content="2025-12-10T10:03:28.000Z">
+<meta property="article:modified_time" content="2025-12-10T10:08:36.498Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/ring.png">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-learning/open-course/CS144/labs/lab0-network-warmup" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/">CS144</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
+            <time datetime="2025-12-10T10:03:28.000Z" itemprop="datePublished">2025-12-10</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 0 Networking Warmup
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#webget"><span class="toc-number">1.</span> <span class="toc-text">webget</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#byte-stream"><span class="toc-number">2.</span> <span class="toc-text">byte stream</span></a></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>在这个 Lab 里我们要实现一个发 GET 请求的函数和一个“内存字节流”，我们开始吧。</p>
+<h2 id="webget"><a href="#webget" class="headerlink" title="webget"></a>webget</h2><p>首先我们回顾一下 CSAPP 里客户端使用 socket 接口的方法：getaddrinfo -&gt; socket -&gt; connect -&gt; read/write -&gt; close</p>
+<p>然后对照 socket.hh 和 file_descriptor.hh 写出 C++ 版本的代码就行：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">get_URL</span><span class="token punctuation">(</span> <span class="token keyword">const</span> string<span class="token operator">&amp;</span> host<span class="token punctuation">,</span> <span class="token keyword">const</span> string<span class="token operator">&amp;</span> path <span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  TCPSocket socket<span class="token punctuation">;</span>
+  socket<span class="token punctuation">.</span><span class="token function">connect</span><span class="token punctuation">(</span> <span class="token function">Address</span><span class="token punctuation">(</span> host<span class="token punctuation">,</span> <span class="token string">"http"</span> <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  socket<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span> <span class="token string">"GET "</span> <span class="token operator">+</span> path <span class="token operator">+</span> <span class="token string">" HTTP/1.1\r\nHost: "</span> <span class="token operator">+</span> host <span class="token operator">+</span> <span class="token string">"\r\nConnection: close\r\n\r\n"</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  std<span class="token double-colon punctuation">::</span>string buf<span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token operator">!</span>socket<span class="token punctuation">.</span><span class="token function">eof</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    socket<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span> buf <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> buf<span class="token punctuation">;</span>
+    buf<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里不需要手动调用 close，因为 file_descriptor.cc 的析构函数 ~FDWrapper() 自己会调用 close. 这是遵循了 C++ 的 RAII 规范。</p>
+<p>测试代码的原理是 webget_t.sh 用管道重定向程序输出，然后对比正确值。</p>
+<h2 id="byte-stream"><a href="#byte-stream" class="headerlink" title="byte stream"></a>byte stream</h2><p>我们需要实现一个内存字节流，写者可以往里面写东西，读者可以读，字节流有最大容量。Lab 文档说无需考虑并发，所以我们简单做个环形队列然后设置读写头就行（死去的 6S081 记忆突然攻击我！）</p>
+<p>首先设置几个成员变量，这里的 head<em> 始终指向第一个有效数据，tail</em> 始终指向空位置：</p>
+<p><img src="/images/learning/open-course/CS144/labs/lab0/ring.png" width="50%" height="auto"></p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">ByteStream</span>
+<span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+  <span class="token keyword">explicit</span> <span class="token function">ByteStream</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> capacity <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// Helper functions (provided) to access the ByteStream's Reader and Writer interfaces</span>
+  Reader<span class="token operator">&amp;</span> <span class="token function">reader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> Reader<span class="token operator">&amp;</span> <span class="token function">reader</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span><span class="token punctuation">;</span>
+  Writer<span class="token operator">&amp;</span> <span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> Writer<span class="token operator">&amp;</span> <span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">void</span> <span class="token function">set_error</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> error_ <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>       <span class="token comment">// Signal that the stream suffered an error.</span>
+  <span class="token keyword">bool</span> <span class="token function">has_error</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> error_<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span> <span class="token comment">// Has the stream had an error?</span>
+
+<span class="token keyword">protected</span><span class="token operator">:</span>
+  <span class="token comment">// Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.</span>
+  <span class="token keyword">uint64_t</span> capacity_<span class="token punctuation">;</span>
+  <span class="token keyword">uint64_t</span> tot_pushed_ <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">uint64_t</span> head_ <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> tail_ <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span><span class="token keyword">char</span><span class="token operator">></span> ring_<span class="token punctuation">;</span>
+  <span class="token keyword">bool</span> closed_ <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">bool</span> error_ <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里成员变量命名结尾带下划线是 Google C++ Style，利于区分成员变量和局部变量 / 函数参数。</p>
+<p>然后这里的 Reader 和 Writer 方法有什么用呢？Reader 和 Writer 继承自 ByteStream，允许用户用不同视角看同一个对象。这么说有点抽象，可以看向 byte_stream_helpers.cc，它只是做了类型转换。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Reader<span class="token operator">&amp;</span> <span class="token class-name">ByteStream</span><span class="token double-colon punctuation">::</span><span class="token function">reader</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">static_assert</span><span class="token punctuation">(</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span> Reader <span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span> ByteStream <span class="token punctuation">)</span><span class="token punctuation">,</span>
+                 <span class="token string">"Please add member variables to the ByteStream base, not the ByteStream Reader."</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>Reader<span class="token operator">&amp;</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> <span class="token operator">*</span><span class="token keyword">this</span> <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// NOLINT(*-downcast)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>读者和写者操控的是一个 ByteStream 对象，所以我们要提供两种不同的视角，每种视角有不同的操作数据的方法。</p>
+<p>然后实现两种视角各自的接口：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"byte_stream.hh"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"debug.hh"</span></span>
+
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
+
+<span class="token comment">// Leave one space to distinguish between a full ring and an empty ring.</span>
+<span class="token class-name">ByteStream</span><span class="token double-colon punctuation">::</span><span class="token function">ByteStream</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> capacity <span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">capacity_</span><span class="token punctuation">(</span> capacity <span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">ring_</span><span class="token punctuation">(</span> capacity <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Push data to stream, but only as much as available capacity allows.</span>
+<span class="token keyword">void</span> <span class="token class-name">Writer</span><span class="token double-colon punctuation">::</span><span class="token function">push</span><span class="token punctuation">(</span> <span class="token keyword">const</span> string<span class="token operator">&amp;</span> data <span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token keyword">auto</span> written_len <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span> <span class="token function">available_capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> data<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> written_len <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> written_len<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    ring_<span class="token punctuation">[</span>tail_<span class="token punctuation">]</span> <span class="token operator">=</span> data<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tail_ <span class="token operator">=</span> <span class="token punctuation">(</span> tail_ <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token operator">%</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  tot_pushed_ <span class="token operator">+=</span> written_len<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Signal that the stream has reached its ending. Nothing more will be written.</span>
+<span class="token keyword">void</span> <span class="token class-name">Writer</span><span class="token double-colon punctuation">::</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  closed_ <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Has the stream been closed?</span>
+<span class="token keyword">bool</span> <span class="token class-name">Writer</span><span class="token double-colon punctuation">::</span><span class="token function">is_closed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> closed_<span class="token punctuation">;</span> <span class="token comment">// Your code here.</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// How many bytes can be pushed to the stream right now?</span>
+<span class="token keyword">uint64_t</span> <span class="token class-name">Writer</span><span class="token double-colon punctuation">::</span><span class="token function">available_capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span> head_ <span class="token operator">+</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> tail_ <span class="token operator">-</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token operator">%</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Total number of bytes cumulatively pushed to the stream</span>
+<span class="token keyword">uint64_t</span> <span class="token class-name">Writer</span><span class="token double-colon punctuation">::</span><span class="token function">bytes_pushed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> tot_pushed_<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Peek at the next bytes in the buffer -- ideally as many as possible.</span>
+<span class="token comment">// It's not required to return a string_view of the *whole* buffer, but</span>
+<span class="token comment">// if the peeked string_view is only one byte at a time, it will probably force</span>
+<span class="token comment">// the caller to do a lot of extra work.</span>
+string_view <span class="token class-name">Reader</span><span class="token double-colon punctuation">::</span><span class="token function">peek</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> head_ <span class="token operator">==</span> tail_ <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> head_ <span class="token operator">&lt;</span> tail_ <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> ring_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int64_t</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> head_ <span class="token punctuation">)</span><span class="token punctuation">,</span> ring_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int64_t</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> tail_ <span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> ring_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int64_t</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> head_ <span class="token punctuation">)</span><span class="token punctuation">,</span> ring_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Remove `len` bytes from the buffer.</span>
+<span class="token keyword">void</span> <span class="token class-name">Reader</span><span class="token double-colon punctuation">::</span><span class="token function">pop</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> len <span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  head_ <span class="token operator">=</span> <span class="token punctuation">(</span> head_ <span class="token operator">+</span> len <span class="token punctuation">)</span> <span class="token operator">%</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Is the stream finished (closed and fully popped)?</span>
+<span class="token keyword">bool</span> <span class="token class-name">Reader</span><span class="token double-colon punctuation">::</span><span class="token function">is_finished</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> closed_ <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span> head_ <span class="token operator">==</span> tail_ <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Number of bytes currently buffered (pushed and not popped)</span>
+<span class="token keyword">uint64_t</span> <span class="token class-name">Reader</span><span class="token double-colon punctuation">::</span><span class="token function">bytes_buffered</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span> tail_ <span class="token operator">+</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> head_ <span class="token punctuation">)</span> <span class="token operator">%</span> ring_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Total number of bytes cumulatively popped from stream</span>
+<span class="token keyword">uint64_t</span> <span class="token class-name">Reader</span><span class="token double-colon punctuation">::</span><span class="token function">bytes_popped</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> tot_pushed_ <span class="token operator">-</span> <span class="token function">bytes_buffered</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后放下测试结果：</p>
+<p><img src="/images/learning/open-course/CS144/labs/lab0/test.png" width="70%" height="auto"><br>写这个 Lab 的感想就是 C++ 好复杂…</p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab9-mmap/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Lab 9 mmap</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        CS144
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file active">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 0 Networking Warmup
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Traps
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab5-cow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Copy-on-Write Fork
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Networking
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 7 Lock
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab8-fs/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 8 File System
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab9-mmap/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 9 mmap
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _Datalab和我
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _玩乐的人
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            _我也想做出优秀的作品
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/moon/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            透过望远镜给月亮拍照
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2025
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
