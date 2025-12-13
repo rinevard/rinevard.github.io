@@ -435,7 +435,7 @@ uint64 alarm_handler<span class="token punctuation">;</span>        <span class=
     p<span class="token operator">-></span>is_alarming <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> p<span class="token operator">-></span>alarm_tf<span class="token punctuation">.</span>a0<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="一些小想法"><a href="#一些小想法" class="headerlink" title="一些小想法"></a>一些小想法</h2><p>为什么说“Prevent re-entrant calls to the handler——if a handler hasn’t returned yet, the kernel shouldn’t call it again. test2 tests this.”，即不能在上次对 handler 的调用完成前进行下次调用？我猜是因为我们会保存调用前的用户进程状态，而在上次 handler 完成前再次调用 handler 就会保存上次 handler 正在执行时的用户进程状态，这会覆盖最开始的用户进程状态。</p>
+<h2 id="一些小想法"><a href="#一些小想法" class="headerlink" title="一些小想法"></a>一些小想法</h2><p>为什么说“Prevent re-entrant calls to the handler—-if a handler hasn’t returned yet, the kernel shouldn’t call it again. test2 tests this.”，即不能在上次对 handler 的调用完成前进行下次调用？我猜是因为我们会保存调用前的用户进程状态，而在上次 handler 完成前再次调用 handler 就会保存上次 handler 正在执行时的用户进程状态，这会覆盖最开始的用户进程状态。</p>
 <p>再说句题外话，感觉 Page Tables 的 hard 的难度比这个难不少……果然 All hards are hard, but some hards are harder than others🫠🫠</p>
 
                                                                                                                             
@@ -561,6 +561,13 @@ uint64 alarm_handler<span class="token punctuation">;</span>        <span class=
                                         <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 0 Networking Warmup
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Stitching substrings into a byte stream
                                         </a>
                                     </li>
                                     

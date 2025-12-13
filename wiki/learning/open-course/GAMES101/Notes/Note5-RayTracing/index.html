@@ -270,26 +270,20 @@
 <p>光线追踪也自然地生成了阴影——如果射线打中的点和光源的连线间有物体遮挡，这点就是阴影，否则就不是阴影。</p>
 <h2 id="碰撞检测"><a href="#碰撞检测" class="headerlink" title="碰撞检测"></a>碰撞检测</h2><p>既然如此，我们只要检测射线和三角形的碰撞就好了。我们可以用下面的 Möller Trumbore Algorithm 来做检测，其思路是解 “直线上的点 = 三角形重心坐标表示” 这个方程：</p>
 <p>考虑射线 $\vec{O} + t\vec{D}$ 和三角形 $P_0, P_1, P_2$，我们要解方程</p>
-<script type="math/tex; mode=display">
-\vec{O} + t\vec{D} = (1-b_1-b_2)\vec{P_0} + b_1\vec{P_1} + b_2\vec{P_2}</script><p>这是一个线性方程组，解为</p>
-<script type="math/tex; mode=display">
-\begin{bmatrix} t \\ b_1 \\ b_2 \end{bmatrix} = \frac{1}{\vec{S_1} \cdot \vec{E_1}} \begin{bmatrix} \vec{S_2} \cdot \vec{E_2} \\ \vec{S_1} \cdot \vec{S} \\ \vec{S_2} \cdot \vec{D} \end{bmatrix}</script><p>其中</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\vec{E_1} &= \vec{P_1} - \vec{P_0} \\
-\vec{E_2} &= \vec{P_2} - \vec{P_0} \\
-\vec{S} &= \vec{O} - \vec{P_0} \\
-\vec{S_1} &= \vec{D} \times \vec{E_2} \\
-\vec{S_2} &= \vec{S} \times \vec{E_1}
-\end{aligned}</script><h1 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h1><p>在做射线和三角形的碰撞检测时，简单地遍历场景里的每个三角形显然太慢了，所以我们用包围盒来优化。如果一个射线没有碰到包围盒，自然就不会碰到盒子里的物体；如果碰到了，再和盒子里的物体做碰撞检测。</p>
+<p>$$<br>\vec{O} + t\vec{D} = (1-b_1-b_2)\vec{P_0} + b_1\vec{P_1} + b_2\vec{P_2}<br>$$</p>
+<p>这是一个线性方程组，解为</p>
+<p>$$<br>\begin{bmatrix} t \ b_1 \ b_2 \end{bmatrix} = \frac{1}{\vec{S_1} \cdot \vec{E_1}} \begin{bmatrix} \vec{S_2} \cdot \vec{E_2} \ \vec{S_1} \cdot \vec{S} \ \vec{S_2} \cdot \vec{D} \end{bmatrix}<br>$$</p>
+<p>其中</p>
+<p>$$<br>\begin{aligned}<br>\vec{E_1} &amp;= \vec{P_1} - \vec{P_0} \<br>\vec{E_2} &amp;= \vec{P_2} - \vec{P_0} \<br>\vec{S} &amp;= \vec{O} - \vec{P_0} \<br>\vec{S_1} &amp;= \vec{D} \times \vec{E_2} \<br>\vec{S_2} &amp;= \vec{S} \times \vec{E_1}<br>\end{aligned}<br>$$</p>
+<h1 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h1><p>在做射线和三角形的碰撞检测时，简单地遍历场景里的每个三角形显然太慢了，所以我们用包围盒来优化。如果一个射线没有碰到包围盒，自然就不会碰到盒子里的物体；如果碰到了，再和盒子里的物体做碰撞检测。</p>
 <h2 id="常见包围盒"><a href="#常见包围盒" class="headerlink" title="常见包围盒"></a>常见包围盒</h2><p>包围盒有两种思路，一种是基于空间的划分，另一种是基于物体的划分。前者的代表包括四叉树、八叉树；后者的代表是 BVH.</p>
 <p>四叉树、八叉树把空间进行平分，当一个区域里还剩较多物体时就再在这个区域里平分一次。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note5/octree.png" alt=""></p>
 <p>BVH 为每组物体建立包围盒，然后再把父包围盒划分成子包围盒。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note5/bvh.png" alt=""></p>
-<h2 id="射线和包围盒的碰撞检测"><a href="#射线和包围盒的碰撞检测" class="headerlink" title="射线和包围盒的碰撞检测"></a>射线和包围盒的碰撞检测</h2><p>包围盒有六个面，我们可以把相对的面划分成一组从而得到三组面。计算射线 $\vec{O} + t\vec{D}$ 与这三组面的交点后，我们会得到 $[t<em>{x, \text{enter}}, t</em>{x, \text{exit}}],[t<em>{y, \text{enter}}, t</em>{y, \text{exit}}],[t<em>{z, \text{enter}}, t</em>{z, \text{exit}}]$，之后计算下面的交集：</p>
-<script type="math/tex; mode=display">
-[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]</script><p>如果交集为空则无交点，否则有交点。</p>
+<h2 id="射线和包围盒的碰撞检测"><a href="#射线和包围盒的碰撞检测" class="headerlink" title="射线和包围盒的碰撞检测"></a>射线和包围盒的碰撞检测</h2><p>包围盒有六个面，我们可以把相对的面划分成一组从而得到三组面。计算射线 $\vec{O} + t\vec{D}$ 与这三组面的交点后，我们会得到 $[t_{x, \text{enter}}, t_{x, \text{exit}}],[t_{y, \text{enter}}, t_{y, \text{exit}}],[t_{z, \text{enter}}, t_{z, \text{exit}}]$，之后计算下面的交集：</p>
+<p>$$<br>[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]<br>$$</p>
+<p>如果交集为空则无交点，否则有交点。</p>
 <p>为了方便计算，包围盒一般是与坐标轴平行的。</p>
 
                                                                                                                             
@@ -415,6 +409,13 @@
                                         <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 0 Networking Warmup
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Stitching substrings into a byte stream
                                         </a>
                                     </li>
                                     

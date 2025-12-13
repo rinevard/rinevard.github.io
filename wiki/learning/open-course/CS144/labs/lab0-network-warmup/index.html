@@ -24,7 +24,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/ring.png">
 <meta property="og:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/test.png">
 <meta property="article:published_time" content="2025-12-10T10:03:28.000Z">
-<meta property="article:modified_time" content="2025-12-10T10:08:36.498Z">
+<meta property="article:modified_time" content="2025-12-12T08:26:04.875Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/learning/open-course/CS144/labs/lab0/ring.png">
@@ -279,7 +279,7 @@
 <p>这里不需要手动调用 close，因为 file_descriptor.cc 的析构函数 ~FDWrapper() 自己会调用 close. 这是遵循了 C++ 的 RAII 规范。</p>
 <p>测试代码的原理是 webget_t.sh 用管道重定向程序输出，然后对比正确值。</p>
 <h2 id="byte-stream"><a href="#byte-stream" class="headerlink" title="byte stream"></a>byte stream</h2><p>我们需要实现一个内存字节流，写者可以往里面写东西，读者可以读，字节流有最大容量。Lab 文档说无需考虑并发，所以我们简单做个环形队列然后设置读写头就行（死去的 6S081 记忆突然攻击我！）</p>
-<p>首先设置几个成员变量，这里的 head<em> 始终指向第一个有效数据，tail</em> 始终指向空位置：</p>
+<p>首先设置几个成员变量，这里的 head_ 始终指向第一个有效数据，tail_ 始终指向空位置：</p>
 <p><img src="/images/learning/open-course/CS144/labs/lab0/ring.png" width="50%" height="auto"></p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">ByteStream</span>
 <span class="token punctuation">&#123;</span>
@@ -313,7 +313,7 @@
 
   <span class="token keyword">return</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>Reader<span class="token operator">&amp;</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> <span class="token operator">*</span><span class="token keyword">this</span> <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// NOLINT(*-downcast)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>读者和写者操控的是一个 ByteStream 对象，所以我们要提供两种不同的视角，每种视角有不同的操作数据的方法。</p>
+<p>读者和写者操控的是同一个 ByteStream 对象，我们则提供了两种不同的视角，每种视角有不同的操作数据的方法。</p>
 <p>然后实现两种视角各自的接口：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"byte_stream.hh"</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"debug.hh"</span></span>
@@ -399,8 +399,9 @@ string_view <span class="token class-name">Reader</span><span class="token doubl
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">return</span> tot_pushed_ <span class="token operator">-</span> <span class="token function">bytes_buffered</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里的 Reader::peek 无需返回整个环，只需尽力而为，所以我们在 head &gt; tail 时只返回 head 到 ring.size 部分的内容而没带上 0 到 tail 的内容；这里的 Writer::push 或许可以用 std::copy 来优化，但我就不写了吧。</p>
 <p>然后放下测试结果：</p>
-<p><img src="/images/learning/open-course/CS144/labs/lab0/test.png" width="70%" height="auto"><br>写这个 Lab 的感想就是 C++ 好复杂…</p>
+<p><img src="/images/learning/open-course/CS144/labs/lab0/test.png" width="70%" height="auto"></p>
 
                                                                                                                             
                                                                                                                                 
@@ -413,6 +414,15 @@ string_view <span class="token class-name">Reader</span><span class="token doubl
 
     
 <nav id="article-nav">
+    
+        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Lab 1 Stitching substrings into a byte stream
+                
+            </div>
+        </a>
     
     
         <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab9-mmap/" id="article-nav-older" class="article-nav-link-wrap">
@@ -516,6 +526,13 @@ string_view <span class="token class-name">Reader</span><span class="token doubl
                                         <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 0 Networking Warmup
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Stitching substrings into a byte stream
                                         </a>
                                     </li>
                                     
