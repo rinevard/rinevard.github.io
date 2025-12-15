@@ -6,19 +6,23 @@
         
             <title>
                 
-                    归档: 2025/9 | 
+                    Lab 2 The TCP receiver | 
                             Rinevard
             </title>
             
                 
-                    <meta name="keywords" content="Rinevard" />
+                    <meta name="keywords" content="Lab 2 The TCP receiver" />
                     
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        <meta property="og:type" content="website">
-<meta property="og:title" content="Rinevard">
-<meta property="og:url" content="http://rinevard.github.io/archives/2025/09/index.html">
+                        <meta name="description" content="在这个 Lab 里我们要写 TCP 协议的接收方收到数据时的处理函数，以及构造接收方的回信的函数。 在 TCP 协议中我们要和三种索引打交道：  seqno: 在 TCP 头部中空间很宝贵，所以只用 32 位来存储序列号，这就是 seqno. 考虑到安全性，seqno 不从 0 开始，而是从一个随机数 ISN 开始。 absolute seqno: 每个 TCP 连接中的字节流以 SYN 为开头，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lab 2 The TCP receiver">
+<meta property="og:url" content="http://rinevard.github.io/wiki/learning/open-course/CS144/labs/lab2-receiver/index.html">
 <meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="在这个 Lab 里我们要写 TCP 协议的接收方收到数据时的处理函数，以及构造接收方的回信的函数。 在 TCP 协议中我们要和三种索引打交道：  seqno: 在 TCP 头部中空间很宝贵，所以只用 32 位来存储序列号，这就是 seqno. 考虑到安全性，seqno 不从 0 开始，而是从一个随机数 ISN 开始。 absolute seqno: 每个 TCP 连接中的字节流以 SYN 为开头，">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-15T12:40:28.000Z">
+<meta property="article:modified_time" content="2025-12-15T13:43:09.896Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
                             
@@ -45,6 +49,10 @@
 
                                                                 <!-- TOC Sidebar CSS -->
                                                                 
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
 
                                                                             <!-- Medium Zoom CSS -->
                                                                             
@@ -197,263 +205,257 @@
 
                 <div class="outer">
                     
-                                <section id="main"><article class="article article-type-page">
+                                <section id="main"><article id="post-learning/open-course/CS144/labs/lab2-receiver" class="article article-type-post" itemscope
+    itemprop="blogPost">
     <div class="article-inner">
-        <div class="article-entry">
-            <div class="timeline timeline-wrap">
-                
-                    <div class="timeline-row timeline-row-major">
-                        <span class="node"><i class="fa fa-calendar-o"></i></span>
-                        <h1 class="title"><a href="/archives/2025/">
-                                2025
-                            </a></h1>
-                    </div>
+        
                     
-                        <div class="timeline-row timeline-row-major">
-                            <span class="node"><i class="fa fa-calendar"></i></span>
-                            <h1 class="title"><a href="/archives/2025/09/">
-                                    2025-09
-                                </a><span class="archive-list-count">
-                                    7
-                                </span></h1>
-                        </div>
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/">CS144</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/CS144/Labs/">Labs</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/learning/open-course/CS144/labs/lab2-receiver/">
+            <time datetime="2025-12-15T12:40:28.000Z" itemprop="datePublished">2025-12-15</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            Lab 2 The TCP receiver
+        </h1>
+    
+
+                        </header>
                         
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">Note 5 RayTracing</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
-            <time datetime="2025-09-25T13:48:28.000Z" itemprop="datePublished">2025-09-25</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/">Notes</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
                             
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
+                                <div class="article-entry" itemprop="articleBody">
                                     
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">Assignment 6 Bounding Box</a>
-        </h1>
-    
-
                                         
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
-            <time datetime="2025-09-24T09:46:44.000Z" itemprop="datePublished">2025-09-24</time>
-        </a>
-    </div>
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Translating-between-64-bit-indexes-and-32-bit-seqnos"><span class="toc-number">1.</span> <span class="toc-text">Translating between 64-bit indexes and 32-bit seqnos</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Implementing-the-TCP-receiver"><span class="toc-number">2.</span> <span class="toc-text">Implementing the TCP receiver</span></a></li></ol>
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>在这个 Lab 里我们要写 TCP 协议的接收方收到数据时的处理函数，以及构造接收方的回信的函数。</p>
+<p>在 TCP 协议中我们要和三种索引打交道：</p>
+<ol>
+<li>seqno: 在 TCP 头部中空间很宝贵，所以只用 32 位来存储序列号，这就是 seqno. 考虑到安全性，seqno 不从 0 开始，而是从一个随机数 ISN 开始。</li>
+<li>absolute seqno: 每个 TCP 连接中的字节流以 SYN 为开头，FIN 为结尾。用 64 位给每个字节编号就得到了 absolute deqno.</li>
+<li>stream index: 用 64 位给 TCP 连接中除 SYN 和 FIN 以外的实际数据编码就得到了 stream index.</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Sequence Numbers</th>
+<th>Absolute Sequence Numbers</th>
+<th>Stream Indices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标识</td>
+<td>“seqno”</td>
+<td>“absolute seqno”</td>
+<td>“stream index”</td>
+</tr>
+<tr>
+<td>起始点</td>
+<td>从 ISN 开始</td>
+<td>从 0 开始</td>
+<td>从 0 开始</td>
+</tr>
+<tr>
+<td>内容范围</td>
+<td>包括 SYN/FIN</td>
+<td>包括 SYN/FIN</td>
+<td>不包含 SYN/FIN</td>
+</tr>
+<tr>
+<td>性质</td>
+<td>32 bits, 回绕</td>
+<td>64 bits, 不回绕</td>
+<td>64 bits, 不回绕</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这里是示例数据，假设 ISN 为 $2^{32} - 2$，传输的内容为 “cat”，则有：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>element</th>
+<th>SYN</th>
+<th>c</th>
+<th>a</th>
+<th>t</th>
+<th>FIN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>seqno</td>
+<td>$2^{32} - 2$</td>
+<td>$2^{32} - 1$</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>absolute seqno</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td>stream index</td>
+<td></td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Translating-between-64-bit-indexes-and-32-bit-seqnos"><a href="#Translating-between-64-bit-indexes-and-32-bit-seqnos" class="headerlink" title="Translating between 64-bit indexes and 32-bit seqnos"></a>Translating between 64-bit indexes and 32-bit seqnos</h2><p>在 Lab 的开始我们要写 seqno 和 absolute seqno 间相互转换的两个函数，我的实现如下：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Wrap32 <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">wrap</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> n<span class="token punctuation">,</span> Wrap32 zero_point <span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> zero_point <span class="token operator">+</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">uint32_t</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> n <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
+<span class="token keyword">uint64_t</span> <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">unwrap</span><span class="token punctuation">(</span> Wrap32 zero_point<span class="token punctuation">,</span> <span class="token keyword">uint64_t</span> checkpoint <span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">auto</span> dist <span class="token operator">=</span> <span class="token punctuation">[</span>checkpoint<span class="token punctuation">]</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> x <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x <span class="token operator">></span> checkpoint <span class="token operator">?</span> <span class="token punctuation">(</span> x <span class="token operator">-</span> checkpoint <span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token punctuation">(</span> checkpoint <span class="token operator">-</span> x <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> k <span class="token operator">=</span> checkpoint <span class="token operator">>></span> <span class="token number">32</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> val1 <span class="token operator">=</span> raw_value_ <span class="token operator">-</span> zero_point<span class="token punctuation">.</span>raw_value_ <span class="token operator">+</span> k <span class="token operator">*</span> <span class="token punctuation">(</span> <span class="token number">1ULL</span> <span class="token operator">&lt;&lt;</span> <span class="token number">32</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> val2 <span class="token operator">=</span> raw_value_ <span class="token operator">-</span> zero_point<span class="token punctuation">.</span>raw_value_ <span class="token operator">+</span> <span class="token punctuation">(</span> k <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token punctuation">(</span> <span class="token number">1ULL</span> <span class="token operator">&lt;&lt;</span> <span class="token number">32</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> val3 <span class="token operator">=</span> raw_value_ <span class="token operator">-</span> zero_point<span class="token punctuation">.</span>raw_value_ <span class="token operator">+</span> <span class="token punctuation">(</span> k <span class="token operator">-</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token punctuation">(</span> <span class="token number">1ULL</span> <span class="token operator">&lt;&lt;</span> <span class="token number">32</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> std<span class="token double-colon punctuation">::</span><span class="token function">min</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> val1<span class="token punctuation">,</span> val2<span class="token punctuation">,</span> val3 <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>dist<span class="token punctuation">]</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> x<span class="token punctuation">,</span> <span class="token keyword">uint64_t</span> y <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">dist</span><span class="token punctuation">(</span> x <span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token function">dist</span><span class="token punctuation">(</span> y <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="Implementing-the-TCP-receiver"><a href="#Implementing-the-TCP-receiver" class="headerlink" title="Implementing the TCP receiver"></a>Implementing the TCP receiver</h2><p>然后我们要给 TCP 接收方写收到数据的处理函数和构造回信的函数了。这里主要有三个难点，我们分析一下：</p>
+<ol>
+<li><p>怎么根据 message 里的 RST、SYN、FIN 改变收信方的状态？</p>
+<p> 我们可以把 TCP receiver 分成 LISTEN、SYN_RCVD、CLOSE_WAIT 三种状态， LISTEN 是还没收到 SYN 的状态，SYN_RCVD 是收到 SYN 后正常接收数据的状态，CLOSE_WAIT 则是收到 FIN 后的状态。</p>
+<p> 另外，RST 表示发生了不可挽回的错误，因此在收到 RST 后应该立即抛出异常。在我们的代码里就表现为关闭 ByteStream. 每个 TCP 连接和一个 ByteStream 唯一绑定，是该连接向用户交付数据的唯一渠道。</p>
+</li>
+<li><p>怎么计算 ackno？</p>
+<p> ackno 是我们需要的下一个 byte 的 32 位索引，也就是尚未被写入 ByteStream 的最小索引。ByteStream 存的是 stream index，所以我们要先根据它算出 absolute seqno，再用我们之前实现的 Wrap32 的各种方法得到 32 位的 ackno：</p>
+ <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">const</span> <span class="token keyword">uint64_t</span> abs_ackno <span class="token operator">=</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bytes_pushed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> seen_syn_ <span class="token operator">+</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">is_closed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>optional<span class="token operator">&lt;</span>Wrap32<span class="token operator">></span> ackno
+  <span class="token operator">=</span> seen_syn_ <span class="token operator">?</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">optional</span><span class="token generic class-name"><span class="token operator">&lt;</span>Wrap32<span class="token operator">></span></span></span><span class="token punctuation">(</span> <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">wrap</span><span class="token punctuation">(</span> abs_ackno<span class="token punctuation">,</span> zero_point_ <span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token operator">:</span> std<span class="token double-colon punctuation">::</span>nullopt<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p> 这里的 reassembler<em>.writer().is_closed() 不能换成 seen_fin</em>，因为收到 FIN 并不代表数据已经被填入了 ByteStream.</p>
+</li>
+<li><p>怎么计算 stream index？</p>
+<p> 对带 SYN 的 message，stream index 就是 0.</p>
+<p> 对不带 SYN 的 message，stream index 是 absolute seqno - 1.</p>
+</li>
+</ol>
+<p>最后我们放代码：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">TCPReceiver</span>
+<span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+  <span class="token comment">// ...</span>
+<span class="token keyword">private</span><span class="token operator">:</span>
+  Reassembler reassembler_<span class="token punctuation">;</span>
+  Wrap32 zero_point_ <span class="token punctuation">&#123;</span> <span class="token number">0</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">bool</span> seen_syn_ <span class="token punctuation">&#123;</span> <span class="token boolean">false</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">TCPReceiver</span><span class="token double-colon punctuation">::</span><span class="token function">receive</span><span class="token punctuation">(</span> TCPSenderMessage message <span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> message<span class="token punctuation">.</span>RST <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    reassembler_<span class="token punctuation">.</span><span class="token function">reader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set_error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span>seen_syn_ <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>message<span class="token punctuation">.</span>SYN <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span>seen_syn_ <span class="token operator">&amp;&amp;</span> message<span class="token punctuation">.</span>SYN <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    zero_point_ <span class="token operator">=</span> message<span class="token punctuation">.</span>seqno<span class="token punctuation">;</span>
+    seen_syn_ <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> abs_ackno <span class="token operator">=</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bytes_pushed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> seen_syn_ <span class="token operator">+</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">is_closed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> stream_idx <span class="token operator">=</span> message<span class="token punctuation">.</span>seqno<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span> zero_point_<span class="token punctuation">,</span> abs_ackno <span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token operator">!</span>message<span class="token punctuation">.</span>SYN<span class="token punctuation">;</span>
+  reassembler_<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span> stream_idx<span class="token punctuation">,</span> std<span class="token double-colon punctuation">::</span><span class="token function">move</span><span class="token punctuation">(</span> message<span class="token punctuation">.</span>payload <span class="token punctuation">)</span><span class="token punctuation">,</span> message<span class="token punctuation">.</span>FIN <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">TCPReceiverMessage <span class="token class-name">TCPReceiver</span><span class="token double-colon punctuation">::</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint64_t</span> abs_ackno <span class="token operator">=</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bytes_pushed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> seen_syn_ <span class="token operator">+</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">is_closed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>optional<span class="token operator">&lt;</span>Wrap32<span class="token operator">></span> ackno
+    <span class="token operator">=</span> seen_syn_ <span class="token operator">?</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">optional</span><span class="token generic class-name"><span class="token operator">&lt;</span>Wrap32<span class="token operator">></span></span></span><span class="token punctuation">(</span> <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">wrap</span><span class="token punctuation">(</span> abs_ackno<span class="token punctuation">,</span> zero_point_ <span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token operator">:</span> std<span class="token double-colon punctuation">::</span>nullopt<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token keyword">uint16_t</span> window_size <span class="token operator">=</span> <span class="token punctuation">(</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">available_capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> UINT16_MAX <span class="token punctuation">)</span>
+                                 <span class="token operator">?</span> UINT16_MAX
+                                 <span class="token operator">:</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">uint16_t</span><span class="token operator">></span></span></span><span class="token punctuation">(</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">available_capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> ackno<span class="token punctuation">,</span> window_size<span class="token punctuation">,</span> reassembler_<span class="token punctuation">.</span><span class="token function">reader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">has_error</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+                                                                                                                            
+                                                                                                                                
                                 </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">Assignment 5 Raytracing</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
-            <time datetime="2025-09-22T11:46:16.000Z" itemprop="datePublished">2025-09-22</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">Assignment 4 Geometry</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
-            <time datetime="2025-09-22T11:44:16.000Z" itemprop="datePublished">2025-09-22</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">Note 4 Geometry</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
-            <time datetime="2025-09-19T12:10:28.000Z" itemprop="datePublished">2025-09-19</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/">Notes</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">Note 3 Shading</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
-            <time datetime="2025-09-17T04:10:28.000Z" itemprop="datePublished">2025-09-17</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Notes/">Notes</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-row">
-                                <span class="node"></span>
-                                <div class="content">
-                                    
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">Assignment 3 Pipeline and Shading</a>
-        </h1>
-    
-
-                                        
-                                            <div class="article-meta">
-                                                
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
-            <time datetime="2025-09-13T11:45:16.000Z" itemprop="datePublished">2025-09-13</time>
-        </a>
-    </div>
-
-
-                                                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/">GAMES101</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E5%85%AC%E5%BC%80%E8%AF%BE/GAMES101/Assignments/">Assignments</a>
-    </div>
-
-                                                        
-                                            </div>
-                                            
-                                </div>
-                            </div>
-                            
-            </div>
-        </div>
+                                <footer class="article-footer">
+                                </footer>
     </div>
 </article>
-</section>
+
+
+    
+<nav id="article-nav">
+    
+    
+        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Lab 1 Stitching substrings into a byte stream</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
                                 
                                     <aside id="sidebar">
     <div class="sidebar-content">
@@ -494,28 +496,28 @@
                     
                                 </li>
                                 
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         公开课
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         CS144
                                     </a>
                                     
                     <ul class="unstyled" id="tree" >
                             
-                                <li class="directory">
+                                <li class="directory open">
                                     <a href="#" data-role="directory">
                                         <i
-                                            class="fa fa-folder"></i>
+                                            class="fa fa-folder-open"></i>
                                         Labs
                                     </a>
                                     
@@ -535,7 +537,7 @@
                                         </a>
                                     </li>
                                     
-                                    <li class="file">
+                                    <li class="file active">
                                         <a href="/wiki/learning/open-course/CS144/labs/lab2-receiver/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 2 The TCP receiver
@@ -1089,6 +1091,11 @@
 <script src="/js/main.js"></script>
 
             
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
                         
 <script src="/js/sidebar.js"></script>
 
