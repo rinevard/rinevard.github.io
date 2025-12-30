@@ -271,37 +271,27 @@
 <p>另外，如果我们把无穷远点也考虑进来，我们就可以用 $(x,y,0)$ 表示无穷远点。</p>
 <p>叽里咕噜说什么呢，快告诉我怎么用线性变换表示平移！</p>
 <p>对二维空间的一点 $(x,y)$，首先将它转化为齐次坐标得到 $(x,y,1)$，然后与下面的矩阵相乘</p>
-<script type="math/tex; mode=display">
-M = \begin{bmatrix}
-1 & 0 & t_x \\
-0 & 1 & t_y \\
-0 & 0 & 1
-\end{bmatrix}</script><p>就得到了 $(x+t_x,y+t_y,1)$. 然后再转换回笛卡尔坐标，就得到了 $(x+t_x,y+t_y)$.</p>
+<p>$$<br>M = \begin{bmatrix}<br>1 &amp; 0 &amp; t_x \<br>0 &amp; 1 &amp; t_y \<br>0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>就得到了 $(x+t_x,y+t_y,1)$. 然后再转换回笛卡尔坐标，就得到了 $(x+t_x,y+t_y)$.</p>
 <p>这样一来，旋转、平移就能统一成下面的形式：</p>
-<script type="math/tex; mode=display">
-M = \begin{bmatrix}
-\cos \theta & -\sin \theta & t_x \\
-\sin \theta & \cos \theta & t_y \\
-0 & 0 & 1
-\end{bmatrix}</script><h1 id="3D-Transformation"><a href="#3D-Transformation" class="headerlink" title="3D Transformation"></a>3D Transformation</h1><p>与二维的情况类似，我们也把三维空间嵌入一个新空间。</p>
+<p>$$<br>M = \begin{bmatrix}<br>\cos \theta &amp; -\sin \theta &amp; t_x \<br>\sin \theta &amp; \cos \theta &amp; t_y \<br>0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<h1 id="3D-Transformation"><a href="#3D-Transformation" class="headerlink" title="3D Transformation"></a>3D Transformation</h1><p>与二维的情况类似，我们也把三维空间嵌入一个新空间。</p>
 <p>对三维空间的一点 $(x,y,z)$，三元组 $(xS,yS,zS,S)$ 即为该点的齐次坐标。如 $(1,2,3)$ 可表示为 $(1,2,3,1)$ 或 $(100,200,300,100)$. 换句话说，三维空间的任何点都能表示为齐次坐标 $(X,Y,Z,S)$，其中 $S\neq 0$.</p>
 <p>我们这里讨论右手坐标系，下面给出按右手定则旋转 $\theta$ 角度的矩阵：</p>
-<script type="math/tex; mode=display">
-R_x(\theta) = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & \cos \theta & -\sin \theta & 0 \\ 0 & \sin \theta & \cos \theta & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}</script><script type="math/tex; mode=display">
-R_y(\theta) = \begin{bmatrix} \cos \theta & 0 & \sin \theta & 0 \\ 0 & 1 & 0 & 0 \\ -\sin \theta & 0 & \cos \theta & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}</script><script type="math/tex; mode=display">
-R_z(\theta) = \begin{bmatrix} \cos \theta & -\sin \theta & 0 & 0 \\ \sin \theta & \cos \theta & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}</script><p>你会注意到沿 $y$ 轴旋转的矩阵和别的不一样，但这是完全正确的，认真算一算就好了。</p>
+<p>$$<br>R_x(\theta) = \begin{bmatrix} 1 &amp; 0 &amp; 0 &amp; 0 \ 0 &amp; \cos \theta &amp; -\sin \theta &amp; 0 \ 0 &amp; \sin \theta &amp; \cos \theta &amp; 0 \ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}<br>$$</p>
+<p>$$<br>R_y(\theta) = \begin{bmatrix} \cos \theta &amp; 0 &amp; \sin \theta &amp; 0 \ 0 &amp; 1 &amp; 0 &amp; 0 \ -\sin \theta &amp; 0 &amp; \cos \theta &amp; 0 \ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}<br>$$</p>
+<p>$$<br>R_z(\theta) = \begin{bmatrix} \cos \theta &amp; -\sin \theta &amp; 0 &amp; 0 \ \sin \theta &amp; \cos \theta &amp; 0 &amp; 0 \ 0 &amp; 0 &amp; 1 &amp; 0 \ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}<br>$$</p>
+<p>你会注意到沿 $y$ 轴旋转的矩阵和别的不一样，但这是完全正确的，认真算一算就好了。</p>
 <p>（我没感觉这里有什么“深刻含义”，但感觉即使有也应该不会很有用……）</p>
 <p>（不过不知道如果推广到 $n$ 维旋转会不会有用）</p>
 <p>（可我们生活在三次元！）</p>
 <p>值得注意的是，<strong>旋转矩阵都是正交矩阵</strong>，所以它的转置就是它的逆。</p>
 <p>世界上还存在一个叫做 <strong>Rodrigues 旋转公式</strong>的东西，它给出了向量 $v$ 绕单位向量 $k$ 旋转 $\theta$ 角度得到的结果。（按右手定则旋转）</p>
-<script type="math/tex; mode=display">
-\mathbf{v}_{\text{rot}} = \mathbf{v} \cos\theta + (\mathbf{k} \times \mathbf{v}) \sin\theta + 
-\\
-\mathbf{k}(\mathbf{k} \cdot \mathbf{v})(1 - \cos\theta)</script><p><img src="/images/learning/open-course/GAMES101/Notes/note1/rodrigues.png" alt=""></p>
+<p>$$<br>\mathbf{v}_{\text{rot}} = \mathbf{v} \cos\theta + (\mathbf{k} \times \mathbf{v}) \sin\theta +<br>\<br>\mathbf{k}(\mathbf{k} \cdot \mathbf{v})(1 - \cos\theta)<br>$$</p>
+<p><img src="/images/learning/open-course/GAMES101/Notes/note1/rodrigues.png" alt=""></p>
 <p>当然也可以把这个旋转矩阵写出来：</p>
-<script type="math/tex; mode=display">
-\mathbf{R}(\mathbf{k}, \theta) = \cos(\theta)\mathbf{I} + (1 - \cos(\theta))\mathbf{k}\mathbf{k}^T + \sin(\theta)\begin{bmatrix} 0 & -k_z & k_y \\ k_z & 0 & -k_x \\ -k_y & k_x & 0 \end{bmatrix}</script><p>最右边那个矩阵是 $k$ 的叉乘矩阵啦~</p>
+<p>$$<br>\mathbf{R}(\mathbf{k}, \theta) = \cos(\theta)\mathbf{I} + (1 - \cos(\theta))\mathbf{k}\mathbf{k}^T + \sin(\theta)\begin{bmatrix} 0 &amp; -k_z &amp; k_y \ k_z &amp; 0 &amp; -k_x \ -k_y &amp; k_x &amp; 0 \end{bmatrix}<br>$$</p>
+<p>最右边那个矩阵是 $k$ 的叉乘矩阵啦~</p>
 <h1 id="Viewing-transformation"><a href="#Viewing-transformation" class="headerlink" title="Viewing transformation"></a>Viewing transformation</h1><p>2D 和 3D transformation 都是基础变换，接下来我们研究游戏里的画面是如何渲染到屏幕上的。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note1/map-seq.png" alt=""></p>
 <p>如下图所示，我们有一个摄像机、两个方块，那么我们是怎么计算出摄像机拍摄的画面的呢（参考右下角）？</p>
@@ -309,21 +299,8 @@ R_z(\theta) = \begin{bmatrix} \cos \theta & -\sin \theta & 0 & 0 \\ \sin \theta 
 <p>我们按照下面的流程进行操作：</p>
 <h2 id="Camera-transformation"><a href="#Camera-transformation" class="headerlink" title="Camera transformation"></a>Camera transformation</h2><p>首先，我们变换空间让摄像机位于坐标原点，且面向 $z$ 轴负方向，头顶朝 $y$ 轴正方向。对上图来说，就是把 $w$ 变换为 $z$ 轴，把 $v$ 变换为 $y$ 轴。</p>
 <p>对应的矩阵是</p>
-<script type="math/tex; mode=display">
-\text{M}_{\text{cam}} =
-\begin{bmatrix}
-u_x & u_y & u_z & 0 \\
-v_x & v_y & v_z & 0 \\
-w_x & w_y & w_z & 0 \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-\times
-\begin{bmatrix}
-1 & 0 & 0 & -\text{cam}_x \\
-0 & 1 & 0 & -\text{cam}_y \\
-0 & 0 & 1 & -\text{cam}_z \\
-0 & 0 & 0 & 1
-\end{bmatrix}</script><p>这里的小技巧是，旋转矩阵的逆是其转置，所以我们先算出 $xyz$ 轴变换到 $uvw$ 轴的旋转矩阵，再对其转置，就得到了把 $uvw$ 变换到 $xyz$ 的矩阵。</p>
+<p>$$<br>\text{M}_{\text{cam}} =<br>\begin{bmatrix}<br>u_x &amp; u_y &amp; u_z &amp; 0 \<br>v_x &amp; v_y &amp; v_z &amp; 0 \<br>w_x &amp; w_y &amp; w_z &amp; 0 \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>\times<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 0 &amp; -\text{cam}_x \<br>0 &amp; 1 &amp; 0 &amp; -\text{cam}_y \<br>0 &amp; 0 &amp; 1 &amp; -\text{cam}_z \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>这里的小技巧是，旋转矩阵的逆是其转置，所以我们先算出 $xyz$ 轴变换到 $uvw$ 轴的旋转矩阵，再对其转置，就得到了把 $uvw$ 变换到 $xyz$ 的矩阵。</p>
 <h2 id="Projection-transformation"><a href="#Projection-transformation" class="headerlink" title="Projection transformation"></a>Projection transformation</h2><p>然后，我们把相机拍摄的区域变换到 $[-1,1]^3$ 中，这是一个规范化，为未来把区域放到屏幕上做准备。在此之前，我们要先确定相机能够拍摄的区域的范围。这里涉及到的变量主要有 fov、aspect ratio、near、far. </p>
 <p>下图能清晰地解释 fov 和 aspect ratio。fov 即 field of view，表示用角度衡量的可见范围；aspect ratio 则是显示区域的宽高比。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note1/fov-and-aspect-ratio.png" alt=""></p>
@@ -336,124 +313,32 @@ w_x & w_y & w_z & 0 \\
 <li>近大远小，且缩放比例符合相似三角形的规律</li>
 </ol>
 <p>结合齐次坐标，我们就能得到以下矩阵：</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-\text{M}_\text{per}
-
-&=
-
-\begin{bmatrix}
-\frac{2}{r-l} & 0 & 0 & -\frac{r+l}{r-l} \\
-0 & \frac{2}{t-b} & 0 & -\frac{t+b}{t-b} \\
-0 & 0 & \frac{2}{n-f} & -\frac{n+f}{n-f} \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-\times
-\begin{bmatrix}
-n & 0 & 0 & 0 \\
-0 & n & 0 & 0 \\
-0 & 0 & n+f & -nf \\
-0 & 0 & 1 & 0
-\end{bmatrix}
-\\
-&=
-
-\begin{bmatrix}
-\frac{2n}{r-l} & 0 & -\frac{r+l}{r-l} & 0 \\
-0 & \frac{2n}{t-b} & -\frac{t+b}{t-b} & 0 \\
-0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & 1 & 0
-\end{bmatrix}
-\end{align*}</script><p>第一个等号右边的式子中，右边的矩阵把视锥压缩为一个长方体，左边的矩阵把这个长方体变换到 $[-1,1]^3$.</p>
+<p>$$<br>\begin{align*}<br>\text{M}_\text{per}</p>
+<p>&amp;=</p>
+<p>\begin{bmatrix}<br>\frac{2}{r-l} &amp; 0 &amp; 0 &amp; -\frac{r+l}{r-l} \<br>0 &amp; \frac{2}{t-b} &amp; 0 &amp; -\frac{t+b}{t-b} \<br>0 &amp; 0 &amp; \frac{2}{n-f} &amp; -\frac{n+f}{n-f} \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>\times<br>\begin{bmatrix}<br>n &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; n &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; n+f &amp; -nf \<br>0 &amp; 0 &amp; 1 &amp; 0<br>\end{bmatrix}<br>\<br>&amp;=</p>
+<p>\begin{bmatrix}<br>\frac{2n}{r-l} &amp; 0 &amp; -\frac{r+l}{r-l} &amp; 0 \<br>0 &amp; \frac{2n}{t-b} &amp; -\frac{t+b}{t-b} &amp; 0 \<br>0 &amp; 0 &amp; \frac{n+f}{n-f} &amp; -\frac{2nf}{n-f} \<br>0 &amp; 0 &amp; 1 &amp; 0<br>\end{bmatrix}<br>\end{align*}<br>$$</p>
+<p>第一个等号右边的式子中，右边的矩阵把视锥压缩为一个长方体，左边的矩阵把这个长方体变换到 $[-1,1]^3$.</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note1/rectangle.png" alt=""></p>
 <p>我们可以根据 $\text{near},\text{fov},\text{aspectRatio<br>}$ 求出 $l,t,r,b$.</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&\text{t} = -n \times \tan\left(\frac{\text{fov}}{2}\right)
-\\
-&\text{b} = -\text{t}
-\\
-&\text{r} = \text{t} \times \text{aspectRatio}
-\\
-&\text{l} = -\text{r}
-
-\end{align*}</script><p><img src="/images/learning/open-course/GAMES101/Notes/note1/fov-ltrb.png" alt=""></p>
+<p>$$<br>\begin{align*}<br>&amp;\text{t} = -n \times \tan\left(\frac{\text{fov}}{2}\right)<br>\<br>&amp;\text{b} = -\text{t}<br>\<br>&amp;\text{r} = \text{t} \times \text{aspectRatio}<br>\<br>&amp;\text{l} = -\text{r}</p>
+<p>\end{align*}<br>$$</p>
+<p><img src="/images/learning/open-course/GAMES101/Notes/note1/fov-ltrb.png" alt=""></p>
 <p>也就是说，我们可以把投影矩阵写为：</p>
-<script type="math/tex; mode=display">
-\large
-\text{M}_\text{per} =
-\begin{bmatrix}
--\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
-0 & -\frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
-0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & 1 & 0
-\end{bmatrix}</script><h2 id="Viewport-transformation"><a href="#Viewport-transformation" class="headerlink" title="Viewport transformation"></a>Viewport transformation</h2><p>最后，我们会把 $[-1,1]^3$ 的内容的宽高映射为屏幕大小。在这个变换中 $z$ 坐标不变，因此变换矩阵为：</p>
-<script type="math/tex; mode=display">
-\large
-\text{M}_\text{viewport}=
-\begin{bmatrix}
-\frac{width}{2} & 0 & 0 & \frac{width}{2} \\
-0 & \frac{height}{2} & 0 & \frac{height}{2} \\
-0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1
-\end{bmatrix}</script><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总而言之，我们的变换矩阵为</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&\text{M}=\text{M}_\text{viewport}\text{M}_\text{per}\text{M}_\text{cam}
-\end{align*}</script><p>其中</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-&\text{M}_{\text{cam}} =
-\begin{bmatrix}
-u_x & u_y & u_z & 0 \\
-v_x & v_y & v_z & 0 \\
-w_x & w_y & w_z & 0 \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-\times
-\begin{bmatrix}
-1 & 0 & 0 & -\text{cam}_x \\
-0 & 1 & 0 & -\text{cam}_y \\
-0 & 0 & 1 & -\text{cam}_z \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-\\
-\large
-&\text{M}_\text{per} =
-\begin{bmatrix}
--\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
-0 & -\frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
-0 & 0 & \frac{n+f}{n-f} & -\frac{2nf}{n-f} \\
-0 & 0 & 1 & 0
-\end{bmatrix}
-\\
-&\large
-\text{M}_\text{viewport}=
-\begin{bmatrix}
-\frac{width}{2} & 0 & 0 & \frac{width}{2} \\
-0 & \frac{height}{2} & 0 & \frac{height}{2} \\
-0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-
-\end{align*}</script><p>要注意的是，我们讨论的 $n$ 和 $f$ 被定义为坐标值，它们是小于 0 的。一些地方把 $n$ 和 $f$ 定义为到近/远平面的距离，这是大于 0 的，这会引起投影矩阵的变化。另外，不同的坐标系约定也会引起矩阵的变化。</p>
+<p>$$<br>\large<br>\text{M}_\text{per} =<br>\begin{bmatrix}<br>-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; -\frac{1}{\tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; \frac{n+f}{n-f} &amp; -\frac{2nf}{n-f} \<br>0 &amp; 0 &amp; 1 &amp; 0<br>\end{bmatrix}<br>$$</p>
+<h2 id="Viewport-transformation"><a href="#Viewport-transformation" class="headerlink" title="Viewport transformation"></a>Viewport transformation</h2><p>最后，我们会把 $[-1,1]^3$ 的内容的宽高映射为屏幕大小。在这个变换中 $z$ 坐标不变，因此变换矩阵为：</p>
+<p>$$<br>\large<br>\text{M}_\text{viewport}=<br>\begin{bmatrix}<br>\frac{width}{2} &amp; 0 &amp; 0 &amp; \frac{width}{2} \<br>0 &amp; \frac{height}{2} &amp; 0 &amp; \frac{height}{2} \<br>0 &amp; 0 &amp; 1 &amp; 0 \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总而言之，我们的变换矩阵为</p>
+<p>$$<br>\begin{align<em>}<br>&amp;\text{M}=\text{M}<em>\text{viewport}\text{M}</em>\text{per}\text{M}_\text{cam}<br>\end{align</em>}<br>$$</p>
+<p>其中</p>
+<p>$$<br>\begin{align*}<br>&amp;\text{M}_{\text{cam}} =<br>\begin{bmatrix}<br>u_x &amp; u_y &amp; u_z &amp; 0 \<br>v_x &amp; v_y &amp; v_z &amp; 0 \<br>w_x &amp; w_y &amp; w_z &amp; 0 \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>\times<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 0 &amp; -\text{cam}_x \<br>0 &amp; 1 &amp; 0 &amp; -\text{cam}_y \<br>0 &amp; 0 &amp; 1 &amp; -\text{cam}<em>z \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>\<br>\large<br>&amp;\text{M}</em>\text{per} =<br>\begin{bmatrix}<br>-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; -\frac{1}{\tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; \frac{n+f}{n-f} &amp; -\frac{2nf}{n-f} \<br>0 &amp; 0 &amp; 1 &amp; 0<br>\end{bmatrix}<br>\<br>&amp;\large<br>\text{M}_\text{viewport}=<br>\begin{bmatrix}<br>\frac{width}{2} &amp; 0 &amp; 0 &amp; \frac{width}{2} \<br>0 &amp; \frac{height}{2} &amp; 0 &amp; \frac{height}{2} \<br>0 &amp; 0 &amp; 1 &amp; 0 \<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}</p>
+<p>\end{align*}<br>$$</p>
+<p>要注意的是，我们讨论的 $n$ 和 $f$ 被定义为坐标值，它们是小于 0 的。一些地方把 $n$ 和 $f$ 定义为到近/远平面的距离，这是大于 0 的，这会引起投影矩阵的变化。另外，不同的坐标系约定也会引起矩阵的变化。</p>
 <p>比如在OpenGL中， $n$ 和 $f$ 被定义为到近/远平面的距离，这是大于 0 的，而且他们的 projection transformation 把拍摄内容从右手坐标系的视图空间映射到左手坐标系的标准设备坐标（NDC）空间。特别地，$z$ 轴的 $[ -n,-f]$ 被映射到 $[-1,1]$ （这似乎说明在 NDC 空间中，$z$ 值较小的内容渲染更靠前？）</p>
 <p>他们的 $\text{M}_\text{their-per}$ 为：</p>
-<script type="math/tex; mode=display">
-\large
-\text{M}_\text{their-per} =
-\begin{bmatrix}
-\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} & 0 & 0 & 0 \\
-0 & \frac{1}{\tan(\frac{\text{fov}}{2})} & 0 & 0 \\
-0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
-0 & 0 & -1 & 0
-\end{bmatrix}</script><p>Godot 使用和 OpenGL 一样的矩阵，下面是他们设置 $\text{M}_\text{per}$ 的代码。还要注意的是，他们使用 column-major 的方法存储数据，即</p>
-<script type="math/tex; mode=display">
-M =
-\begin{pmatrix}
-\text{columns}[0][0] & \text{columns}[1][0] \\
-\text{columns}[0][1] & \text{columns}[1][1]
-\end{pmatrix}</script><pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">Projection</span><span class="token double-colon punctuation">::</span><span class="token function">set_perspective</span><span class="token punctuation">(</span>real_t p_fovy_degrees<span class="token punctuation">,</span> real_t p_aspect<span class="token punctuation">,</span> real_t p_z_near<span class="token punctuation">,</span> real_t p_z_far<span class="token punctuation">,</span> <span class="token keyword">bool</span> p_flip_fov<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<p>$$<br>\large<br>\text{M}_\text{their-per} =<br>\begin{bmatrix}<br>\frac{1}{\text{aspect} \times \tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; \frac{1}{\tan(\frac{\text{fov}}{2})} &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; -\frac{f+n}{f-n} &amp; -\frac{2fn}{f-n} \<br>0 &amp; 0 &amp; -1 &amp; 0<br>\end{bmatrix}<br>$$</p>
+<p>Godot 使用和 OpenGL 一样的矩阵，下面是他们设置 $\text{M}_\text{per}$ 的代码。还要注意的是，他们使用 column-major 的方法存储数据，即</p>
+<p>$$<br>M =<br>\begin{pmatrix}<br>\text{columns}[0][0] &amp; \text{columns}[1][0] \<br>\text{columns}[0][1] &amp; \text{columns}[1][1]<br>\end{pmatrix}<br>$$</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">Projection</span><span class="token double-colon punctuation">::</span><span class="token function">set_perspective</span><span class="token punctuation">(</span>real_t p_fovy_degrees<span class="token punctuation">,</span> real_t p_aspect<span class="token punctuation">,</span> real_t p_z_near<span class="token punctuation">,</span> real_t p_z_far<span class="token punctuation">,</span> <span class="token keyword">bool</span> p_flip_fov<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">if</span> <span class="token punctuation">(</span>p_flip_fov<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 		p_fovy_degrees <span class="token operator">=</span> <span class="token function">get_fovy</span><span class="token punctuation">(</span>p_fovy_degrees<span class="token punctuation">,</span> <span class="token number">1.0</span> <span class="token operator">/</span> p_aspect<span class="token punctuation">)</span><span class="token punctuation">;</span>
 	<span class="token punctuation">&#125;</span>
@@ -615,6 +500,13 @@ M =
                                         <a href="/wiki/learning/open-course/CS144/labs/lab2-receiver/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 2 The TCP receiver
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab5-network-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Down the stack (the network interface)
                                         </a>
                                     </li>
                                     
