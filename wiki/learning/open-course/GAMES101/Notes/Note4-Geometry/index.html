@@ -292,10 +292,10 @@
     <span class="token keyword">return</span> p_final<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>看看这个算法也就知道贝塞尔曲线是怎么来的了。</p>
 <p>三阶公式是</p>
-<p>$$<br>\mathbf{B}(t) = (1-t)^3 \mathbf{P}_0 + 3(1-t)^2 t \mathbf{P}_1 + 3(1-t) t^2 \mathbf{P}_2 + t^3 \mathbf{P}_3<br>$$</p>
-<p>一般的 $n$ 阶公式是</p>
-<p>$$<br>\mathbf{B}(t) = \sum_{i=0}^{m} \binom{m}{i} (1-t)^{m-i} t^i \mathbf{P}_i<br>$$</p>
-<p>下图中，左图是 Godot 里的 Curve，它就用到了贝塞尔曲线；右图贝塞尔曲线的生成方法，和上面提到的 Casteljau Algorithm 一致。</p>
+<script type="math/tex; mode=display">
+\mathbf{B}(t) = (1-t)^3 \mathbf{P}_0 + 3(1-t)^2 t \mathbf{P}_1 + 3(1-t) t^2 \mathbf{P}_2 + t^3 \mathbf{P}_3</script><p>一般的 $n$ 阶公式是</p>
+<script type="math/tex; mode=display">
+\mathbf{B}(t) = \sum_{i=0}^{m} \binom{m}{i} (1-t)^{m-i} t^i \mathbf{P}_i</script><p>下图中，左图是 Godot 里的 Curve，它就用到了贝塞尔曲线；右图贝塞尔曲线的生成方法，和上面提到的 Casteljau Algorithm 一致。</p>
 <p><img src="/images/learning/open-course/GAMES101/Notes/note4/bezier.png" alt=""></p>
 <p>再看看左图，我们会发现它是由三个贝塞尔曲线拼接而成的，而且看起来很平滑，这就是所谓的“分段贝塞尔曲线”。高阶贝塞尔曲线不容易控制，所以我们更倾向于把几个低阶贝塞尔曲线拼接起来形成复杂曲线。</p>
 <h3 id="贝塞尔曲面"><a href="#贝塞尔曲面" class="headerlink" title="贝塞尔曲面"></a>贝塞尔曲面</h3><p>我们同样用 Casteljau Algorithm 生成贝塞尔曲面：</p>
@@ -463,6 +463,13 @@
                                         <a href="/wiki/learning/open-course/CS144/labs/lab5-network-interface/">
                                             <i class="fa fa-file-text-o"></i>
                                             Lab 5 Down the stack (the network interface)
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab4-real-world/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Measuring the real world
                                         </a>
                                     </li>
                                     
