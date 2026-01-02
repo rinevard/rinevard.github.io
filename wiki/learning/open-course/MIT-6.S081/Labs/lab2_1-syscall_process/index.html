@@ -290,6 +290,8 @@
 <p>以下是 <a target="_blank" rel="noopener" href="https://www.scs.stanford.edu/~zyedidia/docs/riscv/riscv-privileged.pdf">risc-v 手册</a> 对 ECALL 的解释：</p>
 <blockquote>
 <p>When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode exception, environment-call-from-S-mode exception, or environment-call-from-M-mode exception, respectively, and performs no other operation.</p>
+</blockquote>
+<blockquote>
 <p>如果在 U-mode 执行，ECALL 指令会产生一个来自 U-mode 的环境调用异常；如果在 S-mode 执行，则产生来自 S-mode 的环境调用异常；如果在 M-mode 执行，则产生来自 M-mode 的环境调用异常。</p>
 </blockquote>
 <p>以下是 risc-v 手册对 stvec 寄存器的简介：</p>
@@ -365,6 +367,8 @@
 <p>然后我们一路按<code>si</code>到达<code>sret</code>语句处。<code>sret</code>会做什么呢？让我们看看riscv手册：</p>
 <blockquote>
 <p>The SRET instruction is used to return from a trap taken into S-mode. […] When executing SRET, the privilege level is set to the value in the SPP field of the sstatus register; […] the pc is set to the value stored in the sepc register.</p>
+</blockquote>
+<blockquote>
 <p><code>SRET</code> 指令用于从进入 S-mode 的陷阱中返回。[…] 当执行 <code>SRET</code> 时，特权级别被设置为<code>sstatus</code> 寄存器中 <code>SPP</code> 字段的值；[…] 程序计数器 pc 被设置为存储在 <code>sepc</code> 寄存器中的值。</p>
 </blockquote>
 <p>我们借助 <code>p /x sepc</code> 打印这个寄存器的值看看~（请忽视左图里我之前写成spec的手误）</p>
@@ -853,30 +857,9 @@
                     <ul class="unstyled" id="tree" >
                             
                                     <li class="file">
-                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _Datalab和我
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _玩乐的人
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
                                         <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
                                             <i class="fa fa-file-text-o"></i>
                                             慢慢地冲浪
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _我也想做出优秀的作品
                                         </a>
                                     </li>
                                     
@@ -919,6 +902,13 @@
                                         <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
                                             <i class="fa fa-file-text-o"></i>
                                             树上的黄蜂
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            多级页面测试
                                         </a>
                                     </li>
                                     

@@ -435,7 +435,7 @@ uint64 alarm_handler<span class="token punctuation">;</span>        <span class=
     p<span class="token operator">-></span>is_alarming <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> p<span class="token operator">-></span>alarm_tf<span class="token punctuation">.</span>a0<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="一些小想法"><a href="#一些小想法" class="headerlink" title="一些小想法"></a>一些小想法</h2><p>为什么说“Prevent re-entrant calls to the handler——if a handler hasn’t returned yet, the kernel shouldn’t call it again. test2 tests this.”，即不能在上次对 handler 的调用完成前进行下次调用？我猜是因为我们会保存调用前的用户进程状态，而在上次 handler 完成前再次调用 handler 就会保存上次 handler 正在执行时的用户进程状态，这会覆盖最开始的用户进程状态。</p>
+<h2 id="一些小想法"><a href="#一些小想法" class="headerlink" title="一些小想法"></a>一些小想法</h2><p>为什么说“Prevent re-entrant calls to the handler—-if a handler hasn’t returned yet, the kernel shouldn’t call it again. test2 tests this.”，即不能在上次对 handler 的调用完成前进行下次调用？我猜是因为我们会保存调用前的用户进程状态，而在上次 handler 完成前再次调用 handler 就会保存上次 handler 正在执行时的用户进程状态，这会覆盖最开始的用户进程状态。</p>
 <p>再说句题外话，感觉 Page Tables 的 hard 的难度比这个难不少……果然 All hards are hard, but some hards are harder than others🫠🫠</p>
 
                                                                                                                             
@@ -910,30 +910,9 @@ uint64 alarm_handler<span class="token punctuation">;</span>        <span class=
                     <ul class="unstyled" id="tree" >
                             
                                     <li class="file">
-                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _Datalab和我
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _玩乐的人
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
                                         <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
                                             <i class="fa fa-file-text-o"></i>
                                             慢慢地冲浪
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _我也想做出优秀的作品
                                         </a>
                                     </li>
                                     
@@ -976,6 +955,13 @@ uint64 alarm_handler<span class="token punctuation">;</span>        <span class=
                                         <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
                                             <i class="fa fa-file-text-o"></i>
                                             树上的黄蜂
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            多级页面测试
                                         </a>
                                     </li>
                                     

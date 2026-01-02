@@ -298,8 +298,8 @@
     <span class="token keyword">return</span> <span class="token punctuation">(</span>tMin <span class="token operator">&lt;=</span> tMax<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>思路就是计算这个交集：</p>
-<script type="math/tex; mode=display">
-[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]</script><p>对于最后的 <code>getIntersection</code>，小 AI 说可以在发生相交时更新 <code>ray</code> 的 <code>t_max</code>，然后在射线和盒子的交点大于 <code>t_max</code> 时不再检测盒子内部的相交，这可以优化性能。我认为他说得非常有道理，但改起来有点麻烦，就不改了。</p>
+<p>$$<br>[t_\text{raymin},t_\text{raymax}]\cap[t_{x, \text{enter}}, t_{x, \text{exit}}]\cap[t_{y, \text{enter}}, t_{y, \text{exit}}]\cap[t_{z, \text{enter}}, t_{z, \text{exit}}]<br>$$</p>
+<p>对于最后的 <code>getIntersection</code>，小 AI 说可以在发生相交时更新 <code>ray</code> 的 <code>t_max</code>，然后在射线和盒子的交点大于 <code>t_max</code> 时不再检测盒子内部的相交，这可以优化性能。我认为他说得非常有道理，但改起来有点麻烦，就不改了。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Intersection <span class="token class-name">BVHAccel</span><span class="token double-colon punctuation">::</span><span class="token function">getIntersection</span><span class="token punctuation">(</span>BVHBuildNode<span class="token operator">*</span> node<span class="token punctuation">,</span> <span class="token keyword">const</span> Ray<span class="token operator">&amp;</span> ray<span class="token punctuation">)</span> <span class="token keyword">const</span>
 <span class="token punctuation">&#123;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>node<span class="token operator">-></span>bounds<span class="token punctuation">.</span><span class="token function">IntersectP</span><span class="token punctuation">(</span>ray<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -808,30 +808,9 @@
                     <ul class="unstyled" id="tree" >
                             
                                     <li class="file">
-                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _Datalab和我
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _玩乐的人
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
                                         <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
                                             <i class="fa fa-file-text-o"></i>
                                             慢慢地冲浪
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _我也想做出优秀的作品
                                         </a>
                                     </li>
                                     
@@ -874,6 +853,13 @@
                                         <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
                                             <i class="fa fa-file-text-o"></i>
                                             树上的黄蜂
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            多级页面测试
                                         </a>
                                     </li>
                                     

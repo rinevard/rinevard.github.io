@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://rinevard.github.io/images/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/reverse_prototype.png">
 <meta property="og:image" content="http://rinevard.github.io/images/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/5x7prototype.png">
 <meta property="article:published_time" content="2025-07-10T12:22:38.000Z">
-<meta property="article:modified_time" content="2025-08-20T11:13:48.877Z">
+<meta property="article:modified_time" content="2026-01-02T03:36:22.508Z">
 <meta property="article:author" content="Rinevard">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://rinevard.github.io/images/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/reverse_prototype.png">
@@ -304,11 +304,12 @@ img{
 <p>比起杀戮尖塔，邪恶冥刻的单局牌局更具”持续性“，我们不仅能考虑到下一回合，还能考虑到下下回合。随从站场、手牌不刷新、献祭机制都是持续性的体现。</p>
 <p>但运气成分实在是太高了！过牌的缺乏导致我们极度依赖于起手，费用不自然回复和五点伤害差就输又强化了这一点。</p>
 <p>不过说到底，这些问题都是因为每回合只抽一张牌对卡组构筑提出了极高的要求。好牌可能沉底，新牌也可能沉底，一沉底这局就没法玩了。</p>
-<p>作者Daniel用奇妙的方式解决了问题——在地图上提供大量的牌组改造节点，并鼓励超模单卡。我们会在下一节讨论这一点。</p>
+<p>作者Daniel用奇妙的方式解决了问题——他做了个特殊的起手机制，另外在地图上提供大量的牌组改造节点，并鼓励超模单卡。我们会在下一节讨论这一点。</p>
 <p>在此之前，我们来看看邪恶冥刻的原型吧：<a target="_blank" rel="noopener" href="https://dmullinsgames.itch.io/sacrifices-must-be-made">https://dmullinsgames.itch.io/sacrifices-must-be-made</a></p>
 <h2 id="每局游戏的自洽-1"><a href="#每局游戏的自洽-1" class="headerlink" title="每局游戏的自洽"></a>每局游戏的自洽</h2><p><img src="/images/game-design/杀戮尖塔框架/inscription.png" alt=""></p>
 <p>如我们之前所言，每回合只抽一张牌对卡组构筑提出了极高的要求。一个自然的思路是允许玩家自由调整卡组，只是设置些许限制，比如每张牌最多带两张、至少二十张牌什么的。但邪恶冥刻并不是这么做的。</p>
-<p>在邪恶冥刻中，删卡并不是很困难的事，造超模单卡也非常简单。祭坛、真菌学家节点可以同时实现这两点，骨王可以删卡，画家可以复制超模单卡，每层可以拿两三张稀有卡。这就让玩家能够迅速提升单卡质量，靠超模单卡和对面打架。</p>
+<p>首先邪恶铭刻的起始手牌一定包含一只松鼠和一张零费或一费的牌，这就保证玩家第一回合总有牌可出。</p>
+<p>另外在邪恶冥刻中，删卡并不是很困难的事，造超模单卡也非常简单。祭坛、真菌学家节点可以同时实现这两点，骨王可以删卡，画家可以复制超模单卡，每层可以拿两三张稀有卡。这就让玩家能够迅速提升单卡质量，靠超模单卡和对面打架。</p>
 <p>也因此在邪恶冥刻中经常会出现一回合秒对面的局，说实话我觉得这并不是太好的设计，不过确实挺自洽的。</p>
 <h1 id="我的游戏"><a href="#我的游戏" class="headerlink" title="我的游戏"></a>我的游戏</h1><p>（哇，你的游戏和杀戮尖塔、邪恶冥刻都是一级标题，那一定和他们一样厉害吧</p>
 <p><img src="/images/game-design/杀戮尖塔框架/reverse_prototype.png" alt=""></p>
@@ -350,9 +351,9 @@ img{
         </a>
     
     
-        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">_我也想做出优秀的作品</div>
+            <div class="article-nav-title">第一章——系统接口</div>
         </a>
     
 </nav>
@@ -800,30 +801,9 @@ img{
                     <ul class="unstyled" id="tree" >
                             
                                     <li class="file">
-                                        <a href="/wiki/others/thoughts/datalab%E5%92%8C%E6%88%91/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _Datalab和我
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E7%8E%A9%E4%B9%90%E7%9A%84%E4%BA%BA/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _玩乐的人
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
                                         <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
                                             <i class="fa fa-file-text-o"></i>
                                             慢慢地冲浪
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="file">
-                                        <a href="/wiki/others/thoughts/%E6%88%91%E4%B9%9F%E6%83%B3%E5%81%9A%E5%87%BA%E4%BC%98%E7%A7%80%E7%9A%84%E4%BD%9C%E5%93%81/">
-                                            <i class="fa fa-file-text-o"></i>
-                                            _我也想做出优秀的作品
                                         </a>
                                     </li>
                                     
@@ -866,6 +846,13 @@ img{
                                         <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
                                             <i class="fa fa-file-text-o"></i>
                                             树上的黄蜂
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            多级页面测试
                                         </a>
                                     </li>
                                     
