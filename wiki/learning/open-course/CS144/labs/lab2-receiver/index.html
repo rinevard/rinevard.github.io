@@ -265,6 +265,7 @@
 <li>absolute seqno: 每个 TCP 连接中的字节流以 SYN 为开头，FIN 为结尾。用 64 位给每个字节编号就得到了 absolute deqno.</li>
 <li>stream index: 用 64 位给 TCP 连接中除 SYN 和 FIN 以外的实际数据编码就得到了 stream index.</li>
 </ol>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -301,7 +302,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>这里是示例数据，假设 ISN 为 $2^{32} - 2$，传输的内容为 “cat”，则有：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -339,6 +342,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="Translating-between-64-bit-indexes-and-32-bit-seqnos"><a href="#Translating-between-64-bit-indexes-and-32-bit-seqnos" class="headerlink" title="Translating between 64-bit indexes and 32-bit seqnos"></a>Translating between 64-bit indexes and 32-bit seqnos</h2><p>在 Lab 的开始我们要写 seqno 和 absolute seqno 间相互转换的两个函数，我的实现如下：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">Wrap32 <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">wrap</span><span class="token punctuation">(</span> <span class="token keyword">uint64_t</span> n<span class="token punctuation">,</span> Wrap32 zero_point <span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
@@ -365,7 +369,7 @@
  <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">const</span> <span class="token keyword">uint64_t</span> abs_ackno <span class="token operator">=</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bytes_pushed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> seen_syn_ <span class="token operator">+</span> reassembler_<span class="token punctuation">.</span><span class="token function">writer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">is_closed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>optional<span class="token operator">&lt;</span>Wrap32<span class="token operator">></span> ackno
   <span class="token operator">=</span> seen_syn_ <span class="token operator">?</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">optional</span><span class="token generic class-name"><span class="token operator">&lt;</span>Wrap32<span class="token operator">></span></span></span><span class="token punctuation">(</span> <span class="token class-name">Wrap32</span><span class="token double-colon punctuation">::</span><span class="token function">wrap</span><span class="token punctuation">(</span> abs_ackno<span class="token punctuation">,</span> zero_point_ <span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token operator">:</span> std<span class="token double-colon punctuation">::</span>nullopt<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p> 这里的 reassembler_.writer().is_closed() 不能换成 seen_fin_，因为收到 FIN 并不代表数据已经被填入了 ByteStream.</p>
+<p> 这里的 reassembler<em>.writer().is_closed() 不能换成 seen_fin</em>，因为收到 FIN 并不代表数据已经被填入了 ByteStream.</p>
 </li>
 <li><p>怎么计算 stream index？</p>
 <p> 对带 SYN 的 message，stream index 就是 0.</p>
@@ -923,6 +927,13 @@
                                     </li>
                                     
                                     <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%974/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[4]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
                                         <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
                                             <i class="fa fa-file-text-o"></i>
                                             树上的黄蜂
@@ -933,6 +944,20 @@
                                         <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
                                             <i class="fa fa-file-text-o"></i>
                                             多级页面测试
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%975/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[5]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%976/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[6]
                                         </a>
                                     </li>
                                     

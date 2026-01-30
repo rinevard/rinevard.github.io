@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang=zh>
+
+    <head>
+        <meta charset="utf-8">
+        
+            <title>
+                
+                    探索日志[4] | 
+                            Rinevard
+            </title>
+            
+                
+                    <meta name="keywords" content="探索日志[4]" />
+                    
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                        <meta name="description" content="赶在2025的末班车开始写探索日志，这样就能探索一年了。 之前的几篇探索日志全是和游戏相关的，写完探索日志[3]后就下定决心下一篇绝不写游戏相关的东西，这么一拖就拖到了现在。 那不写游戏，还能写什么呢？我忽然惊讶地发现自己所有有趣的体验都是和游戏有关的，我想我不能这样去生活。作为人类应该去体验多种多样的事物，不该把自己的生活只寄托在一件事情上。 总之我就去做了 BIT 吃饭年度报告。做的过程和做出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索日志[4]">
+<meta property="og:url" content="http://rinevard.github.io/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%974/index.html">
+<meta property="og:site_name" content="Rinevard">
+<meta property="og:description" content="赶在2025的末班车开始写探索日志，这样就能探索一年了。 之前的几篇探索日志全是和游戏相关的，写完探索日志[3]后就下定决心下一篇绝不写游戏相关的东西，这么一拖就拖到了现在。 那不写游戏，还能写什么呢？我忽然惊讶地发现自己所有有趣的体验都是和游戏有关的，我想我不能这样去生活。作为人类应该去体验多种多样的事物，不该把自己的生活只寄托在一件事情上。 总之我就去做了 BIT 吃饭年度报告。做的过程和做出">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://rinevard.github.io/images/others/random_thoughts/explore4/demo.jpg">
+<meta property="article:published_time" content="2025-12-31T16:50:42.000Z">
+<meta property="article:modified_time" content="2026-01-30T14:29:09.898Z">
+<meta property="article:author" content="Rinevard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://rinevard.github.io/images/others/random_thoughts/explore4/demo.jpg">
+                            
+
+                                
+
+                                        
+                                            <link rel="icon" href="/images/jurorara.png" />
+                                            
+
+                                                
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+                                                    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+                                                        
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+                                                            
+<link rel="stylesheet" href="/css/style.css">
+
+
+                                                                <!-- TOC Sidebar CSS -->
+                                                                
+                                                                    
+<link rel="stylesheet" href="/css/toc-sidebar.css">
+
+                                                                        
+
+                                                                            <!-- Medium Zoom CSS -->
+                                                                            
+<link rel="stylesheet" href="/css/medium-zoom.css">
+
+
+                                                                                
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+                                                                                    <script
+                                                                                        src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+                                                                                    <script>
+                                                                                        if (Cookies.get('sidebarHidden') === 'true') {
+                                                                                            document.documentElement.classList.add('sidebar-hidden');
+                                                                                        }
+                                                                                    </script>
+
+                                                                                    
+    
+                
+                            
+                                        
+                                                
+                                                            
+                                                                                        
+
+                                                                                                <!-- PrismJS assets -->
+                                                                                                <!-- use light theme -->
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+                                                                                                <link rel="stylesheet"
+                                                                                                    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" />
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+                                                                                                <script defer
+                                                                                                    src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+                                                                                                <!-- Custom Prism copy button styling -->
+                                                                                                
+<link rel="stylesheet" href="/css/prism-copy-button.css">
+
+                                                                                                    <!-- configure autoloader before it loads -->
+                                                                                                    <script>
+                                                                                                        window.Prism = window.Prism || {};
+                                                                                                        Prism.plugins = Prism.plugins || {};
+                                                                                                        Prism.plugins.autoloader = Prism.plugins.autoloader || {};
+                                                                                                        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                                                                                                    </script>
+                                                                                                    <script defer
+                                                                                                        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+                                                                                                    <!-- Custom Prism copy button JavaScript -->
+                                                                                                    <script defer
+                                                                                                        src="/js/prism-copy-button.js"></script>
+
+                                                                                                    <!-- Medium Zoom for Images -->
+                                                                                                    <script defer
+                                                                                                        src="/libs/medium-zoom/medium-zoom.min.js"></script>
+                                                                                                    <script defer
+                                                                                                        src="/js/medium-zoom-init.js"></script>
+    <meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Rinevard" type="application/atom+xml">
+</head>
+
+    <body>
+        <div id="container">
+            <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Rinevard</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">文章历史</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+                <div class="outer">
+                    
+                                <section id="main"><article id="post-others/thoughts/探索日志4" class="article article-type-post" itemscope
+    itemprop="blogPost">
+    <div class="article-inner">
+        
+                    
+                        <header class="article-header">
+                            
+                                <div class="article-meta">
+                                    
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/%E6%9D%82%E8%B0%88/%E7%A2%8E%E7%A2%8E%E5%BF%B5/">碎碎念</a>
+    </div>
+
+                                        
+                                            
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%974/">
+            <time datetime="2025-12-31T16:50:42.000Z" itemprop="datePublished">2026-01-01</time>
+        </a>
+    </div>
+
+
+                                                
+                                                        
+                                </div>
+                                
+                                    
+    
+        <h1 class="article-title" itemprop="name">
+            探索日志[4]
+        </h1>
+    
+
+                        </header>
+                        
+                            
+                                <div class="article-entry" itemprop="articleBody">
+                                    
+                                        
+                                                                                                                
+                                                                                                                    <!-- 原始目录隐藏，但保留供JS获取结构 -->
+                                                                                                                    <div id="toc"
+                                                                                                                        class="toc-article"
+                                                                                                                        style="display: none;">
+                                                                                                                        <strong
+                                                                                                                            class="toc-title">
+                                                                                                                            文章目录
+                                                                                                                        </strong>
+                                                                                                                        
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                        <p>赶在2025的末班车开始写探索日志，这样就能探索一年了。</p>
+<p>之前的几篇探索日志全是和游戏相关的，写完探索日志[3]后就下定决心下一篇绝不写游戏相关的东西，这么一拖就拖到了现在。</p>
+<p>那不写游戏，还能写什么呢？我忽然惊讶地发现自己所有有趣的体验都是和游戏有关的，我想我不能这样去生活。作为人类应该去体验多种多样的事物，不该把自己的生活只寄托在一件事情上。</p>
+<p>总之我就去做了 <a target="_blank" rel="noopener" href="https://github.com/rinevard/BIT-Annual-Eat/">BIT 吃饭年度报告</a>。做的过程和做出来的成果其实不太有什么非常出乎意料的地方，但也确实算得上是探索吧。</p>
+<p><img src="/images/others/random_thoughts/explore4/demo.jpg" width="80%"> </p>
+<p>我曾经一定想过要给学校留下些什么，就是很中二的那种想要在学校留下自己的足迹之类的，无论如何这个东西也都能给过去的自己一个交代了。</p>
+<p>作为一篇跨年的探索日志，想必也该写点和 2025 相关的东西。我们在 2025 年都体验了哪些有趣的作品？如果有人看到这里可以分享一下自己在 2025 看到的有趣作品，我很想体验一下。</p>
+<p>于我而言，我在 2025 年最喜欢的动画应该就是凉宫春日了。我很少在动画里看到这样生机勃勃的主角，以至于我现在也会时不时打开随机一集，感慨“世界上有着生命力这么旺盛的人”然后自己也就随着团长欣欣向荣了起来。</p>
+<p>除了动画之外，最喜欢的书应该是漫长的告别（虽然没看几本书），最喜欢的游戏大概在苏丹的游戏、六角疑云、杀死公主里面选，但其实并没玩到极其精彩以至于能在我心中稳居第一的游戏。</p>
+<p>你知道的，我是不熬夜主义者，写到这里真的有点晕晕了，希望醒来后的我认为这篇文章逻辑通顺文笔流畅，我要去睡觉了，祝大家新年快乐。</p>
+
+                                                                                                                            
+                                                                                                                                
+                                </div>
+                                <footer class="article-footer">
+                                </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    树上的黄蜂
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/learning/open-course/CS144/labs/lab6-ip-router/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Lab 6 Building an IP router</div>
+        </a>
+    
+</nav>
+
+
+        
+
+            
+                 
+<section id="comments">
+  <div class="giscus"></div>
+  <script src="https://giscus.app/client.js" data-repo="rinevard/rinevard.github.io"
+    data-repo-id="R_kgDOLkoe9A" data-category="Announcements"
+    data-category-id="DIC_kwDOLkoe9M4CjJnR" data-mapping="pathname" data-reactions-enabled="1"
+    data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN"
+    data-loading="lazy" crossorigin="anonymous" async></script>
+  </section>
+ 
+
+                    
+
+                        
+                            <!-- baidu url auto push script -->
+                            <script type="text/javascript">
+                                !function () { var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi, r = window.location.href, o = document.referrer; if (!e.test(r)) { var n = "//api.share.baidu.com/s.gif"; o ? (n += "?r=" + encodeURIComponent(document.referrer), r && (n += "&l=" + r)) : r && (n += "?l=" + r); var t = new Image; t.src = n } }(window);
+                            </script>
+                            </section>
+                                
+                                    <aside id="sidebar">
+    <div class="sidebar-content">
+        
+            
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>文章</span>
+        </h3>
+
+        <div class="widget categories-widget">
+            
+
+                
+
+                        
+                            
+                                
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        gamejam
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        公开课
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        CS144
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab0-network-warmup/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 0 Networking Warmup
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab1-reassembler/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Stitching substrings into a byte stream
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab2-receiver/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 The TCP receiver
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab5-network-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Down the stack (the network interface)
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab4-real-world/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Measuring the real world
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/CS144/labs/lab6-ip-router/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Building an IP router
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        GAMES101
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Assignments
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw2-rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw3-pipeline-and-shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 3 Pipeline and Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw4-geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw5-raytracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 5 Raytracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw6-bounding-box/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 6 Bounding Box
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Hw/Hw7-path-tracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Assignment 7 Path Tracing
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note1-transformation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 1 Transformation
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note2-Rasterizing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 2 Rasterizing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note3-Shading/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 3 Shading
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note4-Geometry/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 4 Geometry
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note5-RayTracing/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 5 RayTracing
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/GAMES101/Notes/Note6-BRDF-and-renderingequation/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Note 6 BRDF and Rendering Eequation
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        MIT-6.S081
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Labs
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab1-util/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 1 Xv6 and Unix utilities
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2-syscall/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2 System calls
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab2_1-syscall_process/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 2.1 系统调用流程——以sleep为例
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab3-pagetable/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 3 Page Tables
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab4-traps/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 4 Traps
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab5-cow/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 5 Copy-on-Write Fork
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab6-net/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 6 Networking
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab7-lock/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 7 Lock
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab8-fs/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 8 File System
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Labs/lab9-mmap/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            Lab 9 mmap
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        Notes
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/Notes/note1-sys-interface/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            第一章——系统接口
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/MIT-6.S081/BeforeStory/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            在开始之前
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/wiki/learning/open-course/%E8%BF%99%E6%98%AF%E5%93%AA%E9%87%8C/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            这里有什么？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        杂谈
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        二次元
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory open">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder-open"></i>
+                                        碎碎念
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E7%BD%91%E4%B8%8A%E5%86%B2%E6%B5%AA/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            慢慢地冲浪
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%970/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[0]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%971/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[1]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%972/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[2]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%973/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[3]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/moon/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            透过望远镜给月亮拍照
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file active">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%974/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[4]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%A7%E9%BB%84%E8%9C%82/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            树上的黄蜂
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E5%A4%9A%E7%BA%A7%E9%A1%B5%E9%9D%A2%E6%B5%8B%E8%AF%95/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            多级页面测试
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%975/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[5]
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/others/thoughts/%E6%8E%A2%E7%B4%A2%E6%97%A5%E5%BF%976/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            探索日志[6]
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        翻译
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/translation/%E4%B8%83%E5%A4%A9%E5%8E%9F%E5%9E%8B/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            如何在七天内制作游戏原型
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        游戏设计
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%AF%B9%E6%8E%A2%E7%B4%A2%E7%B1%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%9D%E8%80%83/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            对探索类游戏的思考
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E5%86%B0%E5%B1%B1%E4%B9%8B%E4%B8%8B%E7%9A%84%E6%B7%B1%E5%BA%A6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            技巧的分类，冰山之下的深度
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="file">
+                                        <a href="/wiki/game-design/%E6%9D%80%E6%88%AE%E5%B0%96%E5%A1%94%E6%A1%86%E6%9E%B6/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            杀戮尖塔的框架如此自洽，我们能离开它吗？
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                    <li class="file">
+                                        <a href="/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            欢迎！
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                    
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var iconFolderOpenClass = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+
+                if (expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            });
+        });
+    </script>
+    
+        
+    </div>
+</aside>
+                                        
+                </div>
+                <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            Rinevard &copy; 2026
+                    <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+                    <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a
+                        href="https://github.com/rinevard" target="_blank">Rinekitten</a>
+                    
+        </div>
+    </div>
+</footer>
+                    
+    
+                                                                
+                                                                                                            
+                                                                                                                        
+                                                                                                                            <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+                                                                                                                                
+                                                                                                                                    
+
+        <!-- Custom Scripts -->
+        
+<script src="/js/main.js"></script>
+
+            
+                <!-- Notion风格目录JS -->
+                
+<script src="/js/toc-sidebar.js"></script>
+
+                    
+                        
+<script src="/js/sidebar.js"></script>
+
+        </div>
+
+        <!-- 固定在左下角的侧边栏切换按钮 -->
+        <div id="sidebar-toggle-btn">
+            <i class="fa fa-angle-double-left"></i>
+        </div>
+
+        <!-- 回到顶部按钮 -->
+        <div id="toTop" title="回到顶部">
+            <i class="fa fa-arrow-up"></i>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // 回到顶部按钮功能
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 200) {
+                        $('#toTop').fadeIn();
+                    } else {
+                        $('#toTop').fadeOut();
+                    }
+                });
+
+                $('#toTop').click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+
+    </html>
