@@ -279,7 +279,7 @@
 <p>这里不需要手动调用 close，因为 file_descriptor.cc 的析构函数 ~FDWrapper() 自己会调用 close. 这是遵循了 C++ 的 RAII 规范。</p>
 <p>测试代码的原理是 webget_t.sh 用管道重定向程序输出，然后对比正确值。</p>
 <h2 id="byte-stream"><a href="#byte-stream" class="headerlink" title="byte stream"></a>byte stream</h2><p>我们需要实现一个内存字节流，写者可以往里面写东西，读者可以读，字节流有最大容量。Lab 文档说无需考虑并发，所以我们简单做个环形队列然后设置读写头就行（死去的 6S081 记忆突然攻击我！）</p>
-<p>首先设置几个成员变量，这里的 head<em> 始终指向第一个有效数据，tail</em> 始终指向空位置：</p>
+<p>首先设置几个成员变量，这里的 head_ 始终指向第一个有效数据，tail_ 始终指向空位置：</p>
 <p><img src="/images/learning/open-course/CS144/labs/lab0/ring.png" width="50%" height="auto"></p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">ByteStream</span>
 <span class="token punctuation">&#123;</span>
@@ -488,6 +488,26 @@ string_view <span class="token class-name">Reader</span><span class="token doubl
                                         <a href="/wiki/game-design/ldjam%E5%8F%82%E8%B5%9B%E6%8C%87%E5%8D%97/">
                                             <i class="fa fa-file-text-o"></i>
                                             Ludum Dare参加指南
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        godot
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/learning/godot/tracy/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            用 Tracy 分析动画编辑器的性能瓶颈
                                         </a>
                                     </li>
                                     
