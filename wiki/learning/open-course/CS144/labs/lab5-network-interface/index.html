@@ -324,7 +324,7 @@
 
   <span class="token function">transmit</span><span class="token punctuation">(</span> eth_frame <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>在入站方向，接收到 ETH 帧时做个 Multiplexing 分成 IPV4 和 ARP 两个分支，遇到 IPV4 就放进 datagrams_received_ 给上层应用；遇到 ARP 先结合其 sender 的 IP 和 MAC 信息更新 ARP 表、发缓存的包（如果有），再根据类型判断是否回复。</p>
+<p>在入站方向，接收到 ETH 帧时做个 Multiplexing 分成 IPV4 和 ARP 两个分支，遇到 IPV4 就放进 datagrams<em>received</em> 给上层应用；遇到 ARP 先结合其 sender 的 IP 和 MAC 信息更新 ARP 表、发缓存的包（如果有），再根据类型判断是否回复。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">NetworkInterface</span><span class="token double-colon punctuation">::</span><span class="token function">recv_frame</span><span class="token punctuation">(</span> <span class="token keyword">const</span> EthernetFrame<span class="token operator">&amp;</span> frame <span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span> frame<span class="token punctuation">.</span>header<span class="token punctuation">.</span>dst <span class="token operator">!=</span> ethernet_address_ <span class="token operator">&amp;&amp;</span> frame<span class="token punctuation">.</span>header<span class="token punctuation">.</span>dst <span class="token operator">!=</span> ETHERNET_BROADCAST <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -876,6 +876,26 @@
                                         <a href="/wiki/others/animation/%E6%AF%8D%E9%B8%A1%E5%8D%A1%E7%9A%84%E5%90%84%E7%A7%8D%E7%A5%9E%E5%A5%87%E5%81%87%E8%8D%AF/">
                                             <i class="fa fa-file-text-o"></i>
                                             母鸡卡的各种神奇假药
+                                        </a>
+                                    </li>
+                                    
+                    </ul>
+                    
+                                </li>
+                                
+                                <li class="directory">
+                                    <a href="#" data-role="directory">
+                                        <i
+                                            class="fa fa-folder"></i>
+                                        画画
+                                    </a>
+                                    
+                    <ul class="unstyled" id="tree" >
+                            
+                                    <li class="file">
+                                        <a href="/wiki/others/draw/draw/">
+                                            <i class="fa fa-file-text-o"></i>
+                                            画画
                                         </a>
                                     </li>
                                     
