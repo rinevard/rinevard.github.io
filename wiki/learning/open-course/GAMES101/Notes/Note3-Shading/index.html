@@ -160,6 +160,7 @@
         <div class="ins-input-wrapper">
             <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
             <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+            <button type="button" class="ins-mobile-cancel ins-selectable">取消</button>
         </div>
         <div class="ins-section-wrapper">
             <div class="ins-section-container"></div>
@@ -186,28 +187,23 @@
 <script src="/js/insight.js"></script>
 
 
+
 </div>
         </div>
     </div>
     <div id="main-nav-mobile" class="header-sub header-inner">
-        <table class="menu outer">
-            <tr>
-                
-                    <td><a class="main-nav-link" href="/">首页</a></td>
-                
-                    <td><a class="main-nav-link" href="/archives">文章历史</a></td>
-                
-                    <td><a class="main-nav-link" href="/about">关于我</a></td>
-                
-                <td>
-                    
-    <div class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
-    </div>
-
-                </td>
-            </tr>
-        </table>
+        <button class="mobile-nav-button" id="mobile-sidebar-open" type="button" aria-label="打开文章列表">
+            <i class="fa fa-bars"></i>
+        </button>
+        <button class="mobile-search-trigger" type="button" aria-label="搜索文章">
+            <i class="fa fa-search"></i>
+            <span>搜索</span>
+        </button>
+        
+            <button class="mobile-nav-button" id="mobile-toc-open" type="button" aria-label="打开文章目录">
+                <i class="fa fa-list-ul"></i>
+            </button>
+        
     </div>
 </header>
 
@@ -424,6 +420,33 @@ P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}</script><p>这里的 $S$ 是面积�
                                 
                                     <aside id="sidebar">
     <div class="sidebar-content">
+        <div class="mobile-sidebar-title">Rinevard Blog</div>
+        
+            <nav class="mobile-sidebar-menu">
+                
+                    <a href="/">
+                        
+                            <i class="fa fa-home"></i>
+                        
+                        <span>首页</span>
+                    </a>
+                
+                    <a href="/archives">
+                        
+                            <i class="fa fa-history"></i>
+                        
+                        <span>文章历史</span>
+                    </a>
+                
+                    <a href="/about">
+                        
+                            <i class="fa fa-user-o"></i>
+                        
+                        <span>关于我</span>
+                    </a>
+                
+            </nav>
+        
         
             
     <div class="widget-wrap" id='categories'>
@@ -1092,6 +1115,7 @@ P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}</script><p>这里的 $S$ 是面积�
         
     </div>
 </aside>
+
                                         
                 </div>
                 <footer id="footer">
@@ -1153,30 +1177,7 @@ P=\frac{S_{APB}C+S_{BPC}A+S_{CPA}B}{S_{ABC}}</script><p>这里的 $S$ 是面积�
             <i class="fa fa-angle-double-left"></i>
         </div>
 
-        <!-- 回到顶部按钮 -->
-        <div id="toTop" title="回到顶部">
-            <i class="fa fa-arrow-up"></i>
-        </div>
-
-        <script>
-            $(document).ready(function () {
-                // 回到顶部按钮功能
-                $(window).scroll(function () {
-                    if ($(this).scrollTop() > 200) {
-                        $('#toTop').fadeIn();
-                    } else {
-                        $('#toTop').fadeOut();
-                    }
-                });
-
-                $('#toTop').click(function () {
-                    $('html, body').animate({
-                        scrollTop: 0
-                    }, 400);
-                    return false;
-                });
-            });
-        </script>
+        <div id="mobile-panel-mask"></div>
     </body>
 
     </html>
