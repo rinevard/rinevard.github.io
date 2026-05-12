@@ -110,6 +110,22 @@ button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
+a,
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
 html,
 body,
 #container {
@@ -2495,10 +2511,14 @@ ol.toc {
     color: #333;
     font-size: 15px;
     line-height: 1.45;
+    -webkit-transition: color 0.2s ease, background-color 0.2s ease;
+    -moz-transition: color 0.2s ease, background-color 0.2s ease;
+    -ms-transition: color 0.2s ease, background-color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
   }
   .mobile-sidebar-menu a:hover {
     color: #007aff;
-    background: rgba(0,122,255,0.08);
+    background-color: rgba(0,122,255,0.08);
     text-decoration: none;
   }
   .mobile-sidebar-menu a .fa {
@@ -3534,10 +3554,14 @@ html.mobile-toc-open .mobile-toc-panel {
   color: #333;
   text-decoration: none;
   white-space: normal;
+  -webkit-transition: color 0.2s ease, background-color 0.2s ease;
+  -moz-transition: color 0.2s ease, background-color 0.2s ease;
+  -ms-transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 .mobile-toc-content .toc-link:hover {
   color: #007aff;
-  background: rgba(0,122,255,0.08);
+  background-color: rgba(0,122,255,0.08);
 }
 div.code-toolbar>.toolbar {
   position: absolute;
